@@ -1,25 +1,23 @@
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-
-# To-do
-#
-# Continue with Otsu combined with Gaussian.
-# - Seek out the edge cases.
-# 
-# Other images to check Otsu with Gaussian smoothing.
-# 
-# Other algorithms implemented in openCV.
-# 
-# Translate into coordinates of where we think headphones are.
-# 
-# Centroid of connected component, of a certain size, hard filter of background (region of interest).
-# 
-# Threshold based on pixels in the region of interest. Apply threshold to entire image.
-# 
-# Connected components analysis.
  
 class ProcessImage:
+    """ Processes still images to extract coordinates of data points.
+    
+    Prerequisites:
+    - Sample still images from video data.
+    
+    Plan:
+    - Read image, separate colour layers, binarize images through (Otsu) thresholding.
+    - 
+    
+    To-do:
+    - Look at edge cases for Otsu with Gaussian blur (empty vs. full).
+    - Check which other thresholding algorithms are implemented in OpenCV.
+    - Connected components analysis (take centroid). Set up hard filter for region of interest.
+    - Translate image coordinates into real-world coordinates.
+    """
     
     def __init__(self):
         self.data = []
