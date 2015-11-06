@@ -55,7 +55,8 @@ class ProcessImage:
         
         imnames = ['simple_binary', 'simple_binary_inv', 'simple_trunc', 
                    'simple_tozero', 'simple_tozero_inv']
-        images = [thresh1, thresh2, thresh3, thresh4, thresh5]
+        images = [thresh1, thresh2, thresh3, 
+                  thresh4, thresh5]
         
         self.save_images(imin, imnames, images)
     
@@ -68,9 +69,9 @@ class ProcessImage:
         
         ret,th1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
         th2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, \
-                                    cv2.THRESH_BINARY, 11, 50) # 50 - 100
+                                    cv2.THRESH_BINARY, 11, 12) # 50 - 100
         th3 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, \
-                                    cv2.THRESH_BINARY, 11, 50) # 50 - 100
+                                    cv2.THRESH_BINARY, 11, 12) # 50 - 100
         
         imnames = ['adaptive_global', 'adaptive_mean', 'adaptive_gaussian']
         images = [th1, th2, th3]
@@ -94,22 +95,18 @@ class ProcessImage:
         images = [img, th1, th2, blur, th3]
         
         self.save_images(imin, imnames, images)
+    
+    def connected_components(self, imin):
+        im2, contours, hierarchy = cv2.findContours(imin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
 # blaargh is courtesy of Maarten
-blaargh = ProcessImage()
-blaargh.separate_colours('original.png')
+# blaargh = ProcessImage()
 
-blaargh.simple_threshold('original_b.png')
-blaargh.simple_threshold('original_g.png')
-blaargh.simple_threshold('original_r.png')
+# blaargh.separate_colours('example_001.png')
 
-blaargh.adaptive_threshold('original_b.png')
-blaargh.adaptive_threshold('original_g.png')
-blaargh.adaptive_threshold('original_r.png')
-
-blaargh.otsu_threshold('original_b.png')
-blaargh.otsu_threshold('original_g.png')
-blaargh.otsu_threshold('original_r.png')
+# blaargh.otsu_threshold('example_001_g.png')
+# blaargh.otsu_threshold('example_001_r.png')
+# blaargh.otsu_threshold('example_001_b.png')
 
 # Stuff I might want to put into the class:
 #
