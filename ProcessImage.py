@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
- 
+
 class ProcessImage:
     """ Processes still images to extract coordinates of data points.
     
@@ -13,20 +13,37 @@ class ProcessImage:
     - 
     
     To-do:
-    - Look at edge cases for Otsu with Gaussian blur (empty vs. full).
-    - Check which other thresholding algorithms are implemented in OpenCV.
-    - Connected components analysis (take centroid). Set up hard filter for region of interest.
-    - Translate image coordinates into real-world coordinates.
+DONE    - Look at edge cases for Otsu with Gaussian blur (empty vs. full).
+DISC    - Check which other thresholding algorithms are implemented in OpenCV.
+TODO    - Connected components analysis (take centroid). Set up hard filter for region of interest.
+TODO    - Translate image coordinates into real-world coordinates.
     """
     
     def __init__(self):
         self.data = []
     
-    def save_images(self, imin, imnames, images):
+    def save_image(self, imin, imnames, images):
         
         for imname, image in zip(imnames, images):
             cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
     
+    def show_image_col(self, imin):
+        
+        # Correct ordering of colour layers from BGR to RGB.
+        imin2 = imin[:,:,::-1]
+        
+        plt.imshow(imin2)
+        # Hide tick values on X and Y axes.
+        plt.xticks([]), plt.yticks([])
+        plt.show()
+    
+    def show_image_gs(self, imin):
+        
+        plt.imshow(imin, cmap = 'gray', interpolation = 'bicubic')
+        # Hide tick values on X and Y axes.
+        plt.xticks([]), plt.yticks([])
+        plt.show()
+        
     def separate_colours(self, imin):
         """ Takes a colour image and separates the colour layers.
         """
@@ -37,7 +54,7 @@ class ProcessImage:
         imnames = ['b', 'g', 'r']
         images = [b, g, r]
         
-        self.save_images(imin, imnames, images)
+        self.save_image(imin, imnames, images)
         
         return b, g, r
     
@@ -58,7 +75,7 @@ class ProcessImage:
         images = [thresh1, thresh2, thresh3, 
                   thresh4, thresh5]
         
-        self.save_images(imin, imnames, images)
+        self.save_image(imin, imnames, images)
     
     def adaptive_threshold(self, imin):
         """ Takes an image and creates three binarized versions of it using adaptive thresholding.
@@ -76,7 +93,7 @@ class ProcessImage:
         imnames = ['adaptive_global', 'adaptive_mean', 'adaptive_gaussian']
         images = [th1, th2, th3]
         
-        self.save_images(imin, imnames, images)
+        self.save_image(imin, imnames, images)
     
     def otsu_threshold(self, imin):
         
@@ -94,10 +111,17 @@ class ProcessImage:
                   'gaussian_filtered', 'otsu_gaussian']
         images = [img, th1, th2, blur, th3]
         
-        self.save_images(imin, imnames, images)
+        self.save_image(imin, imnames, images)
     
-    def connected_components(self, imin):
-        im2, contours, hierarchy = cv2.findContours(imin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    def find_contours(self, imin):
+        """
+        """
+        
+        
+
+session = ProcessImage()
+
+session.separate_colours('example_009.png')
 
 # blaargh is courtesy of Maarten
 # blaargh = ProcessImage()
