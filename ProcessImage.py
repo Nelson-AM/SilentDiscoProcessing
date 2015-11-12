@@ -1,4 +1,6 @@
-import cv2
+
+import os
+import cv2 
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -23,23 +25,21 @@ TODO    - Translate image coordinates into real-world coordinates.
         self.data = []
     
     def save_image(self, imin, imnames, images):
-        
+        imin = os.path.expanduser(imin)
         for imname, image in zip(imnames, images):
             cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
     
-    def show_image_col(self, imin):
-        
-        # Correct ordering of colour layers from BGR to RGB.
-        imin2 = imin[:,:,::-1]
-        
-        plt.imshow(imin2)
-        # Hide tick values on X and Y axes.
-        plt.xticks([]), plt.yticks([])
-        plt.show()
+    def read_image(self, imin, colourspace):
+        imin = os.path.expanduser(imin)
+        return cv2.imread(imin, colourspace)
     
-    def show_image_gs(self, imin):
+    def show_image(self, imin):
+        if len(imin.shape) == 3:
+            imin = imin[:,:,::-1]
+            plt.imshow(imin)
+        else:
+            plt.imshow(imin, cmap = 'gray', interpolation = 'bicubic')
         
-        plt.imshow(imin, cmap = 'gray', interpolation = 'bicubic')
         # Hide tick values on X and Y axes.
         plt.xticks([]), plt.yticks([])
         plt.show()
@@ -48,8 +48,11 @@ TODO    - Translate image coordinates into real-world coordinates.
         """ Takes a colour image and separates the colour layers.
         """
         
-        img = cv2.imread(imin)
+        # img = self.read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        img = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
         b, g, r = cv2.split(img)
+        
+        self.show_image(img)
         
         imnames = ['b', 'g', 'r']
         images = [b, g, r]
@@ -112,16 +115,11 @@ TODO    - Translate image coordinates into real-world coordinates.
         images = [img, th1, th2, blur, th3]
         
         self.save_image(imin, imnames, images)
-    
-    def find_contours(self, imin):
-        """
-        """
-        
-        
 
 session = ProcessImage()
 
-session.separate_colours('example_009.png')
+# session.separate_colours('~/Documents/PYTHON/SilentDiscoData/example_009.png')
+session.separate_colours('~/Documents/PYTHON/SilentDiscoData/example_009.png')
 
 # blaargh is courtesy of Maarten
 # blaargh = ProcessImage()
