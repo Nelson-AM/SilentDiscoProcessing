@@ -1,4 +1,3 @@
-
 import os
 import cv2 
 import numpy as np
@@ -17,23 +16,50 @@ class ProcessImage:
     To-do:
 DONE    - Look at edge cases for Otsu with Gaussian blur (empty vs. full).
 DISC    - Check which other thresholding algorithms are implemented in OpenCV.
-TODO    - Connected components analysis (take centroid). Set up hard filter for region of interest.
+TODO    - Connected components analysis (take centroid).
+            - S
+        - Set up hard filter for region of interest.
 TODO    - Translate image coordinates into real-world coordinates.
     """
     
     def __init__(self):
         self.data = []
     
-    def save_image(self, imin, imnames, images):
-        imin = os.path.expanduser(imin)
-        for imname, image in zip(imnames, images):
-            cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
-    
     def read_image(self, imin, colourspace):
+        """ Takes filename and colourspace to read image.
+        
+        Colourspace takes the cv2.imread flags, being:
+        - cv2.IMREAD_COLOR
+              Loads a color image. Any transparency of image will be neglected.
+              It is the default flag.
+        - cv2.IMREAD_GRAYSCALE
+            Loads image in grayscale mode
+        - cv2.IMREAD_UNCHANGED
+            Loads image as such including alpha channel
+        
+        """
+        
         imin = os.path.expanduser(imin)
         return cv2.imread(imin, colourspace)
     
+    def save_image(self, imin, imnames, images):
+        """ Saves image to same path as original, with added string contained in imname.
+        
+        To-do:
+        - Generalize so images are saved with the same extension as original.
+        """
+        
+        imin = os.path.expanduser(imin)
+        
+        for imname, image in zip(imnames, images):
+            cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
+    
     def show_image(self, imin):
+        """ Displays image using matplotlib.
+        
+        Assumes colour images are read using cv2, transforms the colourspace from BGR to RGB.
+        """
+        
         if len(imin.shape) == 3:
             imin = imin[:,:,::-1]
             plt.imshow(imin)
@@ -48,11 +74,13 @@ TODO    - Translate image coordinates into real-world coordinates.
         """ Takes a colour image and separates the colour layers.
         """
         
+        # Grayscale versus color image loading for debugging purposes.
         # img = self.read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
         img = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
         b, g, r = cv2.split(img)
         
-        self.show_image(img)
+        # Display image for debugging purposes.
+        # self.show_image(img)
         
         imnames = ['b', 'g', 'r']
         images = [b, g, r]
@@ -99,8 +127,10 @@ TODO    - Translate image coordinates into real-world coordinates.
         self.save_image(imin, imnames, images)
     
     def otsu_threshold(self, imin):
+        """ Takes an image and creates binarised versions using Otsu thresholding.
+        """
         
-        img = cv2.imread(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        img = self.read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
         
         # Global thresholding
         ret1, th1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
@@ -109,26 +139,75 @@ TODO    - Translate image coordinates into real-world coordinates.
         # Otsu's thresholding after Gaussian filtering
         blur = cv2.GaussianBlur(img, (5, 5), 0)
         ret3, th3 = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
+        
         imnames = ['noisy', 'global_v_127', 'otsu',
                   'gaussian_filtered', 'otsu_gaussian']
         images = [img, th1, th2, blur, th3]
         
         self.save_image(imin, imnames, images)
+    
+    def find_contours(self, imin):
+        """ 
+        """
+        
+        im = self.read_image(imin, cv2.IMREAD_COLOR)
+        self.show_image(im)
+        
+        imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        contours, hierarchy = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                
+        cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
+        
+        self.show_image(im)
+    
+    def find_centres(self, imin):
+        """
+        """
+        
+        im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+        imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        self.show_image(im)
+        
+        contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
+        
+        cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
+        
+        self.show_image(im)
+        
+        # contours, _ = cv2.findContours(img.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_L1)
+        
+        print 'contours has length: '
+        print len(contours)
+        
+        centres = []
+        
+        for i in range(len(contours)):
+            moments = cv2.moments(contours[i])
+            print "i is:"
+            print i
+            print "moments:"
+            print moments
+            centres.append((int(moments['m10']/moments['m00']), int(moments['m01']/moments['m00'])))
+            cv2.circle(im, centres[-1], 3, (0, 0, 0), -1)
+
+        print centres
+        
+        self.show_image(im)
+        
+        # cv2.imshow('image', img)
+        # cv2.imwrite('output.png',img)
+        # cv2.waitKey(0)
 
 session = ProcessImage()
 
-# session.separate_colours('~/Documents/PYTHON/SilentDiscoData/example_009.png')
-session.separate_colours('~/Documents/PYTHON/SilentDiscoData/example_009.png')
+# session.separate_colours('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004.png')
+# session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_g.png')
+# session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_r.png')
+# session.find_contours('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_g_otsu_gaussian.png')
+# session.find_contours('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_r_otsu_gaussian.png')
 
-# blaargh is courtesy of Maarten
-# blaargh = ProcessImage()
-
-# blaargh.separate_colours('example_001.png')
-
-# blaargh.otsu_threshold('example_001_g.png')
-# blaargh.otsu_threshold('example_001_r.png')
-# blaargh.otsu_threshold('example_001_b.png')
+session.find_centres('~/Documents/PYTHON/test_centres.png')
+session.find_centres('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_crop.png')
 
 # Stuff I might want to put into the class:
 #
