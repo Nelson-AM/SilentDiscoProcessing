@@ -17,8 +17,8 @@ class ProcessImage:
 DONE    - Look at edge cases for Otsu with Gaussian blur (empty vs. full).
 DISC    - Check which other thresholding algorithms are implemented in OpenCV.
 TODO    - Connected components analysis (take centroid).
-            - S
-        - Set up hard filter for region of interest.
+TODO        - Set up limit for size (done).
+        - Set up mask for area of interest (ignoring exhibition pieces).
 TODO    - Translate image coordinates into real-world coordinates.
     """
     
@@ -36,7 +36,6 @@ TODO    - Translate image coordinates into real-world coordinates.
             Loads image in grayscale mode
         - cv2.IMREAD_UNCHANGED
             Loads image as such including alpha channel
-        
         """
         
         imin = os.path.expanduser(imin)
@@ -164,8 +163,18 @@ TODO    - Translate image coordinates into real-world coordinates.
         """
         """
         
+        # ret,thresh = cv2.threshold(img,127,255,0)
+        # 6 contours,hierarchy = cv2.findContours(thresh, 1, 2)
+        # 7 
+        # 8 cnt = contours[0]
+        # 9 M = cv2.moments(cnt)
+        # 10 print M
+           
         im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        
+        # self.save_image(imin, ['convertedCol'], [imgray])
+        
         self.show_image(im)
         
         contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
@@ -182,14 +191,18 @@ TODO    - Translate image coordinates into real-world coordinates.
         centres = []
         
         for i in range(len(contours)):
+            
+            if cv2.contourArea(contours[i]) < 20:
+                continue
+            
             moments = cv2.moments(contours[i])
             print "i is:"
             print i
             print "moments:"
             print moments
             centres.append((int(moments['m10']/moments['m00']), int(moments['m01']/moments['m00'])))
-            cv2.circle(im, centres[-1], 3, (0, 0, 0), -1)
-
+            cv2.circle(im, centres[-1], 3, (0, 255, 0), -1)
+        
         print centres
         
         self.show_image(im)
@@ -206,8 +219,12 @@ session = ProcessImage()
 # session.find_contours('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_g_otsu_gaussian.png')
 # session.find_contours('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_r_otsu_gaussian.png')
 
-session.find_centres('~/Documents/PYTHON/test_centres.png')
-session.find_centres('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_crop.png')
+# WORKING
+# session.find_centres('~/Documents/PYTHON/Example_004_r_crop.png')
+# session.find_centres('~/Documents/PYTHON/Example_004_r_crop_2.png')
+
+# session.find_centres('~/Documents/PYTHON/test_centres.png')
+session.find_centres('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_r_crop.png')
 
 # Stuff I might want to put into the class:
 #
