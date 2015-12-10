@@ -15,7 +15,7 @@ class ProcessVideo:
         """
         vidin = os.path.expanduser(vidin)
         return cv2.VideoCapture(vidin)
-        
+    
     def save_image(self, imin, imnames, images):
         """ Saves image to same path as original, with added string contained 
         in imname.
@@ -69,7 +69,7 @@ class ProcessVideo:
                     # cv2.imshow('video', frame)
                     pos_frame = cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES)
                     print str(pos_frame) + " frames"
-                
+                    
                 else:
                     
                     # The next frame is not ready, so we try to read it again.
@@ -85,8 +85,7 @@ class ProcessVideo:
                     if cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES) == cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT):
                         # If the number of captured frames is equal to the total number of frames, we stop.
                         break
-
-
+    
     def ProcessVideoPerSec(self, vidin):
         
         vidcap = read_video(vidin)
@@ -107,7 +106,7 @@ class ProcessVideo:
             self.show_image(image)
             # cv2.imshow("20sec", image)
             # cv2.waitKey()
-        
+
 session = ProcessVideo()
 
 
