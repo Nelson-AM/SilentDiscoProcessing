@@ -42,7 +42,8 @@ TODO    - Translate image coordinates into real-world coordinates.
         return cv2.imread(imin, colourspace)
     
     def save_image(self, imin, imnames, images):
-        """ Saves image to same path as original, with added string contained in imname.
+        """ Saves image to same path as original, with added string contained 
+        in imname.
         
         To-do:
         - Generalize so images are saved with the same extension as original.
@@ -60,7 +61,7 @@ TODO    - Translate image coordinates into real-world coordinates.
         """
         
         if len(imin.shape) == 3:
-            imin = imin[:,:,::-1]
+            imin = imin[:, :, ::-1]
             plt.imshow(imin)
         else:
             plt.imshow(imin, cmap = 'gray', interpolation = 'bicubic')

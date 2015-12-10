@@ -7,11 +7,53 @@ from matplotlib import pyplot as plt
 
 class ProcessVideo:
     
-    def ProcessVideo(vid):
-        cap = cv2.VideoCapture("./out.mp4")
+    def __init__(self):
+        self.data = []
+    
+    def read_video(self, vidin):
+        """ 
+        """
+        vidin = os.path.expanduser(vidin)
+        return cv2.VideoCapture(vidin)
+        
+    def save_image(self, imin, imnames, images):
+        """ Saves image to same path as original, with added string contained 
+        in imname.
+        
+        To-do:
+        - Generalize so images are saved with the same extension as original.
+        """
+        
+        imin = os.path.expanduser(imin)
+        
+        for imname, image in zip(imnames, images):
+            cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
+    
+    def show_image(self, imin):
+        """ Displays image using matplotlib.
+        
+        Assumes colour images are read using cv2, transforms the colourspace from BGR to RGB.
+        """
+        
+        if len(imin.shape) == 3:
+            imin = imin[:, :, ::-1]
+            plt.imshow(imin)
+        else:
+            plt.imshow(imin, cmap = 'gray', interpolation = 'bicubic')
+        
+        # Hide tick values on X and Y axes.
+        plt.xticks([]), plt.yticks([])
+        plt.show()
+    
+    def process_video(self, vidin):
+        
+        cap = self.read_video(vidin)
+        # cv2.VideoCapture("./out.mp4")
         
         while not cap.isOpened():
-            cap = cv2.VideoCapture("./out.mp4")
+            cap = self.read_video(vidin)
+            # cap = cv2.VideoCapture("./out.mp4")
+            
             cv2.waitKey(1000)
             print "Wait for the header"
             
@@ -23,7 +65,8 @@ class ProcessVideo:
                 if flag:
                     
                     # The frame is ready and already captured
-                    cv2.imshow('video', frame)
+                    self.show_image(frame)
+                    # cv2.imshow('video', frame)
                     pos_frame = cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES)
                     print str(pos_frame) + " frames"
                 
@@ -44,53 +87,27 @@ class ProcessVideo:
                         break
 
 
-    def ProcessVideoPerSec(vid):
+    def ProcessVideoPerSec(self, vidin):
         
-        vidcap = cv2.VideoCapture('d:/video/keep/Le Sang Des Betes.mp4')
+        vidcap = read_video(vidin)
+        # vidcap = cv2.VideoCapture('d:/video/keep/Le Sang Des Betes.mp4')
         
         # Cue to 20 sec. position
         vidcap.set(cv2.CAP_PROP_POS_MSEC, 20000)
         success, image = vidcap.read()
         
+        if success:
+            # save frame as PNG
+            imnames = ['20sec']
+            images = [image]
+            
+            self.save_image(vidin, imnames, images)
+            # cv2.imwrite("frame20sec.jpg", image)
+            
+            self.show_image(image)
+            # cv2.imshow("20sec", image)
+            # cv2.waitKey()
         
-        
-        
-        
-    vidcap = cv2.VideoCapture('d:/video/keep/Le Sang Des Betes.mp4')
-    vidcap.set(cv2.CAP_PROP_POS_MSEC, 20000)      # just cue to 20 sec. position
-    success,image = vidcap.read()
-    if success:
-        cv2.imwrite("frame20sec.jpg", image)     # save frame as JPEG file
-        cv2.imshow("20sec",image)
-        cv2.waitKey()
-        
-# c++ example
-#include "opencv2/opencv.hpp"
+session = ProcessVideo()
 
-def ProcessVideoFromC:
-    """
-    
-    using namespace cv;
-    
-    int main(int, char**)
-    {
-        VideoCapture cap(0); // open the default camera
-        if(!cap.isOpened())  // check if we succeeded
-            return -1;
-        
-        Mat edges;
-        namedWindow("edges",1);
-        for(;;)
-        {
-            Mat frame;
-            cap >> frame; // get a new frame from camera
-            cvtColor(frame, edges, CV_BGR2GRAY);
-            GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
-            Canny(edges, edges, 0, 30, 3);
-            imshow("edges", edges);
-            if(waitKey(30) >= 0) break;
-        }
-        // the camera will be deinitialized automatically in VideoCapture destructor
-        return 0;
-    }
-    """
+

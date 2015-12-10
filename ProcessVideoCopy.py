@@ -47,47 +47,17 @@ class ProcessVideo:
                         # If the number of captured frames is equal to the
                         # total number of frames, we stop.
                         break
+    
+    def ProcessVideoPerSec(vid):
+        
+        vidcap = cv2.VideoCapture('d:/video/keep/Le Sang Des Betes.mp4')
+        
+        # just cue to 20 sec. position
+        vidcap.set(cv2.CAP_PROP_POS_MSEC, 20000)
+        success, image = vidcap.read()
+        
+        if success:
+            cv2.imwrite("frame20sec.jpg", image)     # save frame as JPEG file
+            cv2.imshow("20sec", image)
+            cv2.waitKey()
 
-
-def ProcessVideoPerSec(vid):
-
-    vidcap = cv2.VideoCapture('d:/video/keep/Le Sang Des Betes.mp4')
-    # just cue to 20 sec. position
-    vidcap.set(cv2.CAP_PROP_POS_MSEC, 20000)
-    success, image = vidcap.read()
-    if success:
-        cv2.imwrite("frame20sec.jpg", image)     # save frame as JPEG file
-        cv2.imshow("20sec", image)
-        cv2.waitKey()
-
-# c++ example
-# include "opencv2/opencv.hpp"
-
-
-def ProcessVideoFromC:
-    """
-
-    using namespace cv;
-
-    int main(int, char**)
-    {
-        VideoCapture cap(0); // open the default camera
-        if(!cap.isOpened())  // check if we succeeded
-            return -1;
-
-        Mat edges;
-        namedWindow("edges",1);
-        for(;;)
-        {
-            Mat frame;
-            cap >> frame; // get a new frame from camera
-            cvtColor(frame, edges, CV_BGR2GRAY);
-            GaussianBlur(edges, edges, Size(7,7), 1.5, 1.5);
-            Canny(edges, edges, 0, 30, 3);
-            imshow("edges", edges);
-            if(waitKey(30) >= 0) break;
-        }
-        // the camera will be deinitialized automatically in VideoCapture destructor
-        return 0;
-    }
-    """
