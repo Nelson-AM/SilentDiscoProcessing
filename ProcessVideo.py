@@ -27,7 +27,7 @@ class ProcessVideo:
         imin = os.path.expanduser(imin)
         
         for imname, image in zip(imnames, images):
-            cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
+            cv2.imwrite(imin[:-4] + '_' + str(imname / 1000) + '.png', image)
     
     def show_image(self, imin):
         """ Displays image using matplotlib.
@@ -86,27 +86,40 @@ class ProcessVideo:
                         # If the number of captured frames is equal to the total number of frames, we stop.
                         break
     
-    def ProcessVideoPerSec(self, vidin):
+    def ProcessVideoPerSec(self, vidin, time):
         
         vidcap = self.read_video(vidin)
         
-        # Cue to 20 sec. position
-        vidcap.set(0, 20000)
+        # Cue to 20 sec. position, not sure what 0 does here.
+        # Something related to CV_CAP_PROP_POS_MSEC probably?
+        # vidcap.set(0, time)
+        vidcap.set(cv2.cv.CV_CAP_PROP_POS_MSEC, time)
         success, image = vidcap.read()
         
         if success:
+            
+            print time
+            
             # save frame as PNG
-            imnames = ['20sec']
+            imnames = [time]
             images = [image]
             
             self.save_image(vidin, imnames, images)
             # cv2.imwrite("frame20sec.jpg", image)
             
-            self.show_image(image)
+            # self.show_image(image)
+
 
 session = ProcessVideo()
 
-session.ProcessVideoPerSec('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_21_120-130.mov')
+start = 0
+step = 60000
+total = 660000 + 1
+for i in range(start, total, step):
+    session.ProcessVideoPerSec('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_21_120-130.mov', 
+                               i)
+
+# session.ProcessVideoPerSec('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_21_120-130.mov', 20000)
 # session.read_video('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov')
 
 
