@@ -172,18 +172,31 @@ TODO    - Translate image coordinates into real-world coordinates.
         # 10 print M
            
         im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+        
+        mask = self.read_image('~/Documents/PYTHON/SilentDiscoData/Screenshots/mask.png', 
+                               cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         
         # self.save_image(imin, ['convertedCol'], [imgray])
         
         self.show_image(im)
         
-        contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
+        # apply mask
+        maskedim = cv2.bitwise_and(imgray, imgray, mask = mask)
+        
+        self.show_image(maskedim)
+        
+        contours, _ = cv2.findContours(maskedim, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
+        # contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
         
         cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
         
         self.show_image(im)
         
+        # cv2.drawContours(maskedim, contoursm, -1, (0, 0, 255), 2)
+        # self.show_image(maskedim)
+                
         # contours, _ = cv2.findContours(img.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_L1)
         
         print 'contours has length: '
@@ -193,7 +206,10 @@ TODO    - Translate image coordinates into real-world coordinates.
         
         for i in range(len(contours)):
             
-            if cv2.contourArea(contours[i]) < 20:
+            if cv2.contourArea(contours[i]) < 1:
+                continue
+            
+            if cv2.contourArea(contours[i]) > 150:
                 continue
             
             moments = cv2.moments(contours[i])
@@ -225,7 +241,7 @@ session = ProcessImage()
 # session.find_centres('~/Documents/PYTHON/Example_004_r_crop_2.png')
 
 # session.find_centres('~/Documents/PYTHON/test_centres.png')
-session.find_centres('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_r_crop.png')
+session.find_centres('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_g_otsu_gaussian.png')
 
 # Stuff I might want to put into the class:
 #

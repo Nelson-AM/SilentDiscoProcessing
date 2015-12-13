@@ -79,7 +79,7 @@ class ProcessVideo:
                     # It is better to wait a while for the next frame to be ready.
                     cv2.waitKey(1000)
                     
-                    if cv.waitKey(10) == 27:
+                    if cv2.waitKey(10) == 27:
                         break
                     
                     if cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES) == cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT):
@@ -88,11 +88,10 @@ class ProcessVideo:
     
     def ProcessVideoPerSec(self, vidin):
         
-        vidcap = read_video(vidin)
-        # vidcap = cv2.VideoCapture('d:/video/keep/Le Sang Des Betes.mp4')
+        vidcap = self.read_video(vidin)
         
         # Cue to 20 sec. position
-        vidcap.set(cv2.CAP_PROP_POS_MSEC, 20000)
+        vidcap.set(0, 20000)
         success, image = vidcap.read()
         
         if success:
@@ -104,9 +103,10 @@ class ProcessVideo:
             # cv2.imwrite("frame20sec.jpg", image)
             
             self.show_image(image)
-            # cv2.imshow("20sec", image)
-            # cv2.waitKey()
 
 session = ProcessVideo()
+
+session.ProcessVideoPerSec('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_21_120-130.mov')
+# session.read_video('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov')
 
 
