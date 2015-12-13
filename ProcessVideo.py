@@ -17,18 +17,19 @@ class ProcessVideo:
         vidin = os.path.expanduser(vidin)
         return cv2.VideoCapture(vidin)
 
-    def save_image(self, imin, imnames, images):
+    def save_image(self, imin, imnames, images, outdir):
         """ Saves image to same path as original, with added string contained
         in imname.
 
         To-do:
         - Generalize so images are saved with the same extension as original.
         """
-
+        
         imin = os.path.expanduser(imin)
-
+        outdir = os.path.expanduser(outdir)
+        
         for imname, image in zip(imnames, images):
-            cv2.imwrite(imin[:-4] + '_' + str(imname / 1000) + '.png', image)
+            cv2.imwrite(outdir + imin[17:-4] + '_' + str(imname / 1000) + '.png', image)
 
     def show_image(self, imin):
         """ Displays image using matplotlib.
@@ -90,7 +91,7 @@ class ProcessVideo:
                         # total number of frames, we stop.
                         break
 
-    def ProcessVideoPerSec(self, vidin, time):
+    def ProcessVideoPerSec(self, vidin, time, outdir):
 
         vidcap = self.read_video(vidin)
 
@@ -108,7 +109,7 @@ class ProcessVideo:
             imnames = [time]
             images = [image]
 
-            self.save_image(vidin, imnames, images)
+            self.save_image(vidin, imnames, images, outdir)
             # cv2.imwrite("frame20sec.jpg", image)
 
             # self.show_image(image)
@@ -118,13 +119,16 @@ session = ProcessVideo()
 
 start = 0
 step = 60000
-total = 660000 + 1
+total = (14780 * 1000) + 1
+# total = 660000 + 1
 # for i in range(start, total, step):
 #     session.ProcessVideoPerSec('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_21_120-130.mov',
 #                                i)
 
 for i in range(start, total, step):
-    session.ProcessVideoPerSec()
+    session.ProcessVideoPerSec('/Volumes/SAMSUNG/TX-BACK UP_21.mov', 
+                               i, 
+                               '~/Documents/PYTHON/SilentDiscoData/Frames/')
 
 # session.ProcessVideoPerSec('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_21_120-130.mov', 20000)
 # session.read_video('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov')
