@@ -12,7 +12,7 @@ class ProcessImage:
 
     Plan:
     - Read image, separate colour layers, binarize images through (Otsu) thresholding.
-    - 
+    -
 
     To-do:
 DONE    - Look at edge cases for Otsu with Gaussian blur (empty vs. full).
@@ -43,7 +43,7 @@ TODO    - Translate image coordinates into real-world coordinates.
         return cv2.imread(imin, colourspace)
 
     def save_image(self, imin, imnames, images):
-        """ Saves image to same path as original, with added string contained 
+        """ Saves image to same path as original, with added string contained
         in imname.
 
         To-do:
@@ -150,7 +150,7 @@ TODO    - Translate image coordinates into real-world coordinates.
         self.save_image(imin, imnames, images)
 
     def find_contours(self, imin):
-        """ 
+        """
         """
 
         im = self.read_image(imin, cv2.IMREAD_COLOR)

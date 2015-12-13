@@ -12,13 +12,13 @@ class ProcessVideo:
         self.data = []
 
     def read_video(self, vidin):
-        """ 
+        """
         """
         vidin = os.path.expanduser(vidin)
         return cv2.VideoCapture(vidin)
 
     def save_image(self, imin, imnames, images):
-        """ Saves image to same path as original, with added string contained 
+        """ Saves image to same path as original, with added string contained
         in imname.
 
         To-do:
@@ -84,7 +84,8 @@ class ProcessVideo:
                     if cv2.waitKey(10) == 27:
                         break
 
-                    if cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES) == cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT):
+                    if cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES) == cap.get(
+                            cv2.cv.CV_CAP_PROP_FRAME_COUNT):
                         # If the number of captured frames is equal to the
                         # total number of frames, we stop.
                         break
