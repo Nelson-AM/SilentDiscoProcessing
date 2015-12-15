@@ -91,7 +91,7 @@ class ProcessVideo:
                         # total number of frames, we stop.
                         break
 
-    def ProcessVideoPerSec(self, vidin, time, outdir):
+    def process_video_time(self, vidin, time, outdir):
 
         vidcap = self.read_video(vidin)
 
@@ -126,7 +126,7 @@ total = (14780 * 1000) + 1
 #                                i)
 
 for i in range(start, total, step):
-    session.ProcessVideoPerSec('/Volumes/SAMSUNG/TX-BACK UP_21.mov', 
+    session.process_video_time('/Volumes/SAMSUNG/TX-BACK UP_21.mov', 
                                i, 
                                '~/Documents/PYTHON/SilentDiscoData/Frames/')
 

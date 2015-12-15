@@ -186,6 +186,7 @@ TODO    - Translate image coordinates into real-world coordinates.
         # imgray = self.cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         
         contours, contoursim = self.find_contours(imin)
+        im = self.read_image(imin, cv2.IMREAD_COLOR)
         
         print 'contours has length: '
         print len(contours)
@@ -253,6 +254,16 @@ TODO    - Translate image coordinates into real-world coordinates.
         self.save_image(imin, ['centroids_masked'], [im])
 
 session = ProcessImage()
+
+session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/original_b.png')
+session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/original_g.png')
+session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/original_r.png')
+
+session.find_centres('~/Documents/PYTHON/SilentDiscoData/original_b_otsu_gaussian.png')
+session.find_centres('~/Documents/PYTHON/SilentDiscoData/original_g_otsu_gaussian.png')
+session.find_centres('~/Documents/PYTHON/SilentDiscoData/original_r_otsu_gaussian.png')
+
+
 
 # maskin = '~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_0_MASK.png'
 
