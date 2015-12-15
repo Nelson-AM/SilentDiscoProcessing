@@ -154,30 +154,78 @@ TODO    - Translate image coordinates into real-world coordinates.
         """
 
         im = self.read_image(imin, cv2.IMREAD_COLOR)
-        self.show_image(im)
-
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-        contours, hierarchy = cv2.findContours(
-            imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-        cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
-
-        self.show_image(im)
-
-    def find_centres(self, imin, maskin):
-        """ 
+        
+        contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contoursim = cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
+        
+        return (contours, contoursim)
+    
+    def find_contours_masked(self, imin, maskin):
         """
-
-        im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+        """
+        
+        im = self.read_image(imin, cv2.IMREAD_COLOR)
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         mask = self.read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
         
         # apply mask
-        maskedim = cv2.bitwise_and(imgray, imgray, mask=mask)
+        maksedim = cv2.bitwise_and(imgray, imgray, mask = mask)
         
-        contours, _ = cv2.findContours(maskedim, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
+        contours, _ = cv2.findContours(maskedim, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contoursim = cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
         
-        cv2.drawContours(maskedim, contours, -1, (0, 0, 255), 2)
+        return (contours, contoursim)
+    
+    def find_centres(self, imin):
+        """
+        """
+        
+        # Entire comment block == uplicate from find_contours.
+        # im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+        # imgray = self.cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        
+        contours, contoursim = self.find_contours(imin)
+        
+        print 'contours has length: '
+        print len(contours)
+        
+        centres = []
+        
+        for i in range(len(contours)):
+            # To-do: soft-code these limits.
+            if cv2.contourArea(contours[i]) < 5:
+                continue
+            if cv2.contourArea(contours[i]) > 250:
+                continue
+            
+            moments = cv2.moments(contours[i])
+            print "i is:"
+            print i
+            print "moments:"
+            print moments
+            
+            centres.append(
+                (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
+            cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
+        
+        print centres
+        
+        self.save_image(imin, ['centroids'], [im])
+    
+    def find_centres_masked(self, imin, maskin):
+        """ 
+        """
+        
+        # Entire comment block == duplicate from find_contours_masked.
+        # im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+        # imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        # mask = self.read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        #
+        # apply mask
+        # maskedim = cv2.bitwise_and(imgray, imgray, mask = mask)
+        
+        contours, contoursim = self.find_contours_masked(imin, maskin)
         
         print 'contours has length: '
         print len(contours)
@@ -185,12 +233,12 @@ TODO    - Translate image coordinates into real-world coordinates.
         centres = []
 
         for i in range(len(contours)):
-
+            # To-do: soft-code these limits.
             if cv2.contourArea(contours[i]) < 5:
                 continue
             if cv2.contourArea(contours[i]) > 250:
                 continue
-
+            
             moments = cv2.moments(contours[i])
             print "i is:"
             print i
@@ -202,13 +250,7 @@ TODO    - Translate image coordinates into real-world coordinates.
         
         print centres
         
-        # self.show_image(im)
-        
-        self.save_image(imin, ['centroids'], [im])
-        
-        # cv2.imshow('image', img)
-        # cv2.imwrite('output.png',img)
-        # cv2.waitKey(0)
+        self.save_image(imin, ['centroids_masked'], [im])
 
 session = ProcessImage()
 
