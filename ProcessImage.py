@@ -65,13 +65,13 @@ TODO    - Translate image coordinates into real-world coordinates.
             imin = imin[:, :, ::-1]
             plt.imshow(imin)
         else:
-            plt.imshow(imin, cmap='gray', interpolation='bicubic')
+            plt.imshow(imin, cmap = 'gray', interpolation = 'bicubic')
 
         # Hide tick values on X and Y axes.
         plt.xticks([]), plt.yticks([])
         plt.show()
 
-    def separate_colours(self, imin):
+    def separate_colors(self, imin):
         """ Takes a colour image and separates the colour layers.
         """
 
@@ -164,46 +164,21 @@ TODO    - Translate image coordinates into real-world coordinates.
 
         self.show_image(im)
 
-    def find_centres(self, imin):
+    def find_centres(self, imin, maskin):
+        """ 
         """
-        """
-
-        # ret,thresh = cv2.threshold(img,127,255,0)
-        # 6 contours,hierarchy = cv2.findContours(thresh, 1, 2)
-        # 7
-        # 8 cnt = contours[0]
-        # 9 M = cv2.moments(cnt)
-        # 10 print M
 
         im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
-
-        mask = self.read_image('~/Documents/PYTHON/SilentDiscoData/Screenshots/mask.png',
-                               cv2.CV_LOAD_IMAGE_GRAYSCALE)
-
         imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-
-        # self.save_image(imin, ['convertedCol'], [imgray])
-
-        self.show_image(im)
-
+        mask = self.read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        
         # apply mask
         maskedim = cv2.bitwise_and(imgray, imgray, mask=mask)
-
-        self.show_image(maskedim)
-
-        contours, _ = cv2.findContours(
-            maskedim, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
-        # contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
-
-        cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
-
-        self.show_image(im)
-
-        # cv2.drawContours(maskedim, contoursm, -1, (0, 0, 255), 2)
-        # self.show_image(maskedim)
-
-        # contours, _ = cv2.findContours(img.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_TC89_L1)
-
+        
+        contours, _ = cv2.findContours(maskedim, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
+        
+        cv2.drawContours(maskedim, contours, -1, (0, 0, 255), 2)
+        
         print 'contours has length: '
         print len(contours)
 
@@ -211,10 +186,9 @@ TODO    - Translate image coordinates into real-world coordinates.
 
         for i in range(len(contours)):
 
-            if cv2.contourArea(contours[i]) < 1:
+            if cv2.contourArea(contours[i]) < 5:
                 continue
-
-            if cv2.contourArea(contours[i]) > 150:
+            if cv2.contourArea(contours[i]) > 250:
                 continue
 
             moments = cv2.moments(contours[i])
@@ -224,31 +198,23 @@ TODO    - Translate image coordinates into real-world coordinates.
             print moments
             centres.append(
                 (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
-            cv2.circle(im, centres[-1], 3, (0, 255, 0), -1)
-
+            cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
+        
         print centres
-
-        self.show_image(im)
-
+        
+        # self.show_image(im)
+        
+        self.save_image(imin, ['centroids'], [im])
+        
         # cv2.imshow('image', img)
         # cv2.imwrite('output.png',img)
         # cv2.waitKey(0)
 
 session = ProcessImage()
 
-# session.separate_colours('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004.png')
-# session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_g.png')
-# session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_r.png')
-# session.find_contours('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_g_otsu_gaussian.png')
-# session.find_contours('~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_r_otsu_gaussian.png')
+# maskin = '~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_0_MASK.png'
 
-# WORKING
-# session.find_centres('~/Documents/PYTHON/Example_004_r_crop.png')
-# session.find_centres('~/Documents/PYTHON/Example_004_r_crop_2.png')
-
-# session.find_centres('~/Documents/PYTHON/test_centres.png')
-session.find_centres(
-    '~/Documents/PYTHON/SilentDiscoData/Screenshots/Example_004_g_otsu_gaussian.png')
+# session.find_centres()
 
 # Stuff I might want to put into the class:
 #
