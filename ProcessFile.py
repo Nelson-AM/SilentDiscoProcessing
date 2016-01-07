@@ -10,9 +10,6 @@ Processes a video file and goes through the following steps:
     - Image moments and centroids are determined
 
 GENERAL TO-DO:
-- Convert images to HSV color space
-    - Determine HSV thresholds for red and green lights
-- Compare RGB separated and HSV as extraction methods
 - Integrate video and image processing
     - Save extracted frames to drive
     - Keep frame in memory, get centroids &c.
@@ -23,9 +20,15 @@ GENERAL TO-DO:
         - Centroid color
     - One entry per centroid makes the entire thing easier, as not all frames will contain the 
       same amount of centroids.
-- Save frames to a "processed" directory
-    - Include subdirectories for RGB separated, binarized, etc.
 """
+
+import os
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+import uuid
+DEFAULT = uuid.uuid4()
 
 ####################################
 #####     VIDEO PROCESSING     #####
@@ -37,53 +40,6 @@ def read_video(vidin):
     """
     vidin = os.path.expanduser(vidin)
     return cv2.VideoCapture(vidin)
-
-
-def process_video(vidin):
-    """
-    """
-
-    cap = read_video(vidin)
-    # cv2.VideoCapture("./out.mp4")
-
-    while not cap.isOpened():
-        cap = read_video(vidin)
-        # cap = cv2.VideoCapture("./out.mp4")
-
-        cv2.waitKey(1000)
-        print "Wait for the header"
-
-        pos_frame = cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES)
-
-        while True:
-            flag, frame = cap.read()
-
-            if flag:
-
-                # The frame is ready and already captured
-                show_image(frame)
-                # cv2.imshow('video', frame)
-                pos_frame = cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES)
-                print str(pos_frame) + " frames"
-
-            else:
-
-                # The next frame is not ready, so we try to read it again.
-                cap.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, pos_frame - 1)
-                print "Frame is not ready"
-
-                # It is better to wait a while for the next frame to be
-                # ready.
-                cv2.waitKey(1000)
-
-                if cv2.waitKey(10) == 27:
-                    break
-
-                if cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES) ==
-                    cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT):
-                        # If the number of captured frames is equal to the
-                        # total number of frames, we stop.
-                        break
 
 
 def process_video_time(vidin, time, outdir):
@@ -132,24 +88,47 @@ def read_image(imin, colourspace):
     return cv2.imread(imin, colourspace)
 
 
-def save_image(imin, imnames, images):
+def save_image(imin, imnames, images, imdir = None):
     """ Saves image to the same directory as original with string appended to end of name.
     
-    To-do:
-    - Generalize so images are saved with the same extension as original.
-    - Add extra argument to allow for saving in a different directory.
+    imin = original file path, NO FULL STOPS
+    imnames = string to append to image
+    images = image file
+    imdir = alternative directory, ? FULL PATH ? (optional)
     """
-
+    
     imin = os.path.expanduser(imin)
     
-    for imname, image in zip(imnames, images):
+    if imdir:
+        print 'imdir is present'
+        print imdir
+        
+        imdir = os.path.expanduser(imdir)
         
         # Splitting image name at the last occurence of "."
-        # splitname = imname.rsplit('.', 1)[0]
-        # splitext = imname.rsplit('.', 1)[1]
-        # cv2.imwrite(splitname + '_' + imname + '.' + splitext, image)
+        splitname = imin.rsplit('.', 1)[0]
+        splitname = splitname.rsplit('/', 1)[1]
+        splitext = imin.rsplit('.', 1)[1]
         
-        cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
+        print splitname
+        print splitext
+        
+        
+        for imname, image in zip(imnames, images):
+            print imdir + splitname +  '_' + imname + '.' + splitext
+            cv2.imwrite(imdir + splitname + '_' + imname + '.' + splitext, image)
+    
+    else:
+        
+        print 'imdir is empty'
+        # Splitting image name at the last occurence of "."
+        splitname = imin.rsplit('.', 1)[0]
+        splitext = imin.rsplit('.', 1)[1]
+        
+        for imname, image in zip(imnames, images):
+            cv2.imwrite(splitname + '_' + imname + '.' + splitext, image)
+        
+    # cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
 
 def show_image(imin):
     """ Displays image using matplotlib.
@@ -360,3 +339,13 @@ def find_centres_masked(imin, maskin):
     print centres
 
     save_image(imin, ['centroids_masked'], [im])
+
+
+
+testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
+testdir = "~/Documents/PYTHON/SilentDiscoData/Frames/Processed/"
+
+imaged = read_image(testimage, cv2.IMREAD_COLOR)
+# show_image(imaged)
+# save_image(testimage, ['test'], [imaged])
+save_image(testimage, ['test'], [imaged], testdir)
