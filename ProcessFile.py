@@ -87,11 +87,10 @@ def read_image(imin, colourspace):
     imin = os.path.expanduser(imin)
     return cv2.imread(imin, colourspace)
 
-
 def save_image(imin, imnames, images, imdir = None):
     """ Saves image to the same directory as original with string appended to end of name.
     
-    imin = original file path, NO FULL STOPS
+    imin = original file path, ? NO FULL STOPS ?
     imnames = string to append to image
     images = image file
     imdir = alternative directory, ? FULL PATH ? (optional)
@@ -100,12 +99,12 @@ def save_image(imin, imnames, images, imdir = None):
     imin = os.path.expanduser(imin)
     
     if imdir:
-        print 'imdir is present'
-        print imdir
+        # print 'imdir is present'
+        # print imdir
         
         imdir = os.path.expanduser(imdir)
         
-        # Splitting image name at the last occurence of "."
+        # Splitting image name at the last occurence of "." and at the last "/" for filename.
         splitname = imin.rsplit('.', 1)[0]
         splitname = splitname.rsplit('/', 1)[1]
         splitext = imin.rsplit('.', 1)[1]
@@ -119,9 +118,9 @@ def save_image(imin, imnames, images, imdir = None):
             cv2.imwrite(imdir + splitname + '_' + imname + '.' + splitext, image)
     
     else:
+        # print 'imdir is empty'
         
-        print 'imdir is empty'
-        # Splitting image name at the last occurence of "."
+        # Splitting image name at the last occurence of ".".
         splitname = imin.rsplit('.', 1)[0]
         splitext = imin.rsplit('.', 1)[1]
         
@@ -129,7 +128,7 @@ def save_image(imin, imnames, images, imdir = None):
             cv2.imwrite(splitname + '_' + imname + '.' + splitext, image)
         
     # cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
-
+    
 def show_image(imin):
     """ Displays image using matplotlib.
     
@@ -229,15 +228,18 @@ def otsu_threshold(imin):
     save_image(imin, imnames, images)
 
 
-def find_contours(imin):
+def find_contours(imin, maskin = None):
     """
     """
-
+    
     im = read_image(imin, cv2.IMREAD_COLOR)
     imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    
+    if maskin:
+        mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        imgray = cv2.bitwise_and(imgray, imgray, mask = mask)
 
-    contours, _ = cv2.findContours(
-        imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contoursim = cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
 
     return (contours, contoursim)
@@ -265,7 +267,7 @@ def find_centres(imin):
     """
     """
 
-    # Entire comment block == uplicate from find_contours.
+    # Entire comment block == duplicate from find_contours.
     # im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
     # imgray = self.cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
 
@@ -319,7 +321,7 @@ def find_centres_masked(imin, maskin):
     print len(contours)
 
     centres = []
-
+    
     for i in range(len(contours)):
         # To-do: soft-code these limits.
         if cv2.contourArea(contours[i]) < 5:
@@ -341,11 +343,10 @@ def find_centres_masked(imin, maskin):
     save_image(imin, ['centroids_masked'], [im])
 
 
-
 testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
 testdir = "~/Documents/PYTHON/SilentDiscoData/Frames/Processed/"
 
-imaged = read_image(testimage, cv2.IMREAD_COLOR)
+# imaged = read_image(testimage, cv2.IMREAD_COLOR)
 # show_image(imaged)
 # save_image(testimage, ['test'], [imaged])
-save_image(testimage, ['test'], [imaged], testdir)
+# save_image(testimage, ['test'], [imaged], testdir)
