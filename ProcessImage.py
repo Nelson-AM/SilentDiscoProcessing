@@ -7,8 +7,8 @@ from matplotlib import pyplot as plt
 #####     IMAGE PROCESSING     #####
 ####################################
 
-def read_image(imin, colourspace):
-    """ Takes filename and colourspace to read image.
+def read_image(imin, colorspace = None):
+    """ Takes filename and (optional) colourspace to read image.
     
     Colourspace takes the cv2.imread flags, being:
     - cv2.IMREAD_COLOR
@@ -19,9 +19,13 @@ def read_image(imin, colourspace):
     - cv2.IMREAD_UNCHANGED
         Loads image as such including alpha channel
     """
-
+    
     imin = os.path.expanduser(imin)
-    return cv2.imread(imin, colourspace)
+    
+    if colorspace:
+        return cv2.imread(imin, colorspace)
+    else:
+        return cv2.imread(imin, cv2.IMREAD_COLOR)
 
 def save_image(imin, imnames, images, imdir = None):
     """ Saves image to the same directory as original with string appended to end of name.
@@ -68,14 +72,18 @@ def save_image(imin, imnames, images, imdir = None):
 def show_image(imin):
     """ Displays image using matplotlib.
     
-    Assumes colour images are read using cv2, transforms the colourspace from BGR to RGB.
+    Reads color images using cv2, transforms the colorspace from BGR to RGB.
     """
-
-    if len(imin.shape) == 3:
-        imin = imin[:, :, ::-1]
-        plt.imshow(imin)
+    
+    image = read_image(imin)
+    
+    print "bla"
+    
+    if len(image.shape) == 3:
+        image = image[:, :, ::-1]
+        plt.imshow(image)
     else:
-        plt.imshow(imin, cmap='gray', interpolation='bicubic')
+        plt.imshow(image, cmap = 'gray', interpolation = 'bicubic')
 
     # Hide tick values on X and Y axes.
     plt.xticks([]), plt.yticks([])
@@ -222,3 +230,5 @@ def find_centres(imin, maskin = None):
         save_image(imin, ['centroids_masked'], [im])
     else:
         save_image(imin, ['centroids'], [im])
+
+

@@ -3,6 +3,9 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
+# To make sure any image-related function calls work.
+from ProcessImage import *
+
 ####################################
 #####     VIDEO PROCESSING     #####
 ####################################

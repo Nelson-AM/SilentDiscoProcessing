@@ -18,11 +18,11 @@ h_max, s_max, v_max = 256, 256, 256
 
 # Creating track bar
 cv2.createTrackbar('h_min', 'result', 0, 256, nothing)
-cv2.createTrackbar('h_max', 'result', 0, 256, nothing)
+cv2.createTrackbar('h_max', 'result', 256, 256, nothing)
 cv2.createTrackbar('s_min', 'result', 0, 256, nothing)
-cv2.createTrackbar('s_max', 'result', 0, 256, nothing)
+cv2.createTrackbar('s_max', 'result', 256, 256, nothing)
 cv2.createTrackbar('v_min', 'result', 0, 256, nothing)
-cv2.createTrackbar('v_max', 'result', 0, 256, nothing)
+cv2.createTrackbar('v_max', 'result', 256, 256, nothing)
 
 while(1):
 
@@ -52,7 +52,7 @@ while(1):
 
     cv2.imshow('result',result)
 
-    k = cv2.waitKey(0) & 0xFF
+    k = cv2.waitKey(50) & 0xFF
     if k == 27:
         break
 
