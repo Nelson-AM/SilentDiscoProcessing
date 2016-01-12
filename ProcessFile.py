@@ -27,9 +27,6 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-import uuid
-DEFAULT = uuid.uuid4()
-
 ####################################
 #####     VIDEO PROCESSING     #####
 ####################################
@@ -170,7 +167,7 @@ def simple_threshold(imin):
     """ Take an image and creates three binarized versions of it using simple thresholding.
     """
 
-    img = cv2.imread(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    img = read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
 
     ret, thresh1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
     ret, thresh2 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
@@ -190,7 +187,7 @@ def adaptive_threshold(imin):
     """ Takes an image and creates three binarized versions of it using adaptive thresholding.
     """
 
-    img = cv2.imread(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    img = read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
     img = cv2.medianBlur(img, 5)
 
     ret, th1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
@@ -245,35 +242,19 @@ def find_contours(imin, maskin = None):
     return (contours, contoursim)
 
 
-def find_contours_masked(imin, maskin):
+def find_centres(imin, maskin = None):
     """
     """
-
-    im = read_image(imin, cv2.IMREAD_COLOR)
-    imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-
-    # apply mask
-    maksedim = cv2.bitwise_and(imgray, imgray, mask=mask)
-
-    contours, _ = cv2.findContours(
-        maskedim, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contoursim = cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
-
-    return (contours, contoursim)
-
-
-def find_centres(imin):
-    """
-    """
-
-    # Entire comment block == duplicate from find_contours.
-    # im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
-    # imgray = self.cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-
+    
     contours, contoursim = find_contours(imin)
     im = read_image(imin, cv2.IMREAD_COLOR)
-
+    
+    if maskin:
+        mask = read_image(maskin, cv2.IMREAD_GRAYSCALE)
+        im = cv2.bitwise_and(imgray, imgray, mask = mask)
+    
+    # imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    
     print 'contours has length: '
     print len(contours)
 
@@ -297,11 +278,14 @@ def find_centres(imin):
         cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
 
     print centres
+    
+    if maskin:
+        save_image(imin, ['centroids_masked'], [im])
+    else:
+        save_image(imin, ['centroids'], [im])
 
-    save_image(imin, ['centroids'], [im])
 
-
-def find_centres_masked(imin, maskin):
+""" def find_centres_masked(imin, maskin):
     """
     """
 
@@ -314,8 +298,8 @@ def find_centres_masked(imin, maskin):
     # maskedim = cv2.bitwise_and(imgray, imgray, mask = mask)
 
     contours, contoursim = find_contours_masked(imin, maskin)
-    im = imread(imin, cv2.IMREAD_COLOR)
-    mask = imread(maskin, cv2.IMREAD_GRAYSCALE)
+    im = read_image(imin, cv2.IMREAD_COLOR)
+    mask = read_image(maskin, cv2.IMREAD_GRAYSCALE)
 
     print 'contours has length: '
     print len(contours)
@@ -341,11 +325,10 @@ def find_centres_masked(imin, maskin):
     print centres
 
     save_image(imin, ['centroids_masked'], [im])
-
+"""
 
 testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
-testdir = "~/Documents/PYTHON/SilentDiscoData/Frames/Processed/"
-
+otsu_threshold(testimage)
 # imaged = read_image(testimage, cv2.IMREAD_COLOR)
 # show_image(imaged)
 # save_image(testimage, ['test'], [imaged])
