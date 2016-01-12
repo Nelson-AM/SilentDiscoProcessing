@@ -309,8 +309,8 @@ def find_centres(imin, maskin = None):
     else:
         save_image(imin, ['centroids'], [im])
 
-testvideo = "~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov"
-show_video_HSV(testvideo)
+# testvideo = "~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov"
+# show_video_HSV(testvideo)
 
 
 # testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"

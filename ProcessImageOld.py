@@ -3,13 +3,24 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-####################################
-#####     IMAGE PROCESSING     #####
-####################################
+
+""" Processes still images to extract coordinates of data points.
+
+Requires:
+- Sampled still images from video data.
+
+Plan:
+- Read image, separate colour layers, binarize images through (Otsu) thresholding.
+
+To-do:
+- Check which other thresholding algorithms are implemented in OpenCV.
+- Connected components analysis (take centroid).
+- Translate image coordinates into real-world coordinates.
+"""
 
 def read_image(imin, colourspace):
     """ Takes filename and colourspace to read image.
-    
+
     Colourspace takes the cv2.imread flags, being:
     - cv2.IMREAD_COLOR
         Loads a color image. Any transparency of image will be neglected.
@@ -23,51 +34,22 @@ def read_image(imin, colourspace):
     imin = os.path.expanduser(imin)
     return cv2.imread(imin, colourspace)
 
-def save_image(imin, imnames, images, imdir = None):
-    """ Saves image to the same directory as original with string appended to end of name.
-    
-    imin = original file path, ? NO FULL STOPS ?
-    imnames = string to append to image
-    images = image file
-    imdir = alternative directory, ? FULL PATH ? (optional)
+def save_image(imin, imnames, images):
+    """ Saves image to same path as original, with added string contained
+    in imname.
+
+    To-do:
+    - Generalize so images are saved with the same extension as original.
     """
-    
+
     imin = os.path.expanduser(imin)
-    
-    if imdir:
-        # print 'imdir is present'
-        # print imdir
-        
-        imdir = os.path.expanduser(imdir)
-        
-        # Splitting image name at the last occurence of "." and at the last "/" for filename.
-        splitname = imin.rsplit('.', 1)[0]
-        splitname = splitname.rsplit('/', 1)[1]
-        splitext = imin.rsplit('.', 1)[1]
-        
-        print splitname
-        print splitext
-        
-        
-        for imname, image in zip(imnames, images):
-            print imdir + splitname +  '_' + imname + '.' + splitext
-            cv2.imwrite(imdir + splitname + '_' + imname + '.' + splitext, image)
-    
-    else:
-        # print 'imdir is empty'
-        
-        # Splitting image name at the last occurence of ".".
-        splitname = imin.rsplit('.', 1)[0]
-        splitext = imin.rsplit('.', 1)[1]
-        
-        for imname, image in zip(imnames, images):
-            cv2.imwrite(splitname + '_' + imname + '.' + splitext, image)
-        
-    # cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
-    
+
+    for imname, image in zip(imnames, images):
+        cv2.imwrite(imin[:-4] + '_' + imname + '.png', image)
+
 def show_image(imin):
     """ Displays image using matplotlib.
-    
+
     Assumes colour images are read using cv2, transforms the colourspace from BGR to RGB.
     """
 
@@ -75,12 +57,11 @@ def show_image(imin):
         imin = imin[:, :, ::-1]
         plt.imshow(imin)
     else:
-        plt.imshow(imin, cmap='gray', interpolation='bicubic')
+        plt.imshow(imin, cmap = 'gray', interpolation = 'bicubic')
 
     # Hide tick values on X and Y axes.
     plt.xticks([]), plt.yticks([])
     plt.show()
-
 
 def separate_colors(self, imin):
     """ Takes a colour image and separates the colour layers.
@@ -101,12 +82,11 @@ def separate_colors(self, imin):
 
     return b, g, r
 
-
 def simple_threshold(imin):
     """ Take an image and creates three binarized versions of it using simple thresholding.
     """
 
-    img = read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    img = cv2.imread(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
 
     ret, thresh1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
     ret, thresh2 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
@@ -121,12 +101,11 @@ def simple_threshold(imin):
 
     save_image(imin, imnames, images)
 
-
 def adaptive_threshold(imin):
     """ Takes an image and creates three binarized versions of it using adaptive thresholding.
     """
 
-    img = read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    img = cv2.imread(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
     img = cv2.medianBlur(img, 5)
 
     ret, th1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
@@ -139,7 +118,6 @@ def adaptive_threshold(imin):
     images = [th1, th2, th3]
 
     save_image(imin, imnames, images)
-
 
 def otsu_threshold(imin):
     """ Takes an image and creates binarised versions using Otsu thresholding.
@@ -157,43 +135,93 @@ def otsu_threshold(imin):
     ret3, th3 = cv2.threshold(
         blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-    # imnames = ['noisy', 'global_v_127', 'otsu', 'gaussian_filtered', 'otsu_gaussian']
-    imnames = ['otsu_gaussian']
-    images = [th3]
+    imnames = ['noisy', 'global_v_127', 'otsu',
+               'gaussian_filtered', 'otsu_gaussian']
+    images = [img, th1, th2, blur, th3]
 
     save_image(imin, imnames, images)
 
+def find_contours(imin):
+    """
+    """
 
-def find_contours(imin, maskin = None):
-    """
-    """
-    
     im = read_image(imin, cv2.IMREAD_COLOR)
     imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    
-    if maskin:
-        mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-        imgray = cv2.bitwise_and(imgray, imgray, mask = mask)
-
+        
     contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contoursim = cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
-
+        
     return (contours, contoursim)
 
-
-def find_centres(imin, maskin = None):
+def find_contours_masked(imin, maskin):
     """
     """
+        
+    im = read_image(imin, cv2.IMREAD_COLOR)
+    imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+    mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        
+    # apply mask
+    maksedim = cv2.bitwise_and(imgray, imgray, mask = mask)
+        
+    contours, _ = cv2.findContours(maskedim, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contoursim = cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
+        
+    return (contours, contoursim)
     
+def find_centres(imin):
+    """
+    """
+        
+    # Entire comment block == uplicate from find_contours.
+    # im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+    # imgray = self.cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        
     contours, contoursim = find_contours(imin)
     im = read_image(imin, cv2.IMREAD_COLOR)
+        
+    print 'contours has length: '
+    print len(contours)
+        
+    centres = []
+        
+    for i in range(len(contours)):
+        # To-do: soft-code these limits.
+        if cv2.contourArea(contours[i]) < 5:
+            continue
+        if cv2.contourArea(contours[i]) > 250:
+            continue
+            
+        moments = cv2.moments(contours[i])
+        print "i is:"
+        print i
+        print "moments:"
+        print moments
+            
+        centres.append(
+            (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
+        cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
     
-    if maskin:
-        mask = read_image(maskin, cv2.IMREAD_GRAYSCALE)
-        im = cv2.bitwise_and(imgray, imgray, mask = mask)
+    print centres
+        
+    save_image(imin, ['centroids'], [im])
     
+def find_centres_masked(imin, maskin):
+    """ 
+    """
+        
+    # Entire comment block == duplicate from find_contours_masked.
+    # im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
     # imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    
+    # mask = self.read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    #
+    # apply mask
+    # maskedim = cv2.bitwise_and(imgray, imgray, mask = mask)
+        
+    contours, contoursim = find_contours_masked(imin, maskin)
+    im = imread(imin, cv2.IMREAD_COLOR)
+    mask = imread(maskin, cv2.IMREAD_GRAYSCALE)
+        
     print 'contours has length: '
     print len(contours)
 
@@ -205,20 +233,16 @@ def find_centres(imin, maskin = None):
             continue
         if cv2.contourArea(contours[i]) > 250:
             continue
-
+            
         moments = cv2.moments(contours[i])
         print "i is:"
         print i
         print "moments:"
         print moments
-
         centres.append(
             (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
         cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
-
+        
     print centres
-    
-    if maskin:
-        save_image(imin, ['centroids_masked'], [im])
-    else:
-        save_image(imin, ['centroids'], [im])
+        
+    save_image(imin, ['centroids_masked'], [im])
