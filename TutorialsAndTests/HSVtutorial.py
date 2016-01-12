@@ -192,7 +192,7 @@ def RunSession():
         HSV = cv2.cvtColor(cameraFeed, COLOR_BGR2HSV)
         
         # Filter HSV image between values and store filtered image to threshold matrix
-        threshold = cv2.inRange(HSV, (H_MIN, S_MIN, V_MIN), (H_MAX, S_MAX, V_MAX))
+        tohreshold = cv2.inRange(HSV, (H_MIN, S_MIN, V_MIN), (H_MAX, S_MAX, V_MAX))
         
         # Perform morphological operations on thresholded image to eliminate noise and emphasize the filtered object(s)
         if useMorphOps:

@@ -35,9 +35,9 @@ from matplotlib import pyplot as plt
 def read_video(vidin):
     """
     """
+    
     vidin = os.path.expanduser(vidin)
     return cv2.VideoCapture(vidin)
-
 
 def process_video_time(vidin, time, outdir):
     """
@@ -61,7 +61,32 @@ def process_video_time(vidin, time, outdir):
 
         save_image(vidin, imnames, images)
 
-    # self.show_image(image)
+
+def show_video_HSV(vidin):
+    """
+    """
+    
+    vidcap = read_video(vidin)
+    
+    while(vidcap.isOpened()):
+        ret, frame = vidcap.read()
+        
+        frame = cv2.resize(frame, 
+                           (0, 0), 
+                           fx = 0.5, 
+                           fy = 0.5, 
+                           interpolation = cv2.INTER_CUBIC)
+        
+        hsv_vid = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+        
+        cv2.namedWindow("", cv2.WINDOW_NORMAL)
+        cv2.imshow("frame", hsv_vid)
+        
+        if cv2.waitKey(12) & 0xFF == ord('q'):
+            break
+    
+    capture.release()
+    cv2.destroyAllWindows()
 
 
 ####################################
@@ -284,51 +309,12 @@ def find_centres(imin, maskin = None):
     else:
         save_image(imin, ['centroids'], [im])
 
+testvideo = "~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov"
+show_video_HSV(testvideo)
 
-""" def find_centres_masked(imin, maskin):
-    """
-    """
 
-    # Entire comment block == duplicate from find_contours_masked.
-    # im = self.read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
-    # imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    # mask = self.read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-    #
-    # apply mask
-    # maskedim = cv2.bitwise_and(imgray, imgray, mask = mask)
-
-    contours, contoursim = find_contours_masked(imin, maskin)
-    im = read_image(imin, cv2.IMREAD_COLOR)
-    mask = read_image(maskin, cv2.IMREAD_GRAYSCALE)
-
-    print 'contours has length: '
-    print len(contours)
-
-    centres = []
-    
-    for i in range(len(contours)):
-        # To-do: soft-code these limits.
-        if cv2.contourArea(contours[i]) < 5:
-            continue
-        if cv2.contourArea(contours[i]) > 250:
-            continue
-
-        moments = cv2.moments(contours[i])
-        print "i is:"
-        print i
-        print "moments:"
-        print moments
-        centres.append(
-            (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
-        cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
-
-    print centres
-
-    save_image(imin, ['centroids_masked'], [im])
-"""
-
-testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
-otsu_threshold(testimage)
+# testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
+# otsu_threshold(testimage)
 # imaged = read_image(testimage, cv2.IMREAD_COLOR)
 # show_image(imaged)
 # save_image(testimage, ['test'], [imaged])
