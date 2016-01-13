@@ -34,16 +34,19 @@ def read_image(imin, colorspace = None):
 
 
 def save_image(imin, imname, image, imdir = None):
+    """ 
     
+    imdir is relative to original path.
+    """
     imin = os.path.expanduser(imin)
     
     if imdir:
-        imdir = os.path.expanduser(imdir)
         splitname = imin.rsplit('.', 1)[0]
+        imdir = splitname.rsplit('/', 1)[0] + '/' + imdir
         splitname = splitname.rsplit('/', 1)[1]
         splitext = imin.rsplit('.', 1)[1]
-        print imdir + splitname +  '_' + imname + '.' + splitext
-        cv2.imwrite(imdir + splitname + '_' + imname + '_' + splitext, image)
+        print imdir + '/' + splitname + '_' + imname + '.' + splitext
+        cv2.imwrite(imdir + '/' + splitname + '_' + imname + '.' + splitext, image)
     else:
         splitname = imin.rsplit('.', 1)[0]
         splitext = imin.rsplit('.', 1)[1]
@@ -270,3 +273,5 @@ def find_centres(imin, maskin = None):
 testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
 im = read_image(testimage)
 print len(im.shape)
+# save_image(testimage, 'test', im, 'Processed')
+save_image(testimage, 'test', im)
