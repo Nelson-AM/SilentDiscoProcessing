@@ -3,8 +3,12 @@ import numpy as np
 import os
 
 vid = "~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov"
+img = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_3120.png"
 vid = os.path.expanduser(vid)
-cap = cv2.VideoCapture(vid)
+
+vidcap = cv2.VideoCapture(vid)
+imgcap = cv2.imread(img, cv2.IMREAD_COLOR)
+
 
 def nothing(x):
     pass
@@ -12,23 +16,26 @@ def nothing(x):
 # Creating a window for later use
 cv2.namedWindow('result')
 
-# Starting with 100's to prevent error while masking
+# Starting with min and max values to prevent error while masking
 h_min, s_min, v_min = 0, 0, 0
 h_max, s_max, v_max = 256, 256, 256
 
 # Creating track bar
 cv2.createTrackbar('h_min', 'result', 0, 256, nothing)
 cv2.createTrackbar('h_max', 'result', 256, 256, nothing)
+
 cv2.createTrackbar('s_min', 'result', 0, 256, nothing)
 cv2.createTrackbar('s_max', 'result', 256, 256, nothing)
+
 cv2.createTrackbar('v_min', 'result', 0, 256, nothing)
 cv2.createTrackbar('v_max', 'result', 256, 256, nothing)
 
 while(1):
 
-    _, frame = cap.read()
-
-    frame = cv2.resize(frame, (0, 0), fx = 0.5, fy = 0.5, interpolation = cv2.INTER_CUBIC)
+    # _, frame = vidcap.read()
+    frame = imgcap # .read()
+    
+    # frame = cv2.resize(frame, (0, 0), fx = 0.5, fy = 0.5, interpolation = cv2.INTER_CUBIC)
     
     #converting to HSV
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -50,11 +57,11 @@ while(1):
 
     result = cv2.bitwise_and(frame, frame, mask = mask)
 
-    cv2.imshow('result',result)
+    cv2.imshow('result', result)
 
-    k = cv2.waitKey(50) & 0xFF
+    k = cv2.waitKey(0) & 0xFF
     if k == 27:
         break
 
-cap.release()
+vidcap.release()
 cv2.destroyAllWindows()

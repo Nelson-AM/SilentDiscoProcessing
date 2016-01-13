@@ -225,6 +225,7 @@ def find_centres(imin, maskin = None):
         cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
 
     print centres
+    return centres
     
     if maskin:
         save_image(imin, ['centroids_masked'], [im])
