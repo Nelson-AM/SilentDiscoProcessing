@@ -10,3 +10,5 @@ def read_nodes(nodesin):
     - color
     - identifier (timestamp_number)
     """
+    
+    

@@ -28,8 +28,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-# from ProcessImage import *
+from ProcessImage import *
 from ProcessVideo import *
 
 testframe = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
 show_image(testframe)
+
