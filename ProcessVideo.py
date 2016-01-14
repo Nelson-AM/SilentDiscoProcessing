@@ -18,29 +18,36 @@ def read_video(vidin):
     vidin = os.path.expanduser(vidin)
     return cv2.VideoCapture(vidin)
 
-def process_video_time(vidin, time, outdir = None):
-    """
-    """
 
+def extract_frame_time(vidin, time):
+    """
+    """
+    
     vidcap = read_video(vidin)
-
-    # Cue to 20 sec. position, not sure what 0 does here.
-    # Something related to CV_CAP_PROP_POS_MSEC probably?
-    # vidcap.set(0, time)
+    
     vidcap.set(cv2.cv.CV_CAP_PROP_POS_MSEC, time)
     success, image = vidcap.read()
     
-    timestr = str(time)
-    
     if success:
         print time
-        if outdir:
-            save_image(vidin, timestr, image, outdir)
-        else:
-            save_image(vidin, timestr, image)
+        return image
 
 
-def process_video_frame(vidin, frame, outdir = None):
+def save_frame_time(vidin, time, outdir = None):
+    """
+    """
+    
+    image = extract_frame_time(vidin, time)
+    
+    timestr = str(time)
+    
+    if outdir:
+        save_image(vidin, timestr, image, outdir)
+    else:
+        save_image(vidin, timestr, image)
+
+
+def extract_frame_frame(vidin, frame):
     """
     """
     
@@ -49,14 +56,23 @@ def process_video_frame(vidin, frame, outdir = None):
     vidcap.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, frame)
     success, image = vidcap.read()
     
-    framestr = str(frame)
-    
     if success:
         print frame
-        if outdir:
-            save_image(vidin, framestr, image, outdir)
-        else:
-            save_image(vidin, framestr, image)
+        return image
+
+
+def save_frame_frame(vidin, frame, outdir = None):
+    """
+    """
+    
+    image = extract_frame_frame(vidin, frame)
+    
+    framestr = str(frame)
+    
+    if outdir:
+        save_image(vidin, framestr, image, outdir)
+    else:
+        save_image(vidin, framestr, image)
 
 
 def show_video_HSV(vidin):

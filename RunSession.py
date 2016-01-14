@@ -3,55 +3,29 @@
 from ProcessImage import *
 from ProcessVideo import *
 
+frame_50 = "/Volumes/SAMSUNG/TX-BACK UP_21_50.png"
+frame_2500 = "/Volumes/SAMSUNG/TX-BACK UP_21_2500.png"
+
+
+b, g, r = find_contours_multi(frame_2500)
+
+# print "Contours for B are: \n"
+# print b
+# print "Contours for G are: \n"
+# print g
+# print "Contours for R are: \n"
+# print r
+
+
 # time_start = 0
 # time_step = 60000
 # time_total = (14780 * 1000) + 1
 
-frame_start = 0
-frame_step = 1
-frame_total = (14780 * 25) + 1
+# save_frame_time('/Volumes/SAMSUNG/TX-BACK UP_21.mov', 50)
 
-for i in range(frame_start, frame_total, frame_step):
-    process_video_frame('/Volumes/SAMSUNG/TX-BACK UP_21.mov', i, 'Frames')
+# frame_start = 0
+# frame_step = 1
+# frame_total = (14780 * 25) + 1
 
-# total = 660000 + 1
-# for i in range(start, total, step):
-#     session.ProcessVideoPerSec('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_21_120-130.mov',
-#                                i)
-
-# for i in range(start, total, step):
-#    session.process_video_time('/Volumes/SAMSUNG/TX-BACK UP_21.mov', i, '~/Documents/PYTHON/SilentDiscoData/Frames/')
-
-# ProcessImage = ProcessImage()
-
-# img = ProcessImage.read_image('~/Documents/PYTHON/SilentDiscoData/original_r.png', cv2.IMREAD_GRAYSCALE)
-# ProcessImage.show_image(img)
-
-
-
-# session = ProcessImage()
-
-# session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/original_b.png')
-# session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/original_g.png')
-# session.otsu_threshold('~/Documents/PYTHON/SilentDiscoData/original_r.png')
-
-# session.find_centres_masked('~/Documents/PYTHON/SilentDiscoData/original_b_otsu_gaussian.png', '~/Documents/PYTHON/SilentDiscoData/TX_MASK.png')
-# session.find_centres_masked('~/Documents/PYTHON/SilentDiscoData/original_g_otsu_gaussian.png', '~/Documents/PYTHON/SilentDiscoData/TX_MASK.png')
-# session.find_centres_masked('~/Documents/PYTHON/SilentDiscoData/original_r_otsu_gaussian.png', '~/Documents/PYTHON/SilentDiscoData/TX_MASK.png')
-
-
-
-# maskin = '~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_0_MASK.png'
-
-# session.find_centres()
-
-# Stuff I might want to put into the class:
-#
-# def runsession(self, imagename):
-#    """ Runs an image processing session.
-#    """
-#
-#    self.separate_colours(imagename)
-
-# session.ProcessVideoPerSec('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_21_120-130.mov', 20000)
-# session.read_video('~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov')
+# Frames 0-3229 saved.
+# save_frame_frame('/Volumes/SAMSUNG/TX-BACK UP_21.mov', 2500)

@@ -40,21 +40,25 @@ def save_image(imin, imname, image, imdir = None):
     """
     
     imin = os.path.expanduser(imin)
+    print imin
     
     if imdir:
         splitname = imin.rsplit('.', 1)[0]
         imdir = splitname.rsplit('/', 1)[0] + '/' + imdir
         splitname = splitname.rsplit('/', 1)[1]
         splitext = imin.rsplit('.', 1)[1]
-        if not splitext:
+        if splitext == "mov":
             splitext = "png"
+        
         print imdir + '/' + splitname + '_' + imname + '.' + splitext
         cv2.imwrite(imdir + '/' + splitname + '_' + imname + '.' + splitext, image)
+        
     else:
         splitname = imin.rsplit('.', 1)[0]
         splitext = imin.rsplit('.', 1)[1]
-        if not splitext:
+        if splitext == "mov":
             splitext = "png"
+        
         print splitname + '_' + imname + '.' + splitext
         cv2.imwrite(splitname + '_' + imname + '.' + splitext, image)
         
@@ -71,14 +75,15 @@ def save_images(imin, imnames, images, imdir = None):
             save_image(imin, imname, image)
 
 
-def show_image(imin):
+def show_image(image):
     """ Displays image using matplotlib.
     
     Reads color images using cv2, transforms the colorspace from BGR to RGB.
     """
     
-    image = read_image(imin)
-        
+    if isinstance(image, str):
+        image = read_image(image)
+    
     if len(image.shape) == 3:
         image = image[:, :, ::-1]
         plt.imshow(image)
@@ -98,13 +103,14 @@ def show_image(imin):
 ########################################
 
 
-def separate_colors(self, imin):
+def separate_colors(imin):
     """ Takes a colour image and separates the colour layers.
     """
 
     # Grayscale versus color image loading for debugging purposes.
     # img = self.read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
     img = read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+    show_image(img)
     b, g, r = cv2.split(img)
 
     # Display image for debugging purposes.
@@ -161,6 +167,8 @@ def adaptive_threshold(imin):
 
 
 def otsu_threshold(imin, gauss = None):
+    """
+    """
     
     image = read_image(imin)
     
@@ -185,16 +193,20 @@ def otsu_threshold_multi(imin, gauss = None):
     b, g, r = separate_colors(imin)
     
     if gauss:
-        otsu_b = otsu_threshold(b, gauss)
-        otsu_g = otsu_threshold(g, gauss)
-        otsu_r = otsu_threshold(r, gauss)
+        blur_b = cv2.GaussianBlur(b, (5, 5), 0)
+        blur_g = cv2.GaussianBlur(g, (5, 5), 0)
+        blur_r = cv2.GaussianBlur(r, (5, 5), 0)
         
-        imnames = ['otsu_gauss_b', 'otsu_gauss_g', 'otsug_gauss_r']
+        _, otsu_b = cv2.threshold(blur_b, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        _, otsu_g = cv2.threshold(blur_g, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        _, otsu_r = cv2.threshold(blur_r, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        
+        imnames = ['otsu_gauss_b', 'otsu_gauss_g', 'otsu_gauss_r']
         
     else:
-        otsu_b = otsu_threshold(b)
-        otsu_g = otsu_threshold(g)
-        otsu_r = otsu_threshold(r)
+        _, otsu_b = cv2.threshold(b, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        _, otsu_g = cv2.threshold(g, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        _, otsu_r = cv2.threshold(r, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         
         imnames = ['otsu_b', 'otsu_g', 'otsu_r']
     
@@ -210,7 +222,7 @@ def find_contours(imin, maskin = None):
     """
     
     # Check if Otsu results in single or multi channel image. Otherwise read original image separately as color to show colored contours.
-    im = otsu_threshold(imin, gauss)
+    im = otsu_threshold(imin, "gauss")
     imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     
     if maskin:
@@ -228,24 +240,33 @@ def find_contours_multi(imin, maskin = None):
     - Find contours for each layer.
     """
     
-    b, g, r = otsu_threshold_multi(imin, gauss)
+    b, g, r = otsu_threshold_multi(imin, "gauss")
     
+    image = read_image(imin)
     # Need to check, otsu thresholded images probably already have only one channel. In that case, also load the original color image for contours being colored.
-    b_gray = cv2.cvtColor(b, cv2.COLOR_BGR2GRAY)
-    g_gray = cv2.cvtColor(b, cv2.COLOR_BGR2GRAY)
-    r_gray = cv2.cvtColor(b, cv2.COLOR_BGR2GRAY)
+    # b_gray = cv2.cvtColor(b, cv2.COLOR_BGR2GRAY)
+    # g_gray = cv2.cvtColor(b, cv2.COLOR_BGR2GRAY)
+    # r_gray = cv2.cvtColor(b, cv2.COLOR_BGR2GRAY)
     
     if maskin:
         mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
         
         # apply mask to all three images.
-        b_gray = cv2.bitwise_and(b_gray, b_gray, mask = mask)
-        g_gray = cv2.bitwise_and(g_gray, g_gray, mask = mask)
-        r_gray = cv2.bitwise_and(r_gray, r_gray, mask = mask)
+        b = cv2.bitwise_and(b, b, mask = mask)
+        g = cv2.bitwise_and(g, g, mask = mask)
+        r = cv2.bitwise_and(r, r, mask = mask)
     
-    contours_b, _ = cv2.findContours(b_gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours_g, _ = cv2.findContours(g_gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours_r, _ = cv2.findContours(r_gray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours_b, _ = cv2.findContours(b, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours_g, _ = cv2.findContours(g, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours_r, _ = cv2.findContours(r, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    
+    print "contours_b"
+    
+    cv2.drawContours(image, contours_b, -1, (255, 0, 0), 2)
+    cv2.drawContours(image, contours_g, -1, (0, 255, 0), 2)
+    cv2.drawContours(image, contours_r, -1, (0, 0, 255), 2)
+    
+    show_image(image)
     
     # Think of how to draw the contours on an image. Draw them in a different color for each layer?
     
