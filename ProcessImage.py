@@ -46,11 +46,15 @@ def save_image(imin, imname, image, imdir = None):
         imdir = splitname.rsplit('/', 1)[0] + '/' + imdir
         splitname = splitname.rsplit('/', 1)[1]
         splitext = imin.rsplit('.', 1)[1]
+        if not splitext:
+            splitext = "png"
         print imdir + '/' + splitname + '_' + imname + '.' + splitext
         cv2.imwrite(imdir + '/' + splitname + '_' + imname + '.' + splitext, image)
     else:
         splitname = imin.rsplit('.', 1)[0]
         splitext = imin.rsplit('.', 1)[1]
+        if not splitext:
+            splitext = "png"
         print splitname + '_' + imname + '.' + splitext
         cv2.imwrite(splitname + '_' + imname + '.' + splitext, image)
         
@@ -306,8 +310,8 @@ def find_centres(imin, maskin = None):
 
 
 
-testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
-im = read_image(testimage)
-print len(im.shape)
-save_image(testimage, 'test', im, 'Processed2')
-save_image(testimage, 'test', im)
+# testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
+# im = read_image(testimage)
+# print len(im.shape)
+# save_image(testimage, 'test', im, 'Processed2')
+# save_image(testimage, 'test', im)

@@ -1,12 +1,11 @@
 # RunSession
 
 from ProcessImage import *
-from ProcessVideo import * 
+from ProcessVideo import *
 
-
-time_start = 0
-time_step = 60000
-time_total = (14780 * 1000) + 1
+# time_start = 0
+# time_step = 60000
+# time_total = (14780 * 1000) + 1
 
 frame_start = 0
 frame_step = 1
@@ -25,8 +24,7 @@ for i in range(frame_start, frame_total, frame_step):
 
 # ProcessImage = ProcessImage()
 
-# img = ProcessImage.read_image('~/Documents/PYTHON/SilentDiscoData/original_r.png',
-                              cv2.IMREAD_GRAYSCALE)
+# img = ProcessImage.read_image('~/Documents/PYTHON/SilentDiscoData/original_r.png', cv2.IMREAD_GRAYSCALE)
 # ProcessImage.show_image(img)
 
 

@@ -30,12 +30,14 @@ def process_video_time(vidin, time, outdir = None):
     vidcap.set(cv2.cv.CV_CAP_PROP_POS_MSEC, time)
     success, image = vidcap.read()
     
+    timestr = str(time)
+    
     if success:
         print time
         if outdir:
-            save_image(vidin, time, image, outdir)
+            save_image(vidin, timestr, image, outdir)
         else:
-            save_image(vidin, time, image)
+            save_image(vidin, timestr, image)
 
 
 def process_video_frame(vidin, frame, outdir = None):
@@ -47,12 +49,14 @@ def process_video_frame(vidin, frame, outdir = None):
     vidcap.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, frame)
     success, image = vidcap.read()
     
+    framestr = str(frame)
+    
     if success:
         print frame
         if outdir:
-            save_image(vidin, frame, image, outdir)
+            save_image(vidin, framestr, image, outdir)
         else:
-            save_image(vidin, frame, image)
+            save_image(vidin, framestr, image)
 
 
 def show_video_HSV(vidin):
