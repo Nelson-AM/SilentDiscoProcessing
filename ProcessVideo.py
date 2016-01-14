@@ -18,7 +18,7 @@ def read_video(vidin):
     vidin = os.path.expanduser(vidin)
     return cv2.VideoCapture(vidin)
 
-def process_video_time(vidin, time, outdir):
+def process_video_time(vidin, time, outdir = None):
     """
     """
 
@@ -32,10 +32,13 @@ def process_video_time(vidin, time, outdir):
     
     if success:
         print time
-        save_image(vidin, time, image)
+        if outdir:
+            save_image(vidin, time, image, outdir)
+        else:
+            save_image(vidin, time, image)
 
 
-def process_video_frame(vidin, frame, outdir):
+def process_video_frame(vidin, frame, outdir = None):
     """
     """
     
@@ -46,7 +49,10 @@ def process_video_frame(vidin, frame, outdir):
     
     if success:
         print frame
-        save_image(vidin, frame, image)
+        if outdir:
+            save_image(vidin, frame, image, outdir)
+        else:
+            save_image(vidin, frame, image)
 
 
 def show_video_HSV(vidin):
