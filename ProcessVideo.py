@@ -29,16 +29,24 @@ def process_video_time(vidin, time, outdir):
     # vidcap.set(0, time)
     vidcap.set(cv2.cv.CV_CAP_PROP_POS_MSEC, time)
     success, image = vidcap.read()
-
+    
     if success:
-
         print time
+        save_image(vidin, time, image)
 
-        # save frame as PNG
-        imnames = [time]
-        images = [image]
 
-        save_image(vidin, imnames, images)
+def process_video_frame(vidin, frame, outdir):
+    """
+    """
+    
+    vidcap = read_video(vidin)
+    
+    vidcap.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, frame)
+    success, image = vidcap.read()
+    
+    if success:
+        print frame
+        save_image(vidin, frame, image)
 
 
 def show_video_HSV(vidin):

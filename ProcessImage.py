@@ -254,7 +254,7 @@ def find_centres(imin, maskin = None):
     
     # Assumes single channel image.
     # - Run separate_colors.
-    # - Run find_centres
+    # - Run find_centres for each layer.
     contours, contoursim = find_contours(imin)
     im = read_image(imin, cv2.IMREAD_COLOR)
     
