@@ -2,12 +2,14 @@ import cv2
 import numpy as np
 import os
 
-vid = "~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov"
-img = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_3120.png"
+# vid = "~/Documents/PYTHON/SilentDiscoData/TX-BACK_UP_10s.mov"
+
+vid = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
+
 vid = os.path.expanduser(vid)
 
 vidcap = cv2.VideoCapture(vid)
-imgcap = cv2.imread(img, cv2.IMREAD_COLOR)
+# imgcap = cv2.imread(img, cv2.IMREAD_COLOR)
 
 
 def nothing(x):
@@ -32,12 +34,12 @@ cv2.createTrackbar('v_max', 'result', 256, 256, nothing)
 
 while(1):
 
-    # _, frame = vidcap.read()
-    frame = imgcap # .read()
+    _, frame = vidcap.read()
+    # frame = imgcap # .read()
     
-    # frame = cv2.resize(frame, (0, 0), fx = 0.5, fy = 0.5, interpolation = cv2.INTER_CUBIC)
+    frame = cv2.resize(frame, (0, 0), fx = 0.5, fy = 0.5, interpolation = cv2.INTER_CUBIC)
     
-    #converting to HSV
+    # converting to HSV
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
     # get info from track bar and appy to result
@@ -59,7 +61,7 @@ while(1):
 
     cv2.imshow('result', result)
 
-    k = cv2.waitKey(0) & 0xFF
+    k = cv2.waitKey(25) & 0xFF
     if k == 27:
         break
 

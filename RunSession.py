@@ -3,11 +3,18 @@
 from ProcessImage import *
 from ProcessVideo import *
 
+videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
 frame_50 = "/Volumes/SAMSUNG/TX-BACK UP_21_50.png"
 frame_2500 = "/Volumes/SAMSUNG/TX-BACK UP_21_2500.png"
 
+frame = extract_frame_frame(videofile, 30500)
 
-b, g, r = find_contours_multi(frame_2500)
+b, g, r = find_contours_multi(frame)
+
+
+
+
+# b, g, r = find_contours_multi(frame_2500)
 
 # print "Contours for B are: \n"
 # print b

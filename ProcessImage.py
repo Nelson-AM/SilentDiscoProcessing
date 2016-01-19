@@ -109,8 +109,12 @@ def separate_colors(imin):
 
     # Grayscale versus color image loading for debugging purposes.
     # img = self.read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-    img = read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
-    show_image(img)
+    if isinstance(imin, str):
+        img = read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+    else:
+        img = imin
+    
+    # show_image(img)
     b, g, r = cv2.split(img)
 
     # Display image for debugging purposes.
@@ -170,7 +174,10 @@ def otsu_threshold(imin, gauss = None):
     """
     """
     
-    image = read_image(imin)
+    if isinstance(imin, str):
+        image = read_image(imin)
+    else:
+        image = imin
     
     if gauss:
         blurim = cv2.GaussianBlur(image, (5, 5), 0)
@@ -230,18 +237,17 @@ def find_contours(imin, maskin = None):
         imgray = cv2.bitwise_and(imgray, imgray, mask = mask)
     
     contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contoursim = cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
+    cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
 
     return contours, contoursim
 
 def find_contours_multi(imin, maskin = None):
     """ 
-    - Call otsu_multi, returns colour layers.
+    - Call otsu_multi with gaussian filtering, returns colour layers.
     - Find contours for each layer.
     """
     
     b, g, r = otsu_threshold_multi(imin, "gauss")
-    
     image = read_image(imin)
     # Need to check, otsu thresholded images probably already have only one channel. In that case, also load the original color image for contours being colored.
     # b_gray = cv2.cvtColor(b, cv2.COLOR_BGR2GRAY)
@@ -251,7 +257,7 @@ def find_contours_multi(imin, maskin = None):
     if maskin:
         mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
         
-        # apply mask to all three images.
+        # Apply mask to all three layers.
         b = cv2.bitwise_and(b, b, mask = mask)
         g = cv2.bitwise_and(g, g, mask = mask)
         r = cv2.bitwise_and(r, r, mask = mask)
@@ -260,17 +266,55 @@ def find_contours_multi(imin, maskin = None):
     contours_g, _ = cv2.findContours(g, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours_r, _ = cv2.findContours(r, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
-    print "contours_b"
-    
     cv2.drawContours(image, contours_b, -1, (255, 0, 0), 2)
     cv2.drawContours(image, contours_g, -1, (0, 255, 0), 2)
     cv2.drawContours(image, contours_r, -1, (0, 0, 255), 2)
     
     show_image(image)
     
-    # Think of how to draw the contours on an image. Draw them in a different color for each layer?
-    
     return contours_b, contours_g, contours_r
+
+
+def find_centres_multi(imin, maskin = None):
+    """
+    """
+    
+    if maskin:
+        contours_b, contours_g, contours_r = find_contours_multi(imin, "mask")
+        
+        # Does mask need to be loaded?
+        # mask = read_image(maskin, cv2.IMREAD_GRAYSCALE)
+    else:
+        contours_b, contours_g, contours_r = find_contours_multi(imin)
+    
+    if isinstance(imin, str):
+        image = read_image(imin)
+    else:
+        image = imin
+    
+    # Preallocate for each color layer.
+    centres_b = []
+    centres_g = []
+    centres_r = []
+    
+    # Do this loop for each color layer.
+    for i in range(len(contours)):
+        
+        # Soft code these limits.
+        if cv2.contourArea(contours([i])) < 5 and cv2.contourArea(contours([i])) > 250:
+            continue
+        
+        moments = cv2.moments(contours[i])
+        
+        # Printing for checking and debugging purposes.
+        print "i is:"
+        print i
+        print "moments:"
+        print moments
+        
+        centres_b.append(
+            (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
+        # cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
 
 
 def find_centres(imin, maskin = None):
@@ -296,9 +340,7 @@ def find_centres(imin, maskin = None):
 
     for i in range(len(contours)):
         # To-do: soft-code these limits.
-        if cv2.contourArea(contours[i]) < 5:
-            continue
-        if cv2.contourArea(contours[i]) > 250:
+        if cv2.contourArea(contours([i])) < 5 and cv2.contourArea(contours([i])) > 250:
             continue
 
         moments = cv2.moments(contours[i])
@@ -320,6 +362,17 @@ def find_centres(imin, maskin = None):
     else:
         save_image(imin, 'centroids', im)
         # Save centres unmasked.
+
+def save_centres(centres, color, filename, savedir = None):
+    """ Saves list of centres as comma separated values.
+    
+    Requires input:
+    - video timepoint or frame number
+    - light color
+    - x- and y- coordinates
+    - output directory
+    """
+    
 
 
 
