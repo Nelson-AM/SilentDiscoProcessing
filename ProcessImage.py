@@ -25,6 +25,9 @@ def read_image(imin, colorspace = None):
         Loads image as such including alpha channel.
     """
     
+    if not isinstance(imin, str):
+        return imin
+    
     imin = os.path.expanduser(imin)
     
     if colorspace:
@@ -75,14 +78,13 @@ def save_images(imin, imnames, images, imdir = None):
             save_image(imin, imname, image)
 
 
-def show_image(image):
+def show_image(imin):
     """ Displays image using matplotlib.
     
     Reads color images using cv2, transforms the colorspace from BGR to RGB.
     """
     
-    if isinstance(image, str):
-        image = read_image(image)
+    image = read_image(imin)
     
     if len(image.shape) == 3:
         image = image[:, :, ::-1]
@@ -108,11 +110,7 @@ def separate_colors(imin):
     """
 
     # Grayscale versus color image loading for debugging purposes.
-    # img = self.read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
-    if isinstance(imin, str):
-        img = read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
-    else:
-        img = imin
+    img = read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
     
     # show_image(img)
     b, g, r = cv2.split(img)
@@ -174,10 +172,7 @@ def otsu_threshold(imin, gauss = None):
     """
     """
     
-    if isinstance(imin, str):
-        image = read_image(imin)
-    else:
-        image = imin
+    image = read_image(imin)
     
     if gauss:
         blurim = cv2.GaussianBlur(image, (5, 5), 0)
@@ -287,10 +282,7 @@ def find_centres_multi(imin, maskin = None):
     else:
         contours_b, contours_g, contours_r = find_contours_multi(imin)
     
-    if isinstance(imin, str):
-        image = read_image(imin)
-    else:
-        image = imin
+    image = read_image(imin)
     
     # Preallocate for each color layer.
     centres_b = []
@@ -325,6 +317,7 @@ def find_centres(imin, maskin = None):
     # - Run separate_colors.
     # - Run find_centres for each layer.
     contours, contoursim = find_contours(imin)
+    
     im = read_image(imin, cv2.IMREAD_COLOR)
     
     if maskin:
@@ -372,6 +365,7 @@ def save_centres(centres, color, filename, savedir = None):
     - x- and y- coordinates
     - output directory
     """
+    
     
 
 
