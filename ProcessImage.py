@@ -113,11 +113,11 @@ def separate_colors(imin):
     # Grayscale versus color image loading for debugging purposes.
     img = read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
     
-    # show_image(img)
+    show_image(img)
     b, g, r = cv2.split(img)
 
     # Display image for debugging purposes.
-    # self.show_image(img)
+    # show_image(img)
 
     imnames = ['b', 'g', 'r']
     images = [b, g, r]
@@ -220,7 +220,7 @@ def find_contours_multi(imin, maskin = None):
     cv2.drawContours(contoursim, contours_g, -1, (0, 255, 0), 2)
     cv2.drawContours(contoursim, contours_r, -1, (0, 0, 255), 2)
     
-    # show_image(contoursim)
+    show_image(contoursim)
     
     return contours_b, contours_g, contours_r
 
@@ -255,12 +255,21 @@ def find_centres_multi(imin, maskin = None):
     
     print contours_g
     
-    image = read_image(imin)
+    centre_image = read_image(imin)
     
     # Preallocate for each color layer.
     centres_b = find_centres(contours_b)
     centres_g = find_centres(contours_g)
     centres_r = find_centres(contours_r)
+    
+    for i in range(len(centres_b)):
+        cv2.circle(centre_image, centres_b[i], 5, (0, 255, 255), -1)
+    for i in range(len(centres_g)):
+        cv2.circle(centre_image, centres_g[i], 5, (255, 0, 255), -1)
+    for i in range(len(centres_r)):
+        cv2.circle(centre_image, centres_r[i], 5, (255, 255, 0), -1)
+    
+    show_image(centre_image)
     
     return centres_b, centres_g, centres_r
     
