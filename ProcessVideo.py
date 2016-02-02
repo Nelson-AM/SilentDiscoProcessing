@@ -29,7 +29,7 @@ def extract_frame_time(vidin, time):
     success, image = vidcap.read()
     
     if success:
-        print time
+        # print time
         return image
 
 

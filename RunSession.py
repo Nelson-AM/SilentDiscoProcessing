@@ -4,7 +4,7 @@ from ProcessImage import *
 from ProcessVideo import *
 
 videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
-centresfile = "/Volumes/SAMSUNG/centres10frames_masked.csv"
+centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
 
 # frame_50 = "/Volumes/SAMSUNG/TX-BACK UP_21_50.png"
 # frame_2500 = "/Volumes/SAMSUNG/TX-BACK UP_21_2500.png"
@@ -17,12 +17,14 @@ mask = "/Volumes/SAMSUNG/TX_MASK.png"
 
 frame_start = 50350
 frame_step = 1
-frame_total = 50355
+frame_total = 50352
 
 for i in range(frame_start, frame_total, frame_step):
     current_frame = extract_frame_frame(videofile, i)
     
     centres_b, centres_g, centres_r = find_centres_multi(current_frame, mask)
+    
+    # print centres_b
     
     # Leave blue in for playing around, remove it for the big - proper - file.
     save_centres(centresfile, i, 'blue', centres_b)

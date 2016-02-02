@@ -44,7 +44,7 @@ def save_image(imin, imname, image, imdir = None):
     """
     
     imin = os.path.expanduser(imin)
-    print imin
+    # print imin
     
     if imdir:
         splitname = imin.rsplit('.', 1)[0]
@@ -54,7 +54,7 @@ def save_image(imin, imname, image, imdir = None):
         if splitext == "mov":
             splitext = "png"
         
-        print imdir + '/' + splitname + '_' + imname + '.' + splitext
+        # print imdir + '/' + splitname + '_' + imname + '.' + splitext
         cv2.imwrite(imdir + '/' + splitname + '_' + imname + '.' + splitext, image)
         
     else:
@@ -63,7 +63,7 @@ def save_image(imin, imname, image, imdir = None):
         if splitext == "mov":
             splitext = "png"
         
-        print splitname + '_' + imname + '.' + splitext
+        # print splitname + '_' + imname + '.' + splitext
         cv2.imwrite(splitname + '_' + imname + '.' + splitext, image)
         
         
@@ -253,7 +253,7 @@ def find_centres_multi(imin, maskin = None):
     else:
         contours_b, contours_g, contours_r = find_contours_multi(imin)
     
-    print contours_g
+    # print contours_g
     
     centre_image = read_image(imin)
     
@@ -272,22 +272,6 @@ def find_centres_multi(imin, maskin = None):
     show_image(centre_image)
     
     return centres_b, centres_g, centres_r
-    
-    # Do this loop for each color layer.
-    # for i in range(len(contours_b)):
-    # Soft code these limits.
-    # if cv2.contourArea(contours([i])) < 5 and cv2.contourArea(contours([i])) > 250:
-    # continue
-    # moments = cv2.moments(contours[i])
-    # Printing for checking and debugging purposes.
-    # print "i is:"
-    # print i
-    # print "moments:"
-    # print moments
-    #    
-    # centres_b.append(
-    # (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
-    # cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
 
 
 def find_centres_single(imin, maskin = None):
@@ -307,33 +291,8 @@ def find_centres_single(imin, maskin = None):
     
     # imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     
-    print 'contours has length: '
-    print len(contours)
-
-    centres = []
-
-    for i in range(len(contours)):
-        
-        # To-do: soft-code these limits.
-        print "contour area:"
-        print cv2.contourArea(contours[i])
-        
-        if cv2.contourArea(contours[i]) < 5:
-            continue
-        if cv2.contourArea(contours[i]) > 250:
-            continue
-
-        moments = cv2.moments(contours[i])
-        print "i is:"
-        print i
-        print "moments:"
-        print moments
-
-        centres.append(
-            (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
-        cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
-
-    print centres
+    centres = find_centres(contours)
+    
     return centres
     
     if maskin:
@@ -353,13 +312,17 @@ def save_centres(filename, timepoint, color, centres):
     timepoint
         Identifier for either time or frame number.
     centres
-        List of centres (x and y coordinates).
+        List of centres (x, y).
+        Need to save the centres as two separate basic columns instead of the current array.
     """
     
     with open(filename, 'ab') as csvfile:
         spamwriter = csv.writer(csvfile, quoting = csv.QUOTE_ALL)
         
         for i in range(len(centres)):
+            
+            # centres_x = 
+            # centres_y = 
             
             row = [timepoint] + [color] + [centres[i]]
             spamwriter.writerow(row)
