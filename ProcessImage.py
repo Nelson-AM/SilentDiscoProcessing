@@ -221,6 +221,7 @@ def find_contours_multi(imin, maskin = None):
     cv2.drawContours(contoursim, contours_r, -1, (0, 0, 255), 2)
     
     show_image(contoursim)
+    save_image(imin, "contours", contoursim)
     
     return contours_b, contours_g, contours_r
 
@@ -239,6 +240,7 @@ def find_centres(contours):
         centres.append(
             (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
     
+    print centres
     return centres
     
 def find_centres_multi(imin, maskin = None):
@@ -270,6 +272,8 @@ def find_centres_multi(imin, maskin = None):
         cv2.circle(centre_image, centres_r[i], 5, (255, 255, 0), -1)
     
     show_image(centre_image)
+    
+    save_image(imin, "centres", centre_image)
     
     return centres_b, centres_g, centres_r
 
@@ -319,12 +323,15 @@ def save_centres(filename, timepoint, color, centres):
     with open(filename, 'ab') as csvfile:
         spamwriter = csv.writer(csvfile, quoting = csv.QUOTE_ALL)
         
+        centres_x = [x[0] for x in centres]
+        centres_y = [x[1] for x in centres]
+        
         for i in range(len(centres)):
             
             # centres_x = 
             # centres_y = 
             
-            row = [timepoint] + [color] + [centres[i]]
+            row = [timepoint] + [color] + [centres_x[i]] + [centres_y[i]]
             spamwriter.writerow(row)
 
 
