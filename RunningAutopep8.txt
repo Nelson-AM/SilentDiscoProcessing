@@ -1,3 +1,0 @@
-Running autopep8:
-
-$ autopep8 --in-place --aggressive <filename>

@@ -55,7 +55,8 @@ def save_graph_img(g, name, threshold, pos):
     To-do:
     - Add custom directory support.
     - Take into account e_weight.
-         - Check if line color can be shaded for this.
+        - Check if line color can be shaded for this.
+    - Fill in vertices as the color that they are (r/g/b).
     """
     
     graphnameim = "../graph_" + name + "_" + str(threshold) + ".png"
@@ -128,18 +129,32 @@ def create_edges(g, vlist, v_x, v_y, threshold):
     """
     
     e_weight = g.new_edge_property("double")
+    distancelist = []
     
     for i in range(len(vlist)):
         for j in range(i + 1, len(vlist)):    
-            distance = np.hypot(v_x[i] - v_x[j], v_y[i] - v_y[j])
+            
+            distance = np.hypot(v_x[i] - v_x[j], v_y[i] - v_y[j]) 
+            distancelist.append(distance)
             
             if distance < threshold:
                 source = vlist[i]
                 target = vlist[j]
                 e = g.add_edge(source, target)
+    
+    distance_norm = []
+    weights = []
+    
+    
+    
+    for i in range(len(distancelist)):
+        distance_norm.append((distancelist[i] - min(distancelist)) / 
+                             (max(distancelist) - min(distancelist)))
+        
+        weights.append(1 - distance_norm[i])
 
 
-def create_graph(filename, timestamp):
+def create_graph(filename, timestamp, threshold):
     """ Takes data from CSV file and creates graph for given timestamp.
     
     Single-use case of greate_graphs.
@@ -151,19 +166,25 @@ def create_graph(filename, timestamp):
     
     timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
     
+    g = Graph()
+    
     clist = timedf["Color"].tolist()
     xlist = timedf["X"].tolist()
     ylist = timedf["Y"].tolist()
     
-    print "Max x-value: ", max(xlist)
-    print "Max y-value: ", max(ylist)
+    vlist, v_x, v_y, v_color, pos = create_vertices(g, clist, xlist, ylist)
     
-    g = Graph()
+    create_edges(g, vlist, v_x, v_y, threshold)
+    
+    save_graph(g, name, threshold, v_color, v_x, v_y, pos)   # e_weight
+    
+    save_graph_img(g, name, threshold, pos)
 
 
 def create_graphs(filename, threshold):
     """ Creates graph from data in CSV file for each timepoint.
     """
+    
     centreslist = read_csv(filename)
     centresdf = pd.DataFrame(centreslist,
                              columns = ["Timestamp", "Color", "X", "Y"])
@@ -183,6 +204,56 @@ def create_graphs(filename, threshold):
         save_graph(g, name, threshold, v_color, v_x, v_y, pos)   # e_weight
         
         save_graph_img(g, name, threshold, pos)
+
+
+def create_graph_color(filename, timestamp, threshold, color = None):
+    """ Creates graph from data in CSV file for each or a specific color at each timepoint.
+    
+    NECESSARY?
+    This function might not be necessary given the _rg version.  On the other hand this function 
+    allows testing with any stray blue nodes that might still be around, to check the measures that
+    we get from the modelling.  Blue should do something entirely different from red and green.
+    """
+    
+    # Checks if a color is entered as a parameter.
+    if color:
+        # If a color is entered, build graph for only that color.
+    else:
+        # If no color is entered, build graphs separately for each color.
+
+
+def create_graphs_color(filename, threshold, color = None):
+    """ Creates graph from data in CSV file for each or a specific color at each timepoint.
+    """
+    
+    
+    # Checks if a color is entered as a parameter.
+    if color:
+        # If a color is entered, build graph for only that color.
+    else:
+        # If no color is entered, build graphs separately for each color.
+
+
+def create_graphs_rg(filename, threshold, pgreen, pred):
+    """ Creates graphs with randomly sampled red and green nodes in the given ratios
+    """
+    
+    if pred + pgreen == 100:
+        # Awesome, do stuff!
+        
+        # Make list of all red nodes.
+        # Make list of all green nodes.
+        
+        # Determine number of vertices that have to be selected for each color.
+        # nred = round(pred / length(redlist))
+        # ngreen = round(pgreen / length(greenlist))
+        
+        # Randomly sample each list until the desired amount of vertices is chosen for each list.
+        
+        # Build graph.
+        
+    else:
+        # Error / warning that red + green has to add up to 100.
 
 
 
