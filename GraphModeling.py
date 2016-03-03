@@ -30,7 +30,7 @@ def read_csv(filename):
         return dataframe
 
 
-def save_graph(g, name, threshold, v_color, v_x, v_y, pos, graphdir = None):
+def save_graph(g, name, threshold, graphdir = None):
     """ Saves graph g, including properties of vertices and edges.
     
     To-do:
@@ -119,15 +119,6 @@ def create_vertices(g, clist, xlist, ylist):
     vlist = []
     dlist = []
     
-    # >>> vprop = g.new_vertex_property("double")
-    # >>> g.vp.foo = vprop
-    #     equivalent to g.vertex_properties["foo"] = vprop
-    # >>> v = g.vertex(0)
-    # >>> g.vp.foo[v] = 3.14
-    # >>> print(g.vp.foo[v])
-    # 3.14
-    
-    v_age = g.new_vertex_property("int")
     v_color = g.new_vertex_property("string")
     v_x = g.new_vertex_property("int")
     v_y = g.new_vertex_property("int")
@@ -153,7 +144,7 @@ def create_vertices(g, clist, xlist, ylist):
     print "Properties after vertex creation: "
     g.list_properties()
     
-    return vlist, v_x, v_y, v_color, pos
+    return vlist, v_x, v_y
 
 
 def create_edges(g, vlist, v_x, v_y, threshold):
@@ -194,7 +185,7 @@ def create_base_graph(dataframe, name, threshold):
     xlist = dataframe["X"].tolist()
     ylist = dataframe["Y"].tolist()
     
-    vlist, v_x, v_y, v_color, pos = create_vertices(g, clist, xlist, ylist)
+    vlist, v_x, v_y = create_vertices(g, clist, xlist, ylist)
     create_edges(g, vlist, v_x, v_y, threshold)
     
     print "Properties after edge creation: "

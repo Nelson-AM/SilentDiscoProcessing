@@ -9,11 +9,10 @@ videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
 centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
 
 timestamp = 150354
-thresholds = [50, 100, 300, 350, 400]
+threshold = 50
 
 # create_graph(centresfile, timestamp, threshold)
-for threshold in thresholds:
-    create_graphs(centresfile, threshold)
+create_graphs(centresfile, threshold)
 
 # frame_50 = "/Volumes/SAMSUNG/TX-BACK UP_21_50.png"
 # frame_2500 = "/Volumes/SAMSUNG/TX-BACK UP_21_2500.png"
