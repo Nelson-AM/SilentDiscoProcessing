@@ -347,7 +347,7 @@ def save_centres(filename, timepoint, color, centres):
 
 
 ########################################
-#####     UNFINISHED FUNCTIONS     #####
+#####       DRAFT FUNCTIONS        #####
 ########################################
 
 def show_centres(image, centres):

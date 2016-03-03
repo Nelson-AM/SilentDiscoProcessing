@@ -7,12 +7,19 @@ from graph_tool.all import *
 from matplotlib import pyplot as plt
 
 
+
+
+
 ################################################
 #####     AUX CSV AND GRAPH PROCESSING     #####
 ################################################
 
+
+
+
+
 def read_csv(filename):
-    """ Read CSV file and return it as a list.
+    """ Read CSV file and return it as a pandas dataframe.
     """
     
     filename = os.path.expanduser(filename)
@@ -21,7 +28,9 @@ def read_csv(filename):
         spamreader = csv.reader(csvfile, quoting = csv.QUOTE_ALL)
         
         spamlist = list(spamreader)
-        return spamlist
+        dataframe = pd.DataFrame(spamlist, columns = ["Timestamp", "Color", "X", "Y"])
+        
+        return dataframe
 
 
 def save_graph(g, name, threshold, v_color, v_x, v_y, pos):
@@ -34,7 +43,7 @@ def save_graph(g, name, threshold, v_color, v_x, v_y, pos):
     
     # Build filename based on name and threshold.
     graphnamegz = "../graph_" + name + "_" + str(threshold) + ".xml.gz"
-
+    
     # Make properties internal.
     g.vertex_properties["xcoordinate"] = v_x
     g.vertex_properties["ycoordinate"] = v_y
@@ -68,13 +77,11 @@ def save_graph_img(g, name, threshold, pos):
                vcmap = plt.cm.gist_heat_r, output = graphnameim)
 
 
-def image_graph(filename, outdir):
+def image_graph(filename, name, outdir):
     """ Takes a saved graph and saves it as an image.
-    
-    To-do:
-    - 
     """
     
+    # Build name based on given name and threshold.
     graphnameim = "../graph_" + name + "_" + str(threshold) + ".png"
     print graphnameim
     
@@ -92,9 +99,15 @@ def image_graph(filename, outdir):
                vcmap = plt.cm.gist_heat_r, output = graphnameim)
 
 
+
+
+
 ##################################
 #####     GRAPH BUILDING     #####
 ##################################
+
+
+
 
 
 def create_vertices(g, clist, xlist, ylist):
@@ -145,13 +158,27 @@ def create_edges(g, vlist, v_x, v_y, threshold):
     distance_norm = []
     weights = []
     
-    
-    
     for i in range(len(distancelist)):
         distance_norm.append((distancelist[i] - min(distancelist)) / 
                              (max(distancelist) - min(distancelist)))
         
         weights.append(1 - distance_norm[i])
+
+
+def create_base_graph(dataframe, name, threshold):
+    """
+    """
+    
+    g = Graph()
+    
+    clist = dataframe["Color"].tolist()
+    xlist = dataframe["X"].tolist()
+    ylist = dataframe["Y"].tolist()
+    
+    vlist, v_x, v_y, v_color, pos = create_vertices(g, clist, xlist, ylist)
+    create_edges(g, vlist, v_x, v_y, threshold)
+    save_graph(g, name, threshold, v_color, v_x, v_y, pos)      # e_weight
+    save_graph_img(g, name, threshold, pos)
 
 
 def create_graph(filename, timestamp, threshold):
@@ -160,51 +187,76 @@ def create_graph(filename, timestamp, threshold):
     Single-use case of greate_graphs.
     """
     
-    centreslist = read_csv(filename)
-    centresdf = pd.DataFrame(centreslist,
-                              columns = ["Timestamp", "Color", "X", "Y"])
+    centresdf = read_csv(filename)
     
     timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
     
-    g = Graph()
-    
-    clist = timedf["Color"].tolist()
-    xlist = timedf["X"].tolist()
-    ylist = timedf["Y"].tolist()
-    
-    vlist, v_x, v_y, v_color, pos = create_vertices(g, clist, xlist, ylist)
-    
-    create_edges(g, vlist, v_x, v_y, threshold)
-    
-    save_graph(g, name, threshold, v_color, v_x, v_y, pos)   # e_weight
-    
-    save_graph_img(g, name, threshold, pos)
+    create_base_graph(timedf, timestamp, threshold)
 
 
 def create_graphs(filename, threshold):
     """ Creates graph from data in CSV file for each timepoint.
     """
     
-    centreslist = read_csv(filename)
-    centresdf = pd.DataFrame(centreslist,
-                             columns = ["Timestamp", "Color", "X", "Y"])
+    centresdf = read_csv(filename)
     
     for name, group in centresdf.groupby("Timestamp"):
-        
-        clist = group["Color"].tolist()
-        xlist = group["X"].tolist()
-        ylist = group["Y"].tolist()
-        
-        g = Graph()
-        
-        vlist, v_x, v_y, v_color, pos = create_vertices(g, clist, xlist, ylist)
-        
-        create_edges(g, vlist, v_x, v_y, threshold)
-        
-        save_graph(g, name, threshold, v_color, v_x, v_y, pos)   # e_weight
-        
-        save_graph_img(g, name, threshold, pos)
+        create_base_graph(group, name, threshold)
 
+
+def create_graphs_color(filename, threshold, color = None):
+    """ Creates graph from data in CSV file for each or a specific color at each timepoint.
+    """
+    
+    centresdf = read_csv(filename)
+    
+    if color:
+        # If a color is entered, build graph for only that color.
+        colordf = centresdf.loc[centresdf["Color"] == str(color)]
+        
+        for name, group in colordf.groupby("Timestamp"):
+            create_base_graph(colordf, name, threshold)
+            
+    else:
+        # If no color is entered, build graphs separately for each color.
+
+
+def create_graphs_rg(filename, threshold, pgreen, pred):
+    """ Creates graphs with randomly sampled red and green nodes in the given ratios
+    """
+    
+    if  pgreen + pred == 100:
+        # Awesome, do stuff!
+        
+        # Make list of all red nodes.
+        # Make list of all green nodes.
+        
+        # Determine number of vertices that have to be selected for each color.
+        # nred = round(pred / length(redlist))
+        # ngreen = round(pgreen / length(greenlist))
+        
+        # Randomly sample each list until the desired amount of vertices is chosen for each list.
+        
+        # Build graph.
+        
+    else:
+        print "pgreen and pred should add up to 100."
+        sys.exit(-1)
+        # Error / warning that red + green has to add up to 100.
+
+
+
+#######################################
+#####     STRUCTURAL ANALYSIS     #####
+#######################################
+
+
+
+
+
+########################################
+#####       DRAFT FUNCTIONS        #####
+########################################
 
 def create_graph_color(filename, timestamp, threshold, color = None):
     """ Creates graph from data in CSV file for each or a specific color at each timepoint.
@@ -220,45 +272,4 @@ def create_graph_color(filename, timestamp, threshold, color = None):
         # If a color is entered, build graph for only that color.
     else:
         # If no color is entered, build graphs separately for each color.
-
-
-def create_graphs_color(filename, threshold, color = None):
-    """ Creates graph from data in CSV file for each or a specific color at each timepoint.
-    """
-    
-    
-    # Checks if a color is entered as a parameter.
-    if color:
-        # If a color is entered, build graph for only that color.
-    else:
-        # If no color is entered, build graphs separately for each color.
-
-
-def create_graphs_rg(filename, threshold, pgreen, pred):
-    """ Creates graphs with randomly sampled red and green nodes in the given ratios
-    """
-    
-    if pred + pgreen == 100:
-        # Awesome, do stuff!
-        
-        # Make list of all red nodes.
-        # Make list of all green nodes.
-        
-        # Determine number of vertices that have to be selected for each color.
-        # nred = round(pred / length(redlist))
-        # ngreen = round(pgreen / length(greenlist))
-        
-        # Randomly sample each list until the desired amount of vertices is chosen for each list.
-        
-        # Build graph.
-        
-    else:
-        # Error / warning that red + green has to add up to 100.
-
-
-
-##################################
-#####     GRAPH ANALYSIS     #####
-##################################
-
 
