@@ -212,13 +212,22 @@ def create_graphs_color(filename, threshold, color = None):
     
     if color:
         # If a color is entered, build graph for only that color.
+        # Note: is str(color) necessary?
         colordf = centresdf.loc[centresdf["Color"] == str(color)]
         
         for name, group in colordf.groupby("Timestamp"):
-            create_base_graph(colordf, name, threshold)
+            cname = name + "_" + color
+            create_base_graph(colordf, cname, threshold)
             
     else:
-        # If no color is entered, build graphs separately for each color.
+        # If no color is entered, build separate graphs for each color.
+        colors = ["red", "green", "blue"]
+        for color in colors:
+            colordf = centresdf.loc[centresdf["Color"] == color]
+            
+            for name, group in colordf.groupby("Timestamp"):
+                cname = name + "_" + color
+                create_base_graph(colordf, cname, threshold)
 
 
 def create_graphs_rg(filename, threshold, pgreen, pred):
