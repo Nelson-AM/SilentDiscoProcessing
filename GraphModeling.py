@@ -2,6 +2,7 @@ import os
 import csv
 import numpy as np
 import pandas as pd
+
 from graph_tool.all import *
 
 from matplotlib import pyplot as plt
@@ -15,9 +16,6 @@ from matplotlib import pyplot as plt
 ################################################
 
 
-
-
-
 def read_csv(filename):
     """ Read CSV file and return it as a pandas dataframe.
     """
@@ -26,14 +24,13 @@ def read_csv(filename):
     
     with open(filename, "rb") as csvfile:
         spamreader = csv.reader(csvfile, quoting = csv.QUOTE_ALL)
-        
         spamlist = list(spamreader)
         dataframe = pd.DataFrame(spamlist, columns = ["Timestamp", "Color", "X", "Y"])
         
         return dataframe
 
 
-def save_graph(g, name, threshold, v_color, v_x, v_y, pos):
+def save_graph(g, name, threshold, v_color, v_x, v_y, pos, graphdir = None):
     """ Saves graph g, including properties of vertices and edges.
     
     To-do:
@@ -41,15 +38,23 @@ def save_graph(g, name, threshold, v_color, v_x, v_y, pos):
     - Add e_weight as parameter.
     """
     
-    # Build filename based on name and threshold.
-    graphnamegz = "../graph_" + name + "_" + str(threshold) + ".xml.gz"
+    if graphdir:
+        # Build filename based on graphdir, name and threshold.
+        graphnamegz = graphdir + '/' + name + "_" + str(threshold) + ".xml.gz"
+        
+    else:
+        # Build filename based on name and threshold, saves to current working directory.
+        graphnamegz = "../graph_" + name + "_" + str(threshold) + ".xml.gz"
     
     # Make properties internal.
-    g.vertex_properties["xcoordinate"] = v_x
-    g.vertex_properties["ycoordinate"] = v_y
-    g.vertex_properties["color"] = v_color
-    g.vertex_properties["position"] = pos
+    # g.vertex_properties["xcoordinate"] = v_x
+    # g.vertex_properties["ycoordinate"] = v_y
+    # g.vertex_properties["color"] = v_color
+    # g.vertex_properties["position"] = pos
     # g.edge_properties["weight"] = e_weight
+    
+    print "Properties at time of saving: "
+    g.list_properties()
     
     # now we can save it
     g.save(graphnamegz)
@@ -107,15 +112,20 @@ def image_graph(filename, name, outdir):
 ##################################
 
 
-
-
-
 def create_vertices(g, clist, xlist, ylist):
     """ Support function, creates vertices for graph g from create_graphs.
     """
     
     vlist = []
     dlist = []
+    
+    # >>> vprop = g.new_vertex_property("double")
+    # >>> g.vp.foo = vprop
+    #     equivalent to g.vertex_properties["foo"] = vprop
+    # >>> v = g.vertex(0)
+    # >>> g.vp.foo[v] = 3.14
+    # >>> print(g.vp.foo[v])
+    # 3.14
     
     v_age = g.new_vertex_property("int")
     v_color = g.new_vertex_property("string")
@@ -133,6 +143,15 @@ def create_vertices(g, clist, xlist, ylist):
         pos[i] = (v_x[i], v_y[i])
         
         vlist.append(v)
+    
+    # Make properties internal.
+    g.vertex_properties["x"] = v_x
+    g.vertex_properties["y"] = v_y
+    g.vertex_properties["color"] = v_color
+    g.vertex_properties["position"] = pos
+    
+    print "Properties after vertex creation: "
+    g.list_properties()
     
     return vlist, v_x, v_y, v_color, pos
 
@@ -166,7 +185,7 @@ def create_edges(g, vlist, v_x, v_y, threshold):
 
 
 def create_base_graph(dataframe, name, threshold):
-    """
+    """ 
     """
     
     g = Graph()
@@ -177,6 +196,11 @@ def create_base_graph(dataframe, name, threshold):
     
     vlist, v_x, v_y, v_color, pos = create_vertices(g, clist, xlist, ylist)
     create_edges(g, vlist, v_x, v_y, threshold)
+    
+    print "Properties after edge creation: "
+    g.list_properties()
+    
+    # Make these functions external?
     save_graph(g, name, threshold, v_color, v_x, v_y, pos)      # e_weight
     save_graph_img(g, name, threshold, pos)
 
@@ -236,7 +260,7 @@ def create_graphs_rg(filename, threshold, pgreen, pred):
     
     if  pgreen + pred == 100:
         # Awesome, do stuff!
-        
+        print pgreen + pred
         # Make list of all red nodes.
         # Make list of all green nodes.
         
@@ -249,9 +273,11 @@ def create_graphs_rg(filename, threshold, pgreen, pred):
         # Build graph.
         
     else:
+        # Error / warning that red + green has to add up to 100.
         print "pgreen and pred should add up to 100."
         sys.exit(-1)
-        # Error / warning that red + green has to add up to 100.
+
+
 
 
 
@@ -260,12 +286,21 @@ def create_graphs_rg(filename, threshold, pgreen, pred):
 #######################################
 
 
+def grah_analysis_function(arguments):
+    """
+    """
+    
+    # Here we do the statistical analysis part of the graph modeling.
+    print "Yay, time for statistical analysis!"
+
+
 
 
 
 ########################################
 #####       DRAFT FUNCTIONS        #####
 ########################################
+
 
 def create_graph_color(filename, timestamp, threshold, color = None):
     """ Creates graph from data in CSV file for each or a specific color at each timepoint.
@@ -278,7 +313,9 @@ def create_graph_color(filename, timestamp, threshold, color = None):
     
     # Checks if a color is entered as a parameter.
     if color:
+        print "Yay, color is: " + color + "."
         # If a color is entered, build graph for only that color.
     else:
         # If no color is entered, build graphs separately for each color.
+        print "Boo, you didn't enter a color!"
 

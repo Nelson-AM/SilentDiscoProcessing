@@ -9,18 +9,17 @@ videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
 centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
 
 timestamp = 150354
-threshold = 150
+thresholds = [50, 100, 300, 350, 400]
 
 # create_graph(centresfile, timestamp, threshold)
-create_graphs(centresfile, threshold)
-
-frame_150352 = "/Volumes/SAMSUNG/TX-BACK UP_21_150352.png"
+for threshold in thresholds:
+    create_graphs(centresfile, threshold)
 
 # frame_50 = "/Volumes/SAMSUNG/TX-BACK UP_21_50.png"
 # frame_2500 = "/Volumes/SAMSUNG/TX-BACK UP_21_2500.png"
+# frame_150352 = "/Volumes/SAMSUNG/TX-BACK UP_21_150352.png"
 
-mask = "/Volumes/SAMSUNG/TX_MASK.png"
-
+# mask = "/Volumes/SAMSUNG/TX_MASK.png"
 # find_contours_multi(frame_150352, mask)
 # find_centres_multi(frame_150352, mask)
 
@@ -28,9 +27,9 @@ mask = "/Volumes/SAMSUNG/TX_MASK.png"
 # frame_step = 100
 # frame_total = (14780 * 25) + 1
 
-frame_start = 150350
-frame_step = 1
-frame_total = 150355
+# frame_start = 150350
+# frame_step = 1
+# frame_total = 150355
 
 """
 for i in range(frame_start, frame_total, frame_step):
