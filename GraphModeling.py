@@ -46,17 +46,7 @@ def save_graph(g, name, threshold, graphdir = None):
         # Build filename based on name and threshold, saves to current working directory.
         graphnamegz = "../graph_" + name + "_" + str(threshold) + ".xml.gz"
     
-    # Make properties internal.
-    # g.vertex_properties["xcoordinate"] = v_x
-    # g.vertex_properties["ycoordinate"] = v_y
-    # g.vertex_properties["color"] = v_color
-    # g.vertex_properties["position"] = pos
-    # g.edge_properties["weight"] = e_weight
-    
-    print "Properties at time of saving: "
-    g.list_properties()
-    
-    # now we can save it
+    # Now we can save it.
     g.save(graphnamegz)
 
 
@@ -141,9 +131,6 @@ def create_vertices(g, clist, xlist, ylist):
     g.vertex_properties["color"] = v_color
     g.vertex_properties["position"] = pos
     
-    print "Properties after vertex creation: "
-    g.list_properties()
-    
     return vlist, v_x, v_y
 
 
@@ -179,7 +166,7 @@ def create_base_graph(dataframe, name, threshold):
     """ 
     """
     
-    g = Graph()
+    g = Graph(directed = False)
     
     clist = dataframe["Color"].tolist()
     xlist = dataframe["X"].tolist()
@@ -187,9 +174,6 @@ def create_base_graph(dataframe, name, threshold):
     
     vlist, v_x, v_y = create_vertices(g, clist, xlist, ylist)
     create_edges(g, vlist, v_x, v_y, threshold)
-    
-    print "Properties after edge creation: "
-    g.list_properties()
     
     # Make these functions external?
     save_graph(g, name, threshold, v_color, v_x, v_y, pos)      # e_weight
@@ -277,12 +261,17 @@ def create_graphs_rg(filename, threshold, pgreen, pred):
 #######################################
 
 
-def grah_analysis_function(arguments):
-    """
+def local_clustering(graph):
+    """ Get the local clustering coefficient for a given graph.
     """
     
-    # Here we do the statistical analysis part of the graph modeling.
-    print "Yay, time for statistical analysis!"
+    # Check if graph is a string (filename)
+    if isinstance(graph, str):
+        # Read graph object
+        g = load_graph(graph)
+    
+    # Get local clustering coefficient.
+    print "Here we get the local clustering"
 
 
 
