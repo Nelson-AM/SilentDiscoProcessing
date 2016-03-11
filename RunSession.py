@@ -4,15 +4,27 @@ from ProcessImage import *
 from ProcessVideo import *
 from GraphModeling import *
 
-
+# Specify the file locations. Home directory can be referred to using the tilde.
 videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
 centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
 
+# Using a single threshold and single timepoint.
 timestamp = 150354
 threshold = 50
 
-# create_graph(centresfile, timestamp, threshold)
-create_graphs(centresfile, threshold)
+# create_graphs_color (note: plural) builds a graphs for each timepoint in the input file. The color argument is optional, if no color is given then it will create graphs for red, green and blue.
+create_graphs_color(centresfile, threshold, "red")
+create_graphs_color(centresfile, threshold, "green")
+
+
+
+"""
+for timestamp in timestamps:
+    for threshold in thresholds:
+        
+        # create_graph_color (note: singular) builds a graph for the specified timepoint in the input file.
+        graph = create_graph_color(centresfile, timepoint, threshold, "red")
+"""
 
 # frame_50 = "/Volumes/SAMSUNG/TX-BACK UP_21_50.png"
 # frame_2500 = "/Volumes/SAMSUNG/TX-BACK UP_21_2500.png"

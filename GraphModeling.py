@@ -34,23 +34,23 @@ def save_graph(g, name, threshold, graphdir = None):
     """ Saves graph g, including properties of vertices and edges.
     
     To-do:
-    - Add directory as parameter for saving in any location.
     - Add e_weight as parameter.
     """
     
     if graphdir:
+        graphdir = os.path.expanduser(graphdir)
         # Build filename based on graphdir, name and threshold.
-        graphnamegz = graphdir + '/' + name + "_" + str(threshold) + ".xml.gz"
+        graphnamegz = graphdir + "/" + name + "_" + str(threshold) + ".xml.gz"
         
     else:
         # Build filename based on name and threshold, saves to current working directory.
-        graphnamegz = "../graph_" + name + "_" + str(threshold) + ".xml.gz"
+        graphnamegz = "graph_" + name + "_" + str(threshold) + ".xml.gz"
     
     # Now we can save it.
     g.save(graphnamegz)
 
 
-def save_graph_img(g, name, threshold, pos):
+def save_graph_img(g, name, threshold, graphdir = None):
     """ Saves png image of graph g with vertices at "real" locations.
     
     Plots vertices based on x- and y-coordinates, making 
@@ -63,8 +63,16 @@ def save_graph_img(g, name, threshold, pos):
     - Fill in vertices as the color that they are (r/g/b).
     """
     
-    graphnameim = "../graph_" + name + "_" + str(threshold) + ".png"
-    print graphnameim
+    if graphdir:
+        graphdir = os.path.expanduser(graphdir)
+        graphnameim = graphdir + "/" + name + "_" + str(threshold) + ".png"
+        print graphnameim
+        
+    else:
+        graphnameim = "graph_" + name + "_" + str(threshold) + ".png"
+        print graphnameim
+    
+    pos = g.vertex_properties["pos"]
     
     graph_draw(g, pos, output_size = (1000, 1000), 
                vertex_color = [1, 1, 1, 0],
@@ -82,10 +90,10 @@ def image_graph(filename, name, outdir):
     
     g = load_graph(filename)
     
-    x = g.vertex_properties["xcoordinate"]
-    y = g.vertex_properties["ycoordinate"]
+    x = g.vertex_properties["x"]
+    y = g.vertex_properties["y"]
     color = g.vertex_properties["color"]
-    pos = g.vertex_properties["position"]
+    pos = g.vertex_properties["pos"]
     
     
     graph_draw(g, pos, output_size = (1000, 1000), 
@@ -129,7 +137,7 @@ def create_vertices(g, clist, xlist, ylist):
     g.vertex_properties["x"] = v_x
     g.vertex_properties["y"] = v_y
     g.vertex_properties["color"] = v_color
-    g.vertex_properties["position"] = pos
+    g.vertex_properties["pos"] = pos
     
     return vlist, v_x, v_y
 
@@ -138,11 +146,12 @@ def create_edges(g, vlist, v_x, v_y, threshold):
     """ Support function, creates edges for graph g from create_graphs.
     """
     
+    e_length = g.new_edge_property("double")
     e_weight = g.new_edge_property("double")
     distancelist = []
     
     for i in range(len(vlist)):
-        for j in range(i + 1, len(vlist)):    
+        for j in range(i + 1, len(vlist)):
             
             distance = np.hypot(v_x[i] - v_x[j], v_y[i] - v_y[j]) 
             distancelist.append(distance)
@@ -151,19 +160,27 @@ def create_edges(g, vlist, v_x, v_y, threshold):
                 source = vlist[i]
                 target = vlist[j]
                 e = g.add_edge(source, target)
+                
+                # e_length[e] = distance
     
-    distance_norm = []
-    weights = []
+    # distlist_norm = []
+    # weights = []
     
-    for i in range(len(distancelist)):
-        distance_norm.append((distancelist[i] - min(distancelist)) / 
-                             (max(distancelist) - min(distancelist)))
-        
-        weights.append(1 - distance_norm[i])
+    # Need to loop over edges, and then add the weight based on normalised distance.
+    # for i in range(len(distancelist)):
+    #    
+    #    distlist_norm.append((distancelist[i] - min(distancelist)) / 
+    #                         (max(distancelist) - min(distancelist)))
+    #    
+    #    # Simple linear weight, inverse of normalised distance.
+    #    weights.append(1 - distlist_norm[i])
+    
+    # print "Weights for current graph are: "
+    # print weights
 
 
-def create_base_graph(dataframe, name, threshold):
-    """ 
+def create_base_graph(dataframe, name, threshold, graphdir = None):
+    """ Base function that creates the graph and saves it.
     """
     
     g = Graph(directed = False)
@@ -174,10 +191,15 @@ def create_base_graph(dataframe, name, threshold):
     
     vlist, v_x, v_y = create_vertices(g, clist, xlist, ylist)
     create_edges(g, vlist, v_x, v_y, threshold)
-    
+        
     # Make these functions external?
-    save_graph(g, name, threshold, v_color, v_x, v_y, pos)      # e_weight
-    save_graph_img(g, name, threshold, pos)
+    if graphdir:
+        save_graph(g, name, threshold, graphdir)
+        save_graph_img(g, name, threshold, graphdir)
+        
+    else:
+        save_graph(g, name, threshold)          # v_color, v_x, v_y, pos, e_weight
+        save_graph_img(g, name, threshold)
 
 
 def create_graph(filename, timestamp, threshold):
@@ -190,7 +212,7 @@ def create_graph(filename, timestamp, threshold):
     
     timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
     
-    create_base_graph(timedf, timestamp, threshold)
+    g = create_base_graph(timedf, timestamp, threshold)
 
 
 def create_graphs(filename, threshold):
@@ -199,11 +221,23 @@ def create_graphs(filename, threshold):
     
     centresdf = read_csv(filename)
     
-    for name, group in centresdf.groupby("Timestamp"):
-        create_base_graph(group, name, threshold)
+    for time, group in centresdf.groupby("Timestamp"):
+        create_base_graph(group, time, threshold)
 
 
-def create_graphs_color(filename, threshold, color = None):
+def create_graph_color(filename, timestamp, threshold, color):
+    """ Creates graph from data in CSV file for specified timepoint and color.
+    """
+    
+    centresdf = read_csv(filename)
+    
+    timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
+    timecolordf = timedf.loc[timedf["Color"] == str(color)]
+    
+    create_base_graph(timecolordf, timestamp, threshold)
+
+
+def create_graphs_color(filename, threshold, graphdir = None, color = None):
     """ Creates graph from data in CSV file for each or a specific color at each timepoint.
     """
     
@@ -216,8 +250,12 @@ def create_graphs_color(filename, threshold, color = None):
         
         for name, group in colordf.groupby("Timestamp"):
             cname = name + "_" + color
-            create_base_graph(colordf, cname, threshold)
             
+            if graphdir:
+                create_base_graph(group, cname, threshold, graphdir)
+            else:
+                create_base_graph(group, cname, threshold)
+    
     else:
         # If no color is entered, build separate graphs for each color.
         colors = ["red", "green", "blue"]
@@ -226,31 +264,11 @@ def create_graphs_color(filename, threshold, color = None):
             
             for name, group in colordf.groupby("Timestamp"):
                 cname = name + "_" + color
-                create_base_graph(colordf, cname, threshold)
-
-
-def create_graphs_rg(filename, threshold, pgreen, pred):
-    """ Creates graphs with randomly sampled red and green nodes in the given ratios
-    """
-    
-    if  pgreen + pred == 100:
-        # Awesome, do stuff!
-        print pgreen + pred
-        # Make list of all red nodes.
-        # Make list of all green nodes.
-        
-        # Determine number of vertices that have to be selected for each color.
-        # nred = round(pred / length(redlist))
-        # ngreen = round(pgreen / length(greenlist))
-        
-        # Randomly sample each list until the desired amount of vertices is chosen for each list.
-        
-        # Build graph.
-        
-    else:
-        # Error / warning that red + green has to add up to 100.
-        print "pgreen and pred should add up to 100."
-        sys.exit(-1)
+                
+                if graphdir:
+                    create_base_graph(group, cname, threshold, graphdir)
+                else:
+                    create_base_graph(group, cname, threshold)
 
 
 
@@ -299,3 +317,26 @@ def create_graph_color(filename, timestamp, threshold, color = None):
         # If no color is entered, build graphs separately for each color.
         print "Boo, you didn't enter a color!"
 
+
+def create_graphs_rg(filename, threshold, pgreen, pred):
+    """ Creates graphs with randomly sampled red and green nodes in the given ratios
+    """
+    
+    if  pgreen + pred == 100:
+        # Awesome, do stuff!
+        print pgreen + pred
+        # Make list of all red nodes.
+        # Make list of all green nodes.
+        
+        # Determine number of vertices that have to be selected for each color.
+        # nred = round(pred / length(redlist))
+        # ngreen = round(pgreen / length(greenlist))
+        
+        # Randomly sample each list until the desired amount of vertices is chosen for each list.
+        
+        # Build graph.
+        
+    else:
+        # Error / warning that red + green has to add up to 100.
+        print "pgreen and pred should add up to 100."
+        sys.exit(-1)
