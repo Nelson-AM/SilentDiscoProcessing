@@ -271,19 +271,6 @@ def create_graphs_color(filename, threshold, color = None, graphdir = None):
 #######################################
 
 
-def local_clustering(graph):
-    """ Get the local clustering coefficient for a given graph.
-    """
-    
-    # Check if graph is a string (filename)
-    if isinstance(graph, str):
-        # Read graph object
-        g = load_graph(graph)
-    
-    # Get local clustering coefficient.
-    print "Here we get the local clustering"
-
-
 
 
 

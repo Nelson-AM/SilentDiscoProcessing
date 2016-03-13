@@ -30,37 +30,16 @@ centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
 timestamp = 150354
 threshold = 50
 
-# create_graphs_color (note: plural) builds one graph for each timepoint in the input file.  The color argument is optional, if no color is given then it will automatically create graphs for red, green and blue.
+# create_graphs_color (note: plural) builds one graph for each timepoint in the input file.  The color argument is optional, if no color is given then it will automatically create graphs for red, green and blue.  The graphs are saved as xml.gz files, images of the graphs are saved as well, with the vertices in their approximated real-world location.
 create_graphs_color(centresfile, threshold, "red", graphdir = None)
 create_graphs_color(centresfile, threshold, "green", graphdir = None)
 
+# In case of the shared CSV file, looping over all timestamp:
+frame_start = 0
+frame_step = 100
+frame_total = 369400
 
-
-
-"""
-for timestamp in timestamps:
-    for threshold in thresholds:
-        
-        create_graph_color (note: singular) builds a graph for the specified timepoint in the 
-        input file.
-        graph = create_graph_color(centresfile, timepoint, threshold, "red")
-"""
-
-
-
-"""
 for i in range(frame_start, frame_total, frame_step):
-    current_frame = extract_frame_frame(videofile, i)
-    
-    save_frame_frame(videofile, i)
-    
-    centres_b, centres_g, centres_r = find_centres_multi(current_frame, mask)
-    
-    # print centres_b
-    
-    # Leave blue in for playing around, remove it for the big - proper - file.
-    save_centres(centresfile, i, 'blue', centres_b)
-    save_centres(centresfile, i, 'green', centres_g)
-    save_centres(centresfile, i, 'red', centres_r)
-"""
+    create_graphs_color(centresfile, threshold, "red", graphdir = None)
+    create_graphs_color(centresfile, threshold, "green", graphdir = None)
 
