@@ -160,23 +160,6 @@ def create_edges(g, vlist, v_x, v_y, threshold):
                 source = vlist[i]
                 target = vlist[j]
                 e = g.add_edge(source, target)
-                
-                # e_length[e] = distance
-    
-    # distlist_norm = []
-    # weights = []
-    
-    # Need to loop over edges, and then add the weight based on normalised distance.
-    # for i in range(len(distancelist)):
-    #    
-    #    distlist_norm.append((distancelist[i] - min(distancelist)) / 
-    #                         (max(distancelist) - min(distancelist)))
-    #    
-    #    # Simple linear weight, inverse of normalised distance.
-    #    weights.append(1 - distlist_norm[i])
-    
-    # print "Weights for current graph are: "
-    # print weights
 
 
 def create_base_graph(dataframe, name, threshold, graphdir = None):
@@ -202,7 +185,7 @@ def create_base_graph(dataframe, name, threshold, graphdir = None):
         save_graph_img(g, name, threshold)
 
 
-def create_graph(filename, timestamp, threshold):
+def create_graph(filename, timestamp, threshold, graphdir = None):
     """ Takes data from CSV file and creates graph for given timestamp.
     
     Single-use case of greate_graphs.
@@ -212,20 +195,26 @@ def create_graph(filename, timestamp, threshold):
     
     timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
     
-    g = create_base_graph(timedf, timestamp, threshold)
+    if graphdir:
+        g = create_base_graph(timedf, timestamp, threshold, graphdir)
+    else:
+        g = create_base_graph(timedf, timestamp, threshold)
 
 
-def create_graphs(filename, threshold):
+def create_graphs(filename, threshold, graphdir = None):
     """ Creates graph from data in CSV file for each timepoint.
     """
     
     centresdf = read_csv(filename)
     
     for time, group in centresdf.groupby("Timestamp"):
-        create_base_graph(group, time, threshold)
+        if graphdir:
+            create_base_graph(group, time, threshold, graphdir)
+        else:
+            create_base_graph(group, time, threshold, graphdir)
 
 
-def create_graph_color(filename, timestamp, threshold, color):
+def create_graph_color(filename, timestamp, threshold, color, graphdir = None):
     """ Creates graph from data in CSV file for specified timepoint and color.
     """
     
@@ -234,10 +223,13 @@ def create_graph_color(filename, timestamp, threshold, color):
     timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
     timecolordf = timedf.loc[timedf["Color"] == str(color)]
     
-    create_base_graph(timecolordf, timestamp, threshold)
+    if graphdir:
+        create_base_graph(timecolordf, timestamp, threshold, graphdir)
+    else:
+        create_base_graph(timecolordf, timestamp, threshold)
 
 
-def create_graphs_color(filename, threshold, graphdir = None, color = None):
+def create_graphs_color(filename, threshold, color = None, graphdir = None):
     """ Creates graph from data in CSV file for each or a specific color at each timepoint.
     """
     
@@ -302,11 +294,6 @@ def local_clustering(graph):
 
 def create_graph_color(filename, timestamp, threshold, color = None):
     """ Creates graph from data in CSV file for each or a specific color at each timepoint.
-    
-    NECESSARY?
-    This function might not be necessary given the _rg version.  On the other hand this function 
-    allows testing with any stray blue nodes that might still be around, to check the measures that
-    we get from the modelling.  Blue should do something entirely different from red and green.
     """
     
     # Checks if a color is entered as a parameter.
@@ -340,3 +327,23 @@ def create_graphs_rg(filename, threshold, pgreen, pred):
         # Error / warning that red + green has to add up to 100.
         print "pgreen and pred should add up to 100."
         sys.exit(-1)
+
+
+def add_weights():
+    print "This should become part of the create_edges function"
+                # e_length[e] = distance
+    
+    # distlist_norm = []
+    # weights = []
+    
+    # Need to loop over edges, and then add the weight based on normalised distance.
+    # for i in range(len(distancelist)):
+    #    
+    #    distlist_norm.append((distancelist[i] - min(distancelist)) / 
+    #                         (max(distancelist) - min(distancelist)))
+    #    
+    #    # Simple linear weight, inverse of normalised distance.
+    #    weights.append(1 - distlist_norm[i])
+    
+    # print "Weights for current graph are: "
+    # print weights
