@@ -22,7 +22,7 @@ GraphModeling is imported to process CSV files containing information on the cen
 #####        GRAPH MODELING        #####
 ########################################
 
-# Specify the file locations. Home directory can be referred to using the tilde (~).
+# Specify the file locations.  Home directory can be referred to using the tilde (~).
 videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
 centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
 
@@ -34,7 +34,10 @@ threshold = 50
 create_graphs_color(centresfile, threshold, "red", graphdir = None)
 create_graphs_color(centresfile, threshold, "green", graphdir = None)
 
-# In case of the shared CSV file, looping over all timestamp:
+# create_graphs does the same, but takes every point in the image regardless of color.
+create_graphs(centresfile, threshold, graphdir = None)
+
+# In case of the shared CSV file, looping over all timestamp.  This also works for create_graphs.
 frame_start = 0
 frame_step = 100
 frame_total = 369400
