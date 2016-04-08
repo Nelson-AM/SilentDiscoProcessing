@@ -34,7 +34,7 @@ threshold = 50
 create_graphs_color(centresfile, threshold, "red", graphdir = None)
 create_graphs_color(centresfile, threshold, "green", graphdir = None)
 
-# In case of the shared CSV file, looping over all timestamp:
+# In case of the shared CSV file, looping over all timestamps:
 frame_start = 0
 frame_step = 100
 frame_total = 369400
