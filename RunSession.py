@@ -27,6 +27,7 @@ GraphModeling is imported to process CSV files containing information on the cen
 #####        GRAPH MODELING        #####
 ########################################
 
+
 # Specify the file locations. Home directory can be referred to using the tilde (~).
 # videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
 # centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
@@ -45,6 +46,7 @@ thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400] # , 500, 600, 700, 800,
 # create_graph_color(centresfile, timestamp, threshold, "red", graphdir = None)
 # create_graph_color(centresfile, timestamp, threshold, "green", graphdir = None)
 
+
 # In case of the shared CSV file, looping over all timestamps:
 frame_start = 50000
 frame_step = 50
@@ -52,6 +54,15 @@ frame_stop = 75000
 # frame_stop = 10000
 frame_total = frame_stop + 1
 # frame_stop = 369490
+
+# create_graphs does the same, but takes every point in the image regardless of color.
+create_graphs(centresfile, threshold, graphdir = None)
+
+# In case of the shared CSV file, looping over all timestamp.  This also works for create_graphs.
+frame_start = 0
+frame_step = 100
+frame_total = 369400
+
 
 def errorfill(x, y, yerr, color = None, alpha_fill = 0.3, ax = None):
     ax = ax if ax is not None else plt.gca()
