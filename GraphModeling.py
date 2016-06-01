@@ -40,12 +40,13 @@ def save_graph(g, name, threshold, graphdir = None):
     if graphdir:
         graphdir = os.path.expanduser(graphdir)
         # Build filename based on graphdir, name and threshold.
-        graphnamegz = graphdir + "/" + name + "_" + str(threshold) + ".xml.gz"
+        graphnamegz = graphdir + "/graph_" + str(name) + "_" + str(threshold) + ".xml.gz"
         
     else:
         # Build filename based on name and threshold, saves to current working directory.
-        graphnamegz = "graph_" + name + "_" + str(threshold) + ".xml.gz"
+        graphnamegz = "graph_" + str(name) + "_" + str(threshold) + ".xml.gz"
     
+    print graphnamegz
     # Now we can save it.
     g.save(graphnamegz)
 
@@ -65,17 +66,20 @@ def save_graph_img(g, name, threshold, graphdir = None):
     
     if graphdir:
         graphdir = os.path.expanduser(graphdir)
-        graphnameim = graphdir + "/" + name + "_" + str(threshold) + ".png"
-        print graphnameim
+        print graphdir
+        graphnameim = graphdir + "/graph_" + str(name) + "_" + str(threshold) + ".png"
         
     else:
-        graphnameim = "graph_" + name + "_" + str(threshold) + ".png"
-        print graphnameim
+        graphnameim = "graph_" + str(name) + "_" + str(threshold) + ".png"
     
+    print graphnameim
     pos = g.vertex_properties["pos"]
+    color = g.vertex_properties["color"]
     
-    graph_draw(g, pos, output_size = (1000, 1000), 
-               vertex_color = [1, 1, 1, 0],
+    graph_draw(g, pos, output_size = (1920, 1080), 
+               fit_view = False,
+               vertex_color = color,
+               vertex_fill_color = color,
                vertex_size = 5, edge_pen_width = 1.2, 
                vcmap = plt.cm.gist_heat_r, output = graphnameim)
 
@@ -95,11 +99,11 @@ def image_graph(filename, name, outdir):
     color = g.vertex_properties["color"]
     pos = g.vertex_properties["pos"]
     
-    
-    graph_draw(g, pos, output_size = (1000, 1000), 
-               vertex_color = [1, 1, 1, 0],
-               vertex_size = 5, edge_pen_width = 1.2, 
-               vcmap = plt.cm.gist_heat_r, output = graphnameim)
+    graph_draw(g, pos, output_size = (1920, 1080),
+               vertex_color = color,
+               vertex_fill_color = color,
+               vertex_size = 10, edge_pen_width = 1.2,
+               output = graphnameim)
 
 
 
@@ -174,15 +178,16 @@ def create_base_graph(dataframe, name, threshold, graphdir = None):
     
     vlist, v_x, v_y = create_vertices(g, clist, xlist, ylist)
     create_edges(g, vlist, v_x, v_y, threshold)
-        
-    # Make these functions external?
+    
     if graphdir:
-        save_graph(g, name, threshold, graphdir)
         save_graph_img(g, name, threshold, graphdir)
+        save_graph(g, name, threshold, graphdir)
         
     else:
         save_graph(g, name, threshold)          # v_color, v_x, v_y, pos, e_weight
         save_graph_img(g, name, threshold)
+    
+    return g
 
 
 def create_graph(filename, timestamp, threshold, graphdir = None):
@@ -221,12 +226,15 @@ def create_graph_color(filename, timestamp, threshold, color, graphdir = None):
     centresdf = read_csv(filename)
     
     timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
-    timecolordf = timedf.loc[timedf["Color"] == str(color)]
+    timecolordf = timedf.loc[timedf["Color"] == color]
     
+    graphname = color + "_" + str(timestamp)
     if graphdir:
-        create_base_graph(timecolordf, timestamp, threshold, graphdir)
+        g = create_base_graph(timecolordf, graphname, threshold, graphdir)
     else:
-        create_base_graph(timecolordf, timestamp, threshold)
+        g = create_base_graph(timecolordf, graphname, threshold)
+    
+    return g
 
 
 def create_graphs_color(filename, threshold, color = None, graphdir = None):
@@ -271,6 +279,33 @@ def create_graphs_color(filename, threshold, color = None, graphdir = None):
 #######################################
 
 
+def get_number_vertices(graph):
+    """
+    """
+    
+    v = graph.add_vertex()
+    vindex = graph.vertex_index[v]
+    graph.remove_vertex(v)
+    return vindex
+
+
+def moving_average(dataframe, window):
+    """ Takes a dataframe and adds smoothing. Kernelsize
+    """
+    print "moving average (not weighted)"
+    
+    # take time t (starting at modulo kernelsize, 2)
+    # take times -1, ..., -(1/2) kernelsize
+    # take times +1, ..., +(1/2) kernelsize
+    # sum those and divide by kernelsize
+    # return value for time t.
+    # go to next value
+    
+    pd.rolling_mean(dataframe, window)
+            
+        
+
+
 
 
 
@@ -279,7 +314,11 @@ def create_graphs_color(filename, threshold, color = None, graphdir = None):
 ########################################
 
 
-def create_graph_color(filename, timestamp, threshold, color = None):
+def global_clustering(graph):
+    print "This function might do something with global clustering"
+
+
+def create_graph_color_test(filename, timestamp, threshold, color = None):
     """ Creates graph from data in CSV file for each or a specific color at each timepoint.
     """
     

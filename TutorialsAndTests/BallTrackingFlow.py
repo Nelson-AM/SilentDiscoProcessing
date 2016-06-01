@@ -12,22 +12,21 @@ import cv2
 # Construct the argument parser and parse the arguments (command line tools).
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", help = "path to the (optional) video file")
-ap.add_argument("-m", "--mask", help = "path to the (optional) mask file")
 ap.add_argument("-b", "--buffer", type = int, default = 64, help = "max buffer size")
 args = vars(ap.parse_args())
+
+
+# Create some random colors.
+color = np.random.randint(0, 255, (100, 3))
 
 
 # Define the lower and upper boundaries of the "green" ball in the HSV color space, then initalize the list of tracked points.
 # NOTE: values detected using the range-detector script in the imutils package.  Function can get thresholds for both HSV and RGB color spaces.
 
-# (48, 26, 10)
-# (62, 255, 139)
-# greenLower = (50, 76, 38)
-# greenUpper = (58, 255, 172)
-
 # NOTE: lower and upper bounds for red, based on frame #6000:
 # redLower = (167, 0, 27)
 # redUpper = (190, 255, 255)
+
 # NOTE: lower and upper bounds for green, based on frame #6000:
 greenLower = (50, 76, 38)
 greenUpper = (58, 255, 172)
@@ -42,15 +41,59 @@ if not args.get("video", False):
 else:
     camera = cv2.VideoCapture(args["video"])
 
-if args.get("mask", True):
-    maskone = cv2.imread(args["mask"], cv2.CV_LOAD_IMAGE_GRAYSCALE)
-    # maskone = imutils.resize(maskone, width = 600)
+
+(old_grabbed, old_frame) = camera.read()
+old_gray = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
+
+
+# Parameters for Shitomasi corner detection.
+feature_params = dict(maxCorners = 100, qualityLevel = 0.3, minDistance = 7, blockSize = 7)
+p0 = cv2.goodFeaturesToTrack(old_gray, mask = None, **feature_params)
+
+# Create a mask image for drawing purposes.
+mask = np.zeros_like(old_frame)
 
 # Loop over video file/feed.
 while True:
     # Grab the current frame.
     (grabbed, frame) = camera.read()
-    # frame = imutils.resize(frame, width = 600)
+    frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    
+    # Calculate optical flow.
+    # Documentation:
+    # http://docs.opencv.org/2.4/modules/video/doc/motion_analysis_and_object_tracking.html
+    p1, st, err = cv2.calcOpticalFlowPyrLK(old_gray, frame_gray, p0) #, None, **lk_params)
+    
+    # Select good points.
+    good_new = p1[st == 1]
+    good_old = p0[st == 1]
+    
+    # draw the tracks
+    for i,(new,old) in enumerate(zip(good_new,good_old)):
+        
+        a, b = new.ravel()
+        c, d = old.ravel()
+        
+        cv2.line(mask, (a, b), (c, d), color[i].tolist(), 2)
+        cv2.circle(frame, (a, b), 5, color[i].tolist(), -1)
+    
+    img = cv2.add(frame, mask)
+    
+    img = imutils.resize(img, width = 900)
+    
+    cv2.imshow('frame', img)
+    key = cv2.waitKey(1) & 0xFF
+    
+    # If the 'q' key is pressed, stop the loop.
+    if key == ord("q"):
+        break
+    
+    # Now update the previous frame and previous points.
+    old_gray = frame_gray.copy()
+    p0 = good_new.reshape(-1, 1, 2)
+
+"""
+
     
     # If we are viewing a video and we did not grab a frame, then we have reached the end of the video.
     if args.get("video") and not grabbed:
@@ -59,19 +102,20 @@ while True:
     
     # Resize the frame, blur it, and convert to HSV color space.
     # NOTE: resizing the frame leads to faster image processing because there is less frame data to process, however in the silent disco case this might lead to data loss.  Also we don't care /that/ much about speed of processing at this time.
+    frame = imutils.resize(frame, width = 600)
     # blurred = cv2.GaussianBlur(frame, (11, 11), 0)
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     
-    hsv = cv2.bitwise_and(hsv, hsv, mask = maskone)
     
     # Construct a mask for the color "green", then perform a series of dilations and erosions to remove any small blobs left in the mask.
     mask = cv2.inRange(hsv, greenLower, greenUpper)
-    # mask = cv2.inRange(hsv, redLower, redUpper)
     mask = cv2.dilate(mask, None, iterations = 2)
     mask = cv2.erode(mask, None, iterations = 2)
-
+    # mask = cv2.inRange(hsv, redLower, redUpper)
     # mask = cv2.dilate(mask, None, iterations = 2)
     # mask = cv2.erode(mask, None, iterations = 2)
+    
+    cv2.imshow("mask", mask)
     
     # Find contours in the mask and initialize the current (x, y) center of the ball.
     # NOTE: the slice of [-2] is necessary to make findContours compatible with OpenCV 3.
@@ -140,9 +184,8 @@ while True:
     # thickness = int(np.sqrt(args["buffer"] / float(i + 1)) * 2.5)
     # cv2.line(frame, pts[i - 1], pts[i], (0, 0, 255), thickness)
     
-    # Show the frame and mask to our screen.
-    frame = imutils.resize(frame, width = 600)
     
+    # Show the frame to our screen.
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1) & 0xFF
     
@@ -150,6 +193,7 @@ while True:
     # If the 'q' key is pressed, stop the loop.
     if key == ord("q"):
         break
+"""
 
 
 # Cleanup the camera and close any open windows.
