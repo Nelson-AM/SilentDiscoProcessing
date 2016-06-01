@@ -2,6 +2,8 @@
 
 *.py[cod]
 
+.fuse_hidden*
+
 # C extensions
 *.so
 
