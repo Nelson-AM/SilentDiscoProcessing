@@ -64,6 +64,8 @@ def save_graph_img(g, name, threshold, graphdir = None):
     - Fill in vertices as the color that they are (r/g/b).
     """
     
+    if isinstance(g, basestring):
+        g = load_graph(g, directed = False)
     if graphdir:
         graphdir = os.path.expanduser(graphdir)
         print graphdir
@@ -84,7 +86,7 @@ def save_graph_img(g, name, threshold, graphdir = None):
                vcmap = plt.cm.gist_heat_r, output = graphnameim)
 
 
-def image_graph(filename, name, outdir):
+def image_graph(filename, name, threshold, outdir):
     """ Takes a saved graph and saves it as an image.
     """
     

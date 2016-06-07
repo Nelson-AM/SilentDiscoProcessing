@@ -7,8 +7,9 @@ from graph_tool.all import *
 import cv2
 import glob
 
-# import numpy as np
-# import matplotlib.pyplot as plt
+
+import numpy as np
+import matplotlib.pyplot as plt
 
 # from mpltools import special
 
@@ -43,28 +44,34 @@ def errorfill(x, y, yerr, color = None, alpha_fill = 0.3, ax = None):
     ax.fill_between(x, ymax, ymin, color=color, alpha=alpha_fill)
 
 # Directory for the xml files + threshold values (for sub-directories).
-xmldir = "/Volumes/SAMSUNG/ESCOM/Graphs/20160510NewMask/"
+# xmldir = "/Volumes/SAMSUNG/ESCOM/Graphs/20160510NewMask/"
+xmldir = "/Volumes/SAMSUNG/ESCOM/graphs/20160602/"
 thresholds = [50, 100, 150, 200, 250, 300, 350, 400] # , 500, 600, 700, 800, 900]
 # thresholds = [150, 200, 250, 300, 350, 400] # , 500, 600, 700, 800, 900]
 
 # In case of the shared CSV file, looping over all timestamps:
-frame_start = 80000
-frame_step = 100
-frame_stop = 90000
+frame_start = 3000
+frame_step = 10
+frame_stop = 4000
 frame_total = frame_stop + 1
 
 for threshold in thresholds:
     
-    greendf = pd.DataFrame(columns = ["frameno", "vertexaverage", "vertexsd",
-                                      "assort", "assortvar"])
-    reddf = pd.DataFrame(columns = ["frameno", "vertexaverage", "vertexsd",
-                                    "assort", "assortvar"])
-    
-    for file in glob.glob(xmldir + str(threshold) + "/*.xml.gz"):
+    greendf = pd.DataFrame(columns = ["frameno", "localcluster", "localsd",
+                                      "globalcluster", "globalsd", 
+                                      "vertexaverage", "vertexsd"])
+    reddf = pd.DataFrame(columns = ["frameno", "localcluster", "localsd",
+                                    "globalcluster", "globalsd", 
+                                    "vertexaverage", "vertexsd"])
+     
+    for file in sorted(glob.glob(xmldir + str(threshold) + "/*.xml.gz")):
         
         print file
         i = file.split("_")
-        print i[2]
+        idot = i[2].split(".")
+        print i
+        print idot
+        # print i
         
         if float(i[2]) in range(frame_start, frame_total, frame_step):
             print "Succes!"
@@ -143,7 +150,7 @@ for threshold in thresholds:
     # Moving average globalcluster + SD
     # 
     
-    pltdir = "/Volumes/SAMSUNG/ESCOM/Plots/xmlplots/"
+    pltdir = "/Volumes/SAMSUNG/ESCOM/plots/20160603xmlplots/"
     if not os.path.isdir(pltdir):
         os.mkdir(pltdir)
     
@@ -153,6 +160,7 @@ for threshold in thresholds:
                     str(frame_start) + "_" + str(frame_stop) + ".png")
     vertavplotname = (pltdir + "vertav_" + str(threshold) + "_" + 
                      str(frame_start) + "_" + str(frame_stop) + ".png")
+    
     
     # Plot global clustering + shaded standard deviation.
     plt.plot(greendf.frameno, greendf.globalcluster, color = 'green')
@@ -168,7 +176,7 @@ for threshold in thresholds:
     axes = plt.gca()
     axes.set_ylim([0, 1.2])
     axes.set_xlim([frame_start, frame_total])
-        
+    
     plt.savefig(globalplotname)
     plt.clf()
     
@@ -184,7 +192,7 @@ for threshold in thresholds:
                      reddf.localcluster + reddf.localsd,
                      color = 'red', alpha = 0.25)
     axes = plt.gca()
-    axes.set_ylim([0, 1])
+    axes.set_ylim([0, 1.2])
     axes.set_xlim([frame_start, frame_total])
     
     plt.savefig(localplotname)
@@ -202,8 +210,10 @@ for threshold in thresholds:
                      reddf.vertexaverage + reddf.vertexsd,
                      color = 'red', alpha = 0.25)
     axes = plt.gca()
-    axes.set_ylim([0, 14])
+    axes.set_ylim([0, 20])
     axes.set_xlim([frame_start, frame_total])
     plt.savefig(vertavplotname)
     
     plt.clf()
+    
+    

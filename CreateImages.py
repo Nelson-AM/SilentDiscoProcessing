@@ -5,6 +5,7 @@ from ProcessVideo import *
 from GraphModeling import *
 from graph_tool.all import *
 import cv2
+import glob
 
 from matplotlib import pyplot as plt
 import numpy as np
@@ -28,6 +29,28 @@ GraphModeling is imported to process CSV files containing information on the cen
 ########################################
 
 
+graphdir = "/Volumes/SAMSUNG/ESCOM/graphs/20160602/"
+graphlist = os.listdir(graphdir)
+
+for threshold in thresholds:
+    
+    greendf = pd.DataFrame(columns = ["frameno", "localcluster", "localsd",
+                                      "globalcluster", "globalsd", 
+                                      "vertexaverage", "vertexsd"])
+    reddf = pd.DataFrame(columns = ["frameno", "localcluster", "localsd",
+                                    "globalcluster", "globalsd", 
+                                    "vertexaverage", "vertexsd"])
+     
+    for file in sorted(glob.glob(xmldir + str(threshold) + "/*.xml.gz")):
+i = 0
+print graphlist[100]
+graph = graphdir + graphlist[100]
+
+image_graph(graph, "testgraph", 50, "~/Documents/")
+#for graph in graphlist:
+#    print graph
+
+"""
 # Specify the file locations. Home directory can be referred to using the tilde (~).
 # videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
 # centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
@@ -48,15 +71,15 @@ thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400] # , 500, 600, 700, 800,
 
 
 # In case of the shared CSV file, looping over all timestamps:
-frame_start = 10
-frame_step = 10
-frame_stop = 1000
+frame_start = 50000
+frame_step = 50
+frame_stop = 75000
 # frame_stop = 10000
 frame_total = frame_stop + 1
 # frame_stop = 369490
 
 # create_graphs does the same, but takes every point in the image regardless of color.
-# create_graphs(centresfile, threshold, graphdir = None)
+create_graphs(centresfile, threshold, graphdir = None)
 
 # In case of the shared CSV file, looping over all timestamp.  This also works for create_graphs.
 frame_start = 0
@@ -88,11 +111,12 @@ for threshold in thresholdrange:
         print i
         
         # Get graph for current frame and threshold.
-        # greeng = create_graph_color(centresfile, i, threshold, 
-        #                            "green", "/Volumes/SAMSUNG/ESCOM/Graphs")
-        # redg = create_graph_color(centresfile, i, threshold, 
-        #                          "red", "/Volumes/SAMSUNG/ESCOM/Graphs")
+        greeng = create_graph_color(centresfile, i, threshold, 
+                                    "green", "/Volumes/SAMSUNG/ESCOM/Graphs")
+        redg = create_graph_color(centresfile, i, threshold, 
+                                  "red", "/Volumes/SAMSUNG/ESCOM/Graphs")
         
+
         # Test if number of vertices is greater than zero.  If n_vertices is greater than zero, do the following, if not, make the entry a NaN?  Check how matplotlib deals with NaNs.
         if get_number_vertices(greeng) is not 0:
             
@@ -210,3 +234,4 @@ for threshold in thresholdrange:
     plt.savefig(vertavplotname)
     
     plt.clf()
+"""
