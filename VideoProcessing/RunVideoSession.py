@@ -1,15 +1,20 @@
+import argparse
 
 from ProcessVideo import *
 from ProcessImage import *
 
-# vidin = "/Volumes/SAMSUNG/MOSI/video/split.mov"
+# Construct the argument parse and parse the arguments.
+ap = argparse.ArgumentParser()
+ap.add_argument("-v", "--video", help = "path to the video file")
+ap.add_argument("-m", "--mask", help = "path to the mask file")
+args = vars(ap.parse_args())
 
-# TODO: CREATE MASK
-# mask = "/Users/Nelson/Desktop/ILLC_PhD_Presentation/TX_MASK_detailed_2.png"
+vidin = args["video"]
+mask = args["mask"]
 
+# TODO: softcode frame-total.
 
 time = 1
-
 frame_start = 1
 frame_total = 100
 frame_step = 1
