@@ -31,14 +31,14 @@ GraphModeling is imported to process CSV files containing information on the cen
 # videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
 # centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
 
-centresfile = "/Volumes/SAMSUNG/ESCOM/allframes.csv"
+centresfile = "/Volumes/SAMSUNG/ESCOM/csv/allframes.csv"
 # centresfile = "/Volumes/SAMSUNG/ESCOM/centresperframe_masked.csv"
 
 # Using a single threshold and single timepoint.  These can be looped over if necessary.
 # timestamp = 150354
 
-thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400] # , 500, 600, 700, 800, 900]
-# thresholdrange = [400]
+# thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400] # , 500, 600, 700, 800, 900]
+thresholdrange = [150]
 # threshold = 50
 
 # create_graphs_color (note: plural) builds one graph for each timepoint in the input file.  The color argument is optional, if no color is given then it will automatically create graphs for red, green and blue.  The graphs are saved as xml.gz files, images of the graphs are saved as well, with the vertices in their approximated real-world location.
@@ -46,9 +46,9 @@ thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400] # , 500, 600, 700, 800,
 # create_graph_color(centresfile, timestamp, threshold, "green", graphdir = None)
 
 # In case of the shared CSV file, looping over all timestamps:
-frame_start = 80000
-frame_step = 50
-frame_stop = 85000
+frame_start = 76710
+frame_step = 10
+frame_stop = 76800
 # frame_stop = 10000
 frame_total = frame_stop + 1
 # frame_stop = 369490
@@ -65,6 +65,10 @@ def errorfill(x, y, yerr, color = None, alpha_fill = 0.3, ax = None):
     ax.plot(x, y, color = color)
     ax.fill_between(x, ymax, ymin, color = color, alpha = alpha_fill)
 
+savedir = "/Volumes/SAMSUNG/fixedgraphs"
+
+if not os.path.isdir(savedir):
+    os.mkdir(savedir)
 
 for threshold in thresholdrange:
     
@@ -75,7 +79,9 @@ for threshold in thresholdrange:
         print i
         
         # Get graph for current frame and threshold.
-        g = create_graph(centresfile, i, threshold, "/Volumes/SAMSUNG/ESCOM/Graphs")
+        g = create_graph(centresfile, i, threshold, savedir)
+    
+    """
         
         # Test if number of vertices is greater than zero.  If n_vertices is greater than zero, do the following, if not, make the entry a NaN?  Check how matplotlib deals with NaNs.
         if get_number_vertices(g) is not 0:
@@ -153,4 +159,4 @@ for threshold in thresholdrange:
     plt.savefig(vertavplotname)
     
     plt.clf()
-    
+    """
