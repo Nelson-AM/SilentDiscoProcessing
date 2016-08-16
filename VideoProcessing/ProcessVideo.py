@@ -24,7 +24,7 @@ def get_number_frames(vidin):
     """
     
     vidcap = read_video(vidin)
-    return int(cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT))
+    return int(vidcap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT))
 
 def extract_frame_time(vidin, time):
     """ Time in miliseconds
