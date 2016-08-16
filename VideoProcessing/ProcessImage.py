@@ -35,58 +35,34 @@ def read_image(imin, colorspace = None):
         return cv2.imread(imin, cv2.IMREAD_UNCHANGED)
 
 
-def save_image(imin, imname, image, imdir = None):
-    """ Save image to same directory as original with string appended to end of name.
+def save_image(image, imname, imdir = None):
+    """ Save image to directory
     
-    imin
-        string of original image path
-    imname
-        name of image to save as (appends to file name)
     image
-        image to save to file
+        image to save (array of values?)
+    imname
+        string: name of image to append to imdir, if it contains no extension default to png
     imdir
-        savepath if applicable (relative to imin path)
-    
-    Arguments imin and imdir are somewhat redundant.
-    A more logical
+        full or relative path to folder, if not save_image defaults to current working directory
     """
     
-    if isinstance(imin, str):
-        imin = os.path.expanduser(imin)
-        # print imin
+    # Test if imname contains an extension, if not: default to png.
+    if len(imname.rsplit('.')) == 1:
+        imname = imname + ".png"
     
     if imdir:
-        splitname = imin.rsplit('.', 1)[0]
-        imdir = splitname.rsplit('/', 1)[0] + '/' + imdir
-        splitname = splitname.rsplit('/', 1)[1]
-        splitext = imin.rsplit('.', 1)[1]
-        if splitext == "mov" or splitext == "mp4":
-            splitext = "png"
-        
-        print imdir + '/' + splitname + '_' + imname + '.' + splitext
-        cv2.imwrite(imdir + '/' + splitname + '_' + imname + '.' + splitext, image)
-        
+        imname = imdir + imname
+        cv2.imwrite(imname, image)
     else:
-        splitname = imin.rsplit('.', 1)[0]
-        splitext = imin.rsplit('.', 1)[1]
-        print splitext
-        if splitext == "mov" or splitext == "mp4":
-            splitext = "png"
-        
-        print splitname + '_' + imname + '.' + splitext
-        cv2.imwrite(splitname + '_' + imname + '.' + splitext, image)
-        
-        
-def save_images(imin, imnames, images, imdir = None):
-    """ Calls save_image to easily save multiple images (names and files in list forms).
-    """
-    
+        cv2.imwrite(imname, image)
+
+
+def save_images(images, imnames, imdir = None):
     if imdir:
         for imname, image in zip(imnames, images):
-            save_image(imin, imname, image, imdir)
+            save_image(image, imname, imdir)
     else:
         for imname, image in zip(imnames, images):
-            save_image(imin, imname, image)
 
 
 def show_image(imin):
