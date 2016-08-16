@@ -38,11 +38,22 @@ def read_image(imin, colorspace = None):
 def save_image(imin, imname, image, imdir = None):
     """ Save image to same directory as original with string appended to end of name.
     
-    imdir is relative to the imin path.
+    imin
+        string of original image path
+    imname
+        name of image to save as (appends to file name)
+    image
+        image to save to file
+    imdir
+        savepath if applicable (relative to imin path)
+    
+    Arguments imin and imdir are somewhat redundant.
+    A more logical
     """
     
-    imin = os.path.expanduser(imin)
-    # print imin
+    if isinstance(imin, str):
+        imin = os.path.expanduser(imin)
+        # print imin
     
     if imdir:
         splitname = imin.rsplit('.', 1)[0]
@@ -194,13 +205,14 @@ def find_contours_single(imin, maskin = None):
     return contours, contoursim
 
 
-def find_contours_multi(imin, maskin = None):
+def find_contours_multi(imin, maskin = None, savedir = None):
     """ 
     - Call otsu_multi with gaussian filtering, returns colour layers.
     - Find contours for each layer.
     """
     
     # TODO: allow function call with input image, not text string.
+    #       save_image assumes imin is a string.
     # TODO: how to get save-directory if input image.
     
     b, g, r = otsu_threshold_multi(imin, "gauss")
@@ -223,7 +235,10 @@ def find_contours_multi(imin, maskin = None):
     cv2.drawContours(contoursim, contours_r, -1, (0, 0, 255), 2)
     
     show_image(contoursim)
-    # save_image(imin, "contours", contoursim)
+    if savedir:
+        save_image(imin, "contours", contoursim, savedir)
+    else:
+        save_image(imin, "contours", contoursim)
     
     return contours_b, contours_g, contours_r
 

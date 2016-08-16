@@ -19,7 +19,7 @@ args = vars(ap.parse_args())
 
 vidin = args["video"]
 mask = args["mask"]
-
+print mask
 # TODO: check indexing for frame start, first frame or not?
 frame_start = 0
 frame_step = args["step"]
@@ -33,6 +33,9 @@ frame_end = frame_total + 1
 # print "Frame step = " + str(frame_step)
 # print "Frame total = " + str(frame_total)
 
+# TODO: get savedir from vidin string
+savedir = str(vidin.rsplit("/", 1)[0])
+
 for i in range(frame_start, frame_end, frame_step):
     
     
@@ -41,11 +44,10 @@ for i in range(frame_start, frame_end, frame_step):
     # TODO: save contours to csv file (same folder as video file).
     frame = extract_frame_frame(vidin, i)
     
-    if mask:
-        find_contours_multi(frame, mask)
+    if not mask:
+        find_contours_multi(frame, mask, savedir)
     else:
-        find_contours_multi(frame)
-    
+        find_contours_multi(frame, savedir = savedir)
 
 # Process video frames within the range [frame_start, frame_total] with step size frame_step.
 # Does this need to be a for loop or can a while loop be used as well?
