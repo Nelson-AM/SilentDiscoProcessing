@@ -200,6 +200,9 @@ def find_contours_multi(imin, maskin = None):
     - Find contours for each layer.
     """
     
+    # TODO: allow function call with input image, not text string.
+    # TODO: how to get save-directory if input image.
+    
     b, g, r = otsu_threshold_multi(imin, "gauss")
     contoursim = read_image(imin)
         
