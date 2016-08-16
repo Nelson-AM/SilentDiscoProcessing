@@ -29,8 +29,14 @@ GraphModeling is imported to process CSV files containing information on the cen
 ########################################
 
 
-graphdir = "/Volumes/SAMSUNG/ESCOM/graphs/20160602/"
+graphdir = "/Volumes/SAMSUNG/fullgraphs/"
 graphlist = os.listdir(graphdir)
+thresholds = [150]
+
+frame_start = 134850
+frame_step = 10
+frame_stop = 137100
+frame_total = frame_stop + 1
 
 for threshold in thresholds:
     
@@ -40,15 +46,19 @@ for threshold in thresholds:
     reddf = pd.DataFrame(columns = ["frameno", "localcluster", "localsd",
                                     "globalcluster", "globalsd", 
                                     "vertexaverage", "vertexsd"])
-     
-    for file in sorted(glob.glob(xmldir + str(threshold) + "/*.xml.gz")):
-i = 0
-print graphlist[100]
-graph = graphdir + graphlist[100]
-
-image_graph(graph, "testgraph", 50, "~/Documents/")
-#for graph in graphlist:
-#    print graph
+    
+    for file in sorted(glob.glob(graphdir + str(threshold) + "/*.xml.gz")):
+        
+        # print file
+        i = file.split("_")
+        idot = i[1].split(".")
+        # print i[1]
+        # print i
+        
+        if float(i[1]) in range(frame_start, frame_total, frame_step):
+            print file
+            
+            image_graph(file, "/Volumes/SAMSUNG/PNG/")
 
 """
 # Specify the file locations. Home directory can be referred to using the tilde (~).

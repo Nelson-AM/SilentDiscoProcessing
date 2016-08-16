@@ -1,6 +1,24 @@
 
-# for i in range(frame_start, frame_total, frame_step):
-#     process_video_frame('/Volumes/SAMSUNG/TX-BACK UP_21.mov', i, 'Frames')
+from ProcessVideo import *
+from ProcessImage import *
+
+# vidin = "/Volumes/SAMSUNG/MOSI/video/split.mov"
+
+# TODO: CREATE MASK
+# mask = "/Users/Nelson/Desktop/ILLC_PhD_Presentation/TX_MASK_detailed_2.png"
+
+
+time = 1
+
+frame_start = 1
+frame_total = 100
+frame_step = 1
+
+# save_frame_frame(vidin, time)
+
+for i in range(frame_start, frame_total, frame_step):
+    frame = extract_frame_time(vidin, i)
+    find_contours_multi(frame, mask)
     
 # b, g, r = find_contours_multi(frame_2500, mask)
 

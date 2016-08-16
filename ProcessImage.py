@@ -1,6 +1,4 @@
-import os
-import csv
-import cv2
+import os, csv, cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -51,19 +49,20 @@ def save_image(imin, imname, image, imdir = None):
         imdir = splitname.rsplit('/', 1)[0] + '/' + imdir
         splitname = splitname.rsplit('/', 1)[1]
         splitext = imin.rsplit('.', 1)[1]
-        if splitext == "mov":
+        if splitext == "mov" or splitext == "mp4":
             splitext = "png"
         
-        # print imdir + '/' + splitname + '_' + imname + '.' + splitext
+        print imdir + '/' + splitname + '_' + imname + '.' + splitext
         cv2.imwrite(imdir + '/' + splitname + '_' + imname + '.' + splitext, image)
         
     else:
         splitname = imin.rsplit('.', 1)[0]
         splitext = imin.rsplit('.', 1)[1]
-        if splitext == "mov":
+        print splitext
+        if splitext == "mov" or splitext == "mp4":
             splitext = "png"
         
-        # print splitname + '_' + imname + '.' + splitext
+        print splitname + '_' + imname + '.' + splitext
         cv2.imwrite(splitname + '_' + imname + '.' + splitext, image)
         
         
@@ -221,7 +220,7 @@ def find_contours_multi(imin, maskin = None):
     cv2.drawContours(contoursim, contours_r, -1, (0, 0, 255), 2)
     
     show_image(contoursim)
-    save_image(imin, "contours", contoursim)
+    # save_image(imin, "contours", contoursim)
     
     return contours_b, contours_g, contours_r
 
@@ -273,7 +272,7 @@ def find_centres_multi(imin, maskin = None):
     
     show_image(centre_image)
     
-    save_image(imin, "centres", centre_image)
+    # save_image(imin, "centres", centre_image)
     
     return centres_b, centres_g, centres_r
 

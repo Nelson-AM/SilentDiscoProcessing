@@ -86,13 +86,29 @@ def save_graph_img(g, name, threshold, graphdir = None):
                vcmap = plt.cm.gist_heat_r, output = graphnameim)
 
 
-def image_graph(filename, name, threshold, outdir):
+def image_graph(filename, outdir = None):
     """ Takes a saved graph and saves it as an image.
     """
     
-    # Build name based on given name and threshold.
-    graphnameim = "../graph_" + name + "_" + str(threshold) + ".png"
-    print graphnameim
+    if outdir:
+        if not os.path.isdir(outdir):
+            os.mkdir(outdir)
+        
+        splitslash = filename.split("/")
+        filenameext = splitslash[-1]
+        splitdot = filenameext.split(".")
+        filenamebare = splitdot[0]
+        
+        graphnameim = outdir + filenamebare + ".png"
+        
+        print graphnameim
+        
+    else:
+        splitdot = filename.split(".")
+        filenamebare = splitdot[0]
+        graphnameim = filenamebare + ".png"
+        
+        print graphnameim
     
     g = load_graph(filename)
     
@@ -102,9 +118,11 @@ def image_graph(filename, name, threshold, outdir):
     pos = g.vertex_properties["pos"]
     
     graph_draw(g, pos, output_size = (1920, 1080),
+               fit_view = False,
                vertex_color = color,
                vertex_fill_color = color,
                vertex_size = 10, edge_pen_width = 1.2,
+               bg_color = [1, 1, 1, 1],
                output = graphnameim)
 
 

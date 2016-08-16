@@ -10,7 +10,6 @@ import cv2
 import csv
 import os
 
-
 def otsu_threshold(imin, gauss = None):
     """
     """
@@ -134,7 +133,7 @@ if args.get("mask", True):
     maskone = cv2.imread(args["mask"], cv2.CV_LOAD_IMAGE_GRAYSCALE)
     # maskone = imutils.resize(maskone, width = 600)
 
-filename = "/Volumes/SAMSUNG/ESCOM/allframes.csv"
+filename = "/Users/Nelson/Desktop/ILLC_PhD_Presentation/noblue.csv"
 
 # Loop over video file/feed.
 while True:
@@ -147,41 +146,38 @@ while True:
     if args.get("video") and not grabbed:
         break
     
-    if frameno % 10 == 0:
+    # Function call to get contours and centres per color.
+    b, g, r = cv2.split(frame)
     
-        # Function call to get contours and centres per color.
-        b, g, r = cv2.split(frame)
+    # b = cv2.dilate(b, None, iterations = 2)
+    # b = cv2.erode(b, None, iterations = 2)
+    g = cv2.dilate(g, None, iterations = 2)
+    g = cv2.erode(g, None, iterations = 2)
+    r = cv2.dilate(r, None, iterations = 2)
+    r = cv2.erode(r, None, iterations = 2)
     
-        b = cv2.dilate(b, None, iterations = 2)
-        b = cv2.erode(b, None, iterations = 2)
-        g = cv2.dilate(g, None, iterations = 2)
-        g = cv2.erode(g, None, iterations = 2)
-        r = cv2.dilate(r, None, iterations = 2)
-        r = cv2.erode(r, None, iterations = 2)
+    # Perform Otsu thresholding
+    # cb = find_centres_single(b, maskone)
+    cg = find_centres_single(g, maskone)
+    cr = find_centres_single(r, maskone)
     
-        # Perform Otsu thresholding
-        cb = find_centres_single(b, maskone)
-        cg = find_centres_single(g, maskone)
-        cr = find_centres_single(r, maskone)
+    # show_centres(frame, cb, 'blue')
+    show_centres(frame, cg, 'green')
+    show_centres(frame, cr, 'red')
     
-        show_centres(frame, cb, 'blue')
-        show_centres(frame, cg, 'green')
-        show_centres(frame, cr, 'red')
+    # Save the frame before resizing.
+    cv2.imwrite("/Users/Nelson/Desktop/ILLC_PhD_Presentation/sampleframes" + str(int(round(frameno))) + ".png", frame)
     
-        # Show the frame and mask to our screen.
-        frame = imutils.resize(frame, width = 600)
+    # Show the frame and mask to our screen.
+    frame = imutils.resize(frame, width = 600)
     
-        cv2.imshow("Frame", frame)
-        key = cv2.waitKey(1) & 0xFF
+    cv2.imshow("Frame", frame)
+    key = cv2.waitKey(1) & 0xFF
     
     
-        # If the 'q' key is pressed, stop the loop.
-        if key == ord("q"):
-            break
-    
-        # save_centres(filename, frameno, 'blue', cb)
-        # save_centres(filename, frameno, 'red', cr)
-        # save_centres(filename, frameno, 'green', cg)
+    # If the 'q' key is pressed, stop the loop.
+    if key == ord("q"):
+        break
 
 
 # Cleanup the camera and close any open windows.

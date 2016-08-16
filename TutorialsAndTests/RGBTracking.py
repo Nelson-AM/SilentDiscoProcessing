@@ -144,7 +144,7 @@ while True:
     frameno = camera.get(cv2.cv.CV_CAP_PROP_POS_FRAMES) 
     # If we are viewing a video and we did not grab a frame, then we have reached the end of the video.
     
-    if frameno > 187250:
+    if frameno > 1:
         
         if args.get("video") and not grabbed:
             break

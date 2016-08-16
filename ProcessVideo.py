@@ -20,7 +20,7 @@ def read_video(vidin):
 
 
 def extract_frame_time(vidin, time):
-    """
+    """ Time in miliseconds
     """
     
     vidcap = read_video(vidin)
