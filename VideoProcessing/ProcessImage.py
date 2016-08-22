@@ -2,7 +2,7 @@ import os, csv, cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-
+# TODO: check for all functions that return values AND save images if this is necessary.
 
 
 
@@ -12,38 +12,36 @@ from matplotlib import pyplot as plt
 
 
 def read_image(imin, colorspace = None):
-    """ Takes filename and (optional) colourspace to read image.
+    """ Reads an image from a filepath.
     
-    Colourspace takes the cv2.imread flags:
-    - cv2.IMREAD_COLOR.
-        Loads a color image. Any transparency of image will be neglected.
-        It is the default flag.
-    - cv2.IMREAD_GRAYSCALE
-        Loads image in grayscale mode.
-    - cv2.IMREAD_UNCHANGED
-        Loads image as such including alpha channel.
+    Args:
+        imin: full path to image (absolute or relative), if it's not a string the function assumes 
+              it to be an image.
+        colorspace: one of the following cv2.imread flags: cv2.IMREAD_COLOR, cv2.IMREAD_GRAYSCALE,
+                    cv2.IMREAD_UNCHANGED (optional).
+    Returns:
+        An image array.
     """
     
-    if not isinstance(imin, str):
-        return imin
-    
-    imin = os.path.expanduser(imin)
-    
-    if colorspace:
-        return cv2.imread(imin, colorspace)
+    if isinstance(imin, str):
+        imin = os.path.expanduser(imin)
+        
+        if colorspace:
+            return cv2.imread(imin, colorspace)
+        else:
+            return cv2.imread(imin)
     else:
-        return cv2.imread(imin, cv2.IMREAD_UNCHANGED)
+        return imin
 
 
 def save_image(image, imname, imdir = None):
-    """ Save image to directory
+    """ Save image to file.
     
-    image
-        image to save (array of values?)
-    imname
-        string: name of image to append to imdir, if it contains no extension default to png
-    imdir
-        full or relative path to folder, if not save_image defaults to current working directory
+    Args:
+        image: image to save (array of values)
+        imname: name of image to append to imdir, if it contains no extension default to png.
+        imdir: full path to target directory (absolute or relative path), if none is given, image is
+               saved to the current working directory.
     """
     
     # Test if imname contains an extension, if not: default to png.
@@ -58,27 +56,41 @@ def save_image(image, imname, imdir = None):
 
 
 def save_images(images, imnames, imdir = None):
+    """ Save multiple images to files (calls save_image)
+    
+    Args:
+        images: list of image to save (array of values)
+        imnames: list of image names to append to imdir, if it contains no extension default to png.
+        imdir: full path to target directory (absolute or relative path), if none is given, image is
+               saved to the current working directory.
+    """
+    
     if imdir:
         for imname, image in zip(imnames, images):
             save_image(image, imname, imdir)
     else:
         for imname, image in zip(imnames, images):
+            save_image(image, imname)
 
 
-def show_image(imin):
+def show_image(imin, imdir = None):
     """ Displays image using matplotlib.
     
-    Reads color images using cv2, transforms the colorspace from BGR to RGB.
+    Args:
+        imin: path to image (absolute or relative) or array of values to display.
     """
     
-    image = read_image(imin)
+    if isinstance(imin, str):
+        image = read_image(imin)
+    else:
+        image = imin
     
     if len(image.shape) == 3:
         image = image[:, :, ::-1]
         plt.imshow(image)
     else:
         plt.imshow(image, cmap = 'gray', interpolation = 'bicubic')
-
+    
     # Hide tick values on X and Y axes.
     plt.xticks([]), plt.yticks([])
     plt.show()
@@ -92,14 +104,24 @@ def show_image(imin):
 ########################################
 
 
-def separate_colors(imin):
+def separate_colors(imin, imdir = None):
     """ Takes a colour image and separates the colour layers.
+    
+    Args:
+        imin: path to image (absolute or relative) or color image to separate.
+        imdir: 
+    
+    Returns:
+        saves individual color layers to file
+        b, g, r: individual color layers of the original image.
     """
 
-    # Grayscale versus color image loading for debugging purposes.
-    img = read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+    if isinstance(imin, str):
+        # Grayscale versus color image loading for debugging purposes.
+        img = read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
+    else:
+        img = imin
     
-    show_image(img)
     b, g, r = cv2.split(img)
 
     # Display image for debugging purposes.
@@ -107,34 +129,60 @@ def separate_colors(imin):
 
     imnames = ['b', 'g', 'r']
     images = [b, g, r]
-
-    # save_images(imin, imnames, images)
-
+    
+    if imdir:
+        save_images(images, imnames, imdir)
+    else:
+        save_images(images, imnames)
+    
     return b, g, r
 
 
-def otsu_threshold(imin, gauss = None):
-    """
+def otsu_threshold(imin, gauss = None, imdir = None):
+    """ Perform otsu thresholding
+    
+    Args:
+        imin: path to image (absolute or relative) or array of values to threshold.
+        gauss: optional
+        imdir: optional path to save directory.
+    
+    Returns:
+        otsuim: thresholded
+        saves thresholded file
     """
     
-    image = read_image(imin)
+    # TODO: assumes greyscale image (i.e. one color layer or a greyscaled image)
+    # TODO: option for filename as argument?
+    
+    if isinstance(imin, str):
+        img = read_image(imin)
+    else:
+        img = imin
     
     if gauss:
-        blurim = cv2.GaussianBlur(image, (5, 5), 0)
+        blurim = cv2.GaussianBlur(img, (5, 5), 0)
         _, otsuim = cv2.threshold(blurim, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        
-        # save_image(imin, 'otsu_gauss', otsuim)
+        imname = 'otsu_gauss'
         
     else:
-        _, otsuim = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        
-        # save_image(imin, 'otsu', otsuim)
+        _, otsuim = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        imname = 'otsu'
+    
+    if imdir:
+        save_image(otsuim, imname, imdir)
+    else:
+        save_image(otsuim, imname)
     
     return otsuim
 
 
-def otsu_threshold_multi(imin, gauss = None):
+def otsu_threshold_multi(imin, gauss = None, imdir = None):
     """ Takes an image and creates binarised versions using Otsu thresholding.
+    
+    Args:
+        imin
+    Returns:
+        otsu_b, otsu_g, otsu_r: 
     """
     
     b, g, r = separate_colors(imin)
@@ -158,7 +206,12 @@ def otsu_threshold_multi(imin, gauss = None):
         imnames = ['otsu_b', 'otsu_g', 'otsu_r']
     
     images = [otsu_b, otsu_g, otsu_r]
-    # save_images(imin, imnames, images)
+    
+    if imdir:
+        save_images(images, imnames, imdir)
+    else:
+        save_images(images, imnames)
+    
     return otsu_b, otsu_g, otsu_r
 
 
@@ -181,10 +234,23 @@ def find_contours_single(imin, maskin = None):
     return contours, contoursim
 
 
-def find_contours_multi(imin, maskin = None, savedir = None):
-    """ 
-    - Call otsu_multi with gaussian filtering, returns colour layers.
-    - Find contours for each layer.
+def find_contours_multi(imin, imname, maskin = None, savedir = None):
+    """ Finds contours for each colour layer, then draws them onto the original color image.
+    
+    Args:
+        imin:
+        imname:
+        makskin:
+        savedir:
+    
+    Returns:
+        saves image to file
+        shows image on screen (show_image, matplotlib)
+        contours_b, contours_g, contours_r: dictionary of contours for the individual layers
+        
+    1. Call otsu_multi with gaussian filtering, returns colour layers.
+    2. Find contours for each layer.
+    3. Draw contours onto original color image.
     """
     
     # TODO: allow function call with input image, not text string.
@@ -192,31 +258,40 @@ def find_contours_multi(imin, maskin = None, savedir = None):
     # TODO: how to get save-directory if input image.
     
     b, g, r = otsu_threshold_multi(imin, "gauss")
-    contoursim = read_image(imin)
-        
+    
+    if not isinstance(imin, str):
+        contoursim = read_image(imin)
+    
     if maskin:
-        mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        # Read mask and apply to all three layers.
+        # TODO: make sure read_image handles the colorspace argument properly.
+        mask = read_image(maskin)
+        mask = cv2.cvtColor(mask, cv2.cv.CV_BGR2GRAY)
         
-        # Apply mask to all three layers.
+        # TODO: see if this can be simplified (i.e. reduce number of near-duplicate lines).
         b = cv2.bitwise_and(b, b, mask = mask)
         g = cv2.bitwise_and(g, g, mask = mask)
         r = cv2.bitwise_and(r, r, mask = mask)
     
+    # TODO: see if this can be simplified (i.e. reduce number of near-duplicate lines).
     contours_b, _ = cv2.findContours(b, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours_g, _ = cv2.findContours(g, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contours_r, _ = cv2.findContours(r, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
+    # TODO: see if this can be simplified (i.e. reduce number of near-duplicate lines).
     cv2.drawContours(contoursim, contours_b, -1, (255, 0, 0), 2)
     cv2.drawContours(contoursim, contours_g, -1, (0, 255, 0), 2)
     cv2.drawContours(contoursim, contours_r, -1, (0, 0, 255), 2)
     
-    show_image(contoursim)
+    # show_image(contoursim)
+    
     if savedir:
-        save_image(imin, "contours", contoursim, savedir)
+        save_image(imin, imname, savedir)
     else:
-        save_image(imin, "contours", contoursim)
+        save_image(imin, imname)
     
     return contours_b, contours_g, contours_r
+
 
 def find_centres(contours):
     
@@ -236,8 +311,17 @@ def find_centres(contours):
     print centres
     return centres
     
-def find_centres_multi(imin, maskin = None):
-    """
+def find_centres_multi(imin, maskin = None, imdir = None):
+    """ Finds centres in each color layer.
+    
+    Args:
+        imin
+        maskin
+        imdir
+    
+    Returns:
+        saves centres images for each color layer
+        
     """
     
     if maskin:
@@ -266,12 +350,15 @@ def find_centres_multi(imin, maskin = None):
     
     show_image(centre_image)
     
-    # save_image(imin, "centres", centre_image)
+    if imdir:
+        save_image(centre_image, "centres", imdir)
+    else:
+        save_image(centre_image, "centres")
     
     return centres_b, centres_g, centres_r
 
 
-def find_centres_single(imin, maskin = None):
+def find_centres_single(imin, maskin = None, imdir = None):
     """
     """
     
@@ -285,19 +372,18 @@ def find_centres_single(imin, maskin = None):
     if maskin:
         mask = read_image(maskin, cv2.IMREAD_GRAYSCALE)
         im = cv2.bitwise_and(imgray, imgray, mask = mask)
-    
-    # imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
+        imname = 'centroids_masked'
+    else:
+        imname = 'centroids_unmasked'
     
     centres = find_centres(contours)
     
     return centres
     
-    if maskin:
-        save_image(imin, 'centroids_masked', im)
-        # Save centres masked.
+    if imdir:
+        save_image(im, imname, imdir)
     else:
-        save_image(imin, 'centroids', im)
-        # Save centres unmasked.
+        save_image(im, imname)
 
 
 def save_centres(filename, timepoint, color, centres):
