@@ -22,10 +22,13 @@ video = args["video"]
 mask = args["mask"]
 
 # CHANGED: frame indexing starts at 1 (frames 0 and 1 are identical).
-frame_start = 1
+frame_start = 1500
 frame_step = args["step"]
 
-frame_total = get_number_frames(video)
+# TODO: toggle when done testing script.
+frame_total = frame_start + 10
+# frame_total = get_number_frames(video)
+frame_end = frame_total + 1
 
 savedir = str(video.rsplit("/", 1)[0])
 
@@ -38,9 +41,13 @@ for i in range(frame_start, frame_end, frame_step):
     frame = extract_frame_frame(video, i)
     
     if mask:
-        imname = "frame_masked_" + str(i)
-        find_contours_multi(frame, imname, maskin = mask, savedir = savedir)
+        imname = "centres_masked_" + str(i)
+        find_centres_multi(frame, maskin = mask)
+        
+        # find_contours_multi(frame, imname, maskin = mask, savedir = savedir)
     else:
-        imname = "frame_" + str(i)
-        find_contours_multi(frame, imname, savedir = savedir)
+        imname = "centres_" + str(i)
+        find_centres_multi(frame)
+        
+        # find_contours_multi(frame, imname, savedir = savedir)
 

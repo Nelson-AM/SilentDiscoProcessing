@@ -2,8 +2,11 @@ import scipy as sp
 import pandas as pd
 import numpy as np
 import os, csv
-import matplotlib.pyplot as plt
 import argparse
+import matplotlib.pyplot as plt
+
+from matplotlib.pylab import rcParams
+rcParams['figure.figsize'] = 15, 6
 
 # TODO: check if scipy, numpy, pandas and matplotlib have the same functionality as these R packages.
 # They probably do.
@@ -23,26 +26,43 @@ redcsv = args["redcsv"]
 greencsv = os.path.expanduser(greencsv)
 redcsv = os.path.expanduser(redcsv)
 
-# Read green csv into dataframe.
-greendf = pd.DataFrame.from_csv(greencsv)
-reddf = pd.DataFrame.from_csv(redcsv)
+# Read read and green csv into dataframe.
+greendf = pd.read_csv(greencsv, index_col = "frameno")
+reddf = pd.read_csv(redcsv, index_col = "frameno")
 
+gts = greendf["localcluster"]
+rts = reddf["localcluster"]
+
+plt.plot(gts)
+plt.show()
+plt.plot(rts)
+plt.show()
 # Create new dataframes.
+"""
 localdf = pd.DataFrame(columns = ["greenframe", "redframe", 
                                   "green", "greensd", 
                                   "red", "redsd", "segment"])
 globaldf = pd.DataFrame(columns = ["greenframe", "redframe",
                                    "green", "greensd",
                                    "red", "redsd", "segment"])
-#vertavdf = pd.DataFrame(columns = ["greenframe", "redframe", 
-#                                   "green", "greensd", 
-#                                   "red", "redsd", "segment"])
+vertavdf = pd.DataFrame(columns = ["greenframe", "redframe", 
+                                   "green", "greensd", 
+                                   "red", "redsd", "segment"])
+"""
 
-# TODO: Copy data from red and green frames to measure frames.
 savedir = str(greencsv.rsplit("/", 1)[0])
 print savedir
 
-# TODO: Check names (they probably work).
+# Check if the index columns (frameno) are the same for red and green.
+"""
+for gframes, rframes in zip(greendf["frameno"], reddf["frameno"]):
+    if not gframes == rframes:
+        print "something went wrong, the frames are unequal \n"
+        print "green: " + str(gframes)
+        print "red: " + str(rframes)
+"""
+
+"""
 localdf["greenframe"] = greendf["frameno"]
 localdf["green"] = greendf["localcluster"]
 localdf["greensd"] = greendf["localsd"]
@@ -50,9 +70,11 @@ localdf["redframe"] = reddf["frameno"]
 localdf["red"] = reddf["localcluster"]
 localdf["redsd"] = reddf["localsd"]
 
-print localdf[0:10]
+print localdf.head()
+print "\n Data Types:"
+print localdf.dtypes
 
-# TODO: check if column names are correct.
+
 globaldf["greenframe"] = greendf["frameno"]
 globaldf["green"] = greendf["globalcluster"]
 globaldf["greensd"] = greendf["globalsd"]
@@ -60,19 +82,16 @@ globaldf["redframe"] = reddf["frameno"]
 globaldf["red"] = reddf["globalcluster"]
 globaldf["redsd"] = reddf["globalsd"]
 
-print globaldf[0:10]
 
-# TODO: Fix column names.
 vertavdf["greenframe"] = greendf["frameno"]
 vertavdf["green"] = greendf["localcluster"]
 vertavdf["greensd"] = greendf["localsd"]
 vertavdf["redframe"] = reddf["frameno"]
 vertavdf["red"] = reddf["localcluster"]
 vertavdf["redsd"] = reddf["localsd"]
+"""
 
-print vertavdf[0:10]
-
-
+# TODO: define segment (can also be done in the model creation based on the index)
 # TODO: Save dataframes for testing.
 
 
