@@ -26,10 +26,13 @@ def read_image(imin, colorspace = None):
     if isinstance(imin, str):
         imin = os.path.expanduser(imin)
         
-        if colorspace:
-            return cv2.imread(imin, colorspace)
-        else:
-            return cv2.imread(imin)
+        return cv2.imread(imin)
+        
+        # FIXME: colorspace doesn't get passed through properly.
+        #if colorspace:
+        #    return cv2.imread(imin, colorspace)
+        #else:
+        #    return cv2.imread(imin)
     else:
         return imin
 
@@ -59,9 +62,9 @@ def save_images(images, imnames, imdir = None):
     """ Save multiple images to files (calls save_image)
     
     Args:
-        images: list of image to save (array of values)
-        imnames: list of image names to append to imdir, if it contains no extension default to png.
-        imdir: full path to target directory (absolute or relative path), if none is given, image is
+        images: list of images to save.
+        imnames: list of image names to append to imdir.
+        imdir: path to target directory (absolute or relative path), if none is given, image is
                saved to the current working directory.
     """
     
@@ -83,6 +86,7 @@ def show_image(imin, imdir = None):
     image = read_image(imin)
     
     if len(image.shape) == 3:
+        # Reshape color layers BGR -> RGB.
         image = image[:, :, ::-1]
         plt.imshow(image)
     else:
@@ -163,7 +167,6 @@ def otsu_threshold_test(imin, gauss = None):
         otsuim = otsu_base(img, gauss)
     
     return otsuim
-    
 
 
 def otsu_threshold(imin, gauss = None, imdir = None):
