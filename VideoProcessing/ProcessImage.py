@@ -80,10 +80,7 @@ def show_image(imin, imdir = None):
         imin: path to image (absolute or relative) or array of values to display.
     """
     
-    if isinstance(imin, str):
-        image = read_image(imin)
-    else:
-        image = imin
+    image = read_image(imin)
     
     if len(image.shape) == 3:
         image = image[:, :, ::-1]
@@ -115,12 +112,8 @@ def separate_colors(imin, imdir = None):
         saves individual color layers to file
         b, g, r: individual color layers of the original image.
     """
-
-    if isinstance(imin, str):
-        # Grayscale versus color image loading for debugging purposes.
-        img = read_image(imin, cv2.CV_LOAD_IMAGE_COLOR)
-    else:
-        img = imin
+    
+    img = read_image(imin)
     
     b, g, r = cv2.split(img)
 
@@ -158,13 +151,10 @@ def otsu_threshold_test(imin, gauss = None):
         thresholded image
     """
     
-    if isinstance(imin, str):
-        img = read_image(imin)
-    else:
-        img = imin
+    img = read_image(imin)
     
     if len(img.shape) is 3:
-        # FIXME: tuple call and then test function!
+        # CHANGED: tuple call and then test function!
         otsuim = np.empty(img.shape)
         for i in range(img.shape[-1]):
             print i
@@ -192,10 +182,7 @@ def otsu_threshold(imin, gauss = None, imdir = None):
     # TODO: assumes greyscale image (i.e. one color layer or a greyscaled image)
     # TODO: option for filename as argument?
     
-    if isinstance(imin, str):
-        img = read_image(imin)
-    else:
-        img = imin
+    img = read_image(imin)
     
     if gauss:
         blurim = cv2.GaussianBlur(img, (5, 5), 0)
@@ -330,8 +317,7 @@ def save_contours_multi(imin, imname, maskin = None, savedir = None):
     3. Save image to file.
     """
     
-    if not isinstance(imin, str):
-        contoursim = read_image(imin)
+    contoursim = read_image(imin)
     
     if maskin:
         contours_b, contours_g, contours_r = find_contours_multi(imin, maskin = maskin)
