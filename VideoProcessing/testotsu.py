@@ -13,4 +13,6 @@ print image.shape
 otsuim = otsu_threshold_test(imname)
 
 show_image(image)
-show_image(otsuim)
+show_image(otsuim[:,:,0])
+show_image(otsuim[:,:,1])
+show_image(otsuim[:,:,2])

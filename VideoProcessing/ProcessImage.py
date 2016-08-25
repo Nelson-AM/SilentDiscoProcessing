@@ -140,10 +140,10 @@ def separate_colors(imin, imdir = None):
 
 def otsu_base(imin, gauss = None):
     if gauss:
-        blurim = cv2.GaussianBlur(img, (5, 5), 0)
+        blurim = cv2.GaussianBlur(imin, (5, 5), 0)
         _, otsuim = cv2.threshold(blurim, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     else:
-        _, otsuim = cv2.threshold(blurim, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        _, otsuim = cv2.threshold(imin, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     return otsuim
 
 
@@ -163,12 +163,12 @@ def otsu_threshold_test(imin, gauss = None):
     else:
         img = imin
     
-    
     if len(img.shape) is 3:
         # FIXME: tuple call and then test function!
-        for i in range(img.shape(-1)):
+        otsuim = np.empty(img.shape)
+        for i in range(img.shape[-1]):
             print i
-            otsuim[:,:,i] = otsu_base(img, gauss)
+            otsuim[:,:,i] = otsu_base(img[:,:,i], gauss)
     else:
         otsuim = otsu_base(img, gauss)
     
