@@ -13,6 +13,8 @@ rcParams['figure.figsize'] = 15, 6
 # library(car)
 # library(heplots)
 
+# TODO: read csv 
+
 # TODO: transform dataframes to timeseries
 # gts = greendf["localcluster"]
 # rts = reddf["localcluster"]
