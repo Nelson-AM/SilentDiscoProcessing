@@ -6,7 +6,6 @@ from ProcessImage import *
 # Construct the argument parse and parse the arguments.
 ap = argparse.ArgumentParser()
 
-# CHANGED: switch to required = True when done debugging.
 ap.add_argument("-v", "--video", required = True, help = "Path to the video file.")
 ap.add_argument("-m", "--mask", required = True, help = "Path to the mask file.")
 # ap.add_argument("-v", "--video", help = "Path to the video file.")
@@ -16,13 +15,15 @@ ap.add_argument("-s", "--step", type = int, default = 1,
                 help = "Step size in number of frames. Default is 1.")
 # Script currently processes the entire video, consider adding frame_total argument for partial video processing. However, this would also require a frame_start argument...
 
+csvname = "/Volumes/SAMSUNG/MOSI/split_colors.csv"
+
 args = vars(ap.parse_args())
 
 video = args["video"]
 mask = args["mask"]
 
-# CHANGED: frame indexing starts at 1 (frames 0 and 1 are identical).
-frame_start = 1500
+# CHANGED: toogle when done testing script.
+frame_start = 1
 frame_step = args["step"]
 
 # CHANGED: toggle when done testing script.
@@ -34,18 +35,19 @@ savedir = str(video.rsplit("/", 1)[0])
 
 for i in range(frame_start, frame_end, frame_step):
     
-    # TODO: get centres from contours data.
-    # TODO: save centres to csv file (same folder as video file).
     frame = extract_frame_frame(video, i)
     
+    # TODO: get centres from contours data.
     if mask:
         imname = "centres_masked_" + str(i)
-        find_centres_multi(frame, maskin = mask)
+        cent_b, cent_g, cent_r = find_centres_multi(frame, maskin = mask)
         
-        # find_contours_multi(frame, imname, maskin = mask, savedir = savedir)
     else:
         imname = "centres_" + str(i)
-        find_centres_multi(frame)
-        
-        # find_contours_multi(frame, imname, savedir = savedir)
+        cent_b, cent_g, cent_r = find_centres_multi(frame)
+    
+    # TODO: save centres to csv file (same folder as video file).
+    save_centres(csvname, i, "blue", cent_b)
+    save_centres(csvname, i, "green", cent_g)
+    save_centres(csvname, i, "red", cent_r)
 

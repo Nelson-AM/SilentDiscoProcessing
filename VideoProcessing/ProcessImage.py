@@ -144,7 +144,7 @@ def otsu_base(imin, gauss = None):
     return otsuim
 
 
-def otsu_threshold_test(imin, gauss = None):
+def otsu_threshold(imin, gauss = None):
     """ Perform Otsu thresholding.
     
     Args:
@@ -161,12 +161,46 @@ def otsu_threshold_test(imin, gauss = None):
         # CHANGED: tuple call and then test function!
         otsuim = np.empty(img.shape)
         for i in range(img.shape[-1]):
-            print i
-            otsuim[:,:,i] = otsu_base(img[:,:,i], gauss)
+            otsuim[:, :, i] = otsu_base(img[:, :, i], gauss)
     else:
         otsuim = otsu_base(img, gauss)
     
     return otsuim
+
+
+def find_contours_base(img, maskin = None):
+    # TODO: fill in base function
+    
+    if maskin:
+        mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+        maskimg = cv2.bitwise_and(img, img, mask = mask)
+        
+        contours, _ = cv2.findContours(maskimg, 
+                                       cv2.RETR_TREE, 
+                                       cv2.CHAIN_APPROX_SIMPLE)
+    else:
+        contours, _ = cv2.findContours(img,
+                                       cv2.RETR_TREE,
+                                       cv2.CHAIN_APPROX_SIMPLE)
+    
+    return contoursim
+
+
+def find_contours_test(imin, maskin = None):
+    """
+    """
+    
+    # TODO: write docstring
+    # TODO: test function
+    img = otsu_threshold(imin, "gauss")
+    
+    if len(img.shape) is 3:
+        for i in range(img.shape[-1]):
+            contoursim[:, :, i] = find_contours_base(img[:, :, i], maskin)
+    else:
+        contoursim = find_contours_base(img, maskin)
+    
+    return contoursim
 
 
 def otsu_threshold(imin, gauss = None, imdir = None):
@@ -355,7 +389,7 @@ def find_centres(contours):
         centres.append(
             (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
     
-    print centres
+    # print centres
     return centres
 
 
@@ -371,6 +405,7 @@ def find_centres_multi(imin, maskin = None):
     """
     
     # FIXME: multiple values of maskin, need to use a different keyword.
+    # TODO: change output to one argument.
     if maskin:
         contours_b, contours_g, contours_r = find_contours_multi(imin, maskin = maskin)
     else:
@@ -475,6 +510,37 @@ def save_centres(filename, timepoint, color, centres):
 
 
 
+
+
+
+
+
+########################################
+#####        MISC FUNCTIONS        #####
+########################################
+
+def printProgress(iteration, total, prefix = "", suffix = "", decimals = 1, barLength = 100):
+    """ Call in a loop to create terminal progress bar.
+    
+    Params:
+        iteration
+        total
+        prefix
+        suffix
+        decimals
+        barLength
+    """
+    
+    formatStr = "{0:." + str(decimals) + "f}"
+    percents = formatStr.format(100 * (iteration / float(total)))
+    filledLength = int(round(barLength * iteration / float(total)))
+    bar = "X" * filledLength + "=" * (barLength - filledLength)
+    sys.stdout.write("\r%s |%s| %s%s %s" % (prefix, bar, percents, "%", suffix)),
+    sys.stdout.flush()
+    
+    if iteration == total:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
 
 
 ########################################

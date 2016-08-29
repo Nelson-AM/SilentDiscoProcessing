@@ -1,12 +1,25 @@
-import random
-
-# RunImageSession.py
-
+from ProcessVideo import *
 from ProcessImage import *
 
-image_1 = '/Volumes/SAMSUNG/ESCOM/Frames/TX-BACK UP_21_1.png'
-mask = '/Volumes/SAMSUNG/ESCOM/TX_MASK_detailed_2.png'
+imname = "/Users/Nelson/Desktop/Mountains/Bromo.jpg"
 
+image = read_image(imname)
+print image.shape
+
+# print image.shape
+# print len(image.shape)
+# print range(image.shape[1])
+
+testim = (imname)
+
+show_image(image)
+show_image(testim[:,:,0])
+show_image(testim[:,:,1])
+show_image(testim[:,:,2])
+
+
+
+"""
 for i in range(10):
     rng = random.randint(1, 3229)
     
@@ -14,3 +27,4 @@ for i in range(10):
     print image
 
     find_contours_multi(image, mask)
+"""
