@@ -1,5 +1,4 @@
 import argparse
-
 from ProcessVideo import *
 from ProcessImage import *
 
@@ -33,6 +32,7 @@ frame_end = frame_total + 1
 
 savedir = str(video.rsplit("/", 1)[0])
 
+
 for i in range(frame_start, frame_end, frame_step):
     
     frame = extract_frame_frame(video, i)
@@ -50,4 +50,6 @@ for i in range(frame_start, frame_end, frame_step):
     save_centres(csvname, i, "blue", cent_b)
     save_centres(csvname, i, "green", cent_g)
     save_centres(csvname, i, "red", cent_r)
+    
+    printProgress(i, frame_end, prefix = "Progress:", suffix = "Complete", barLength = 50)
 

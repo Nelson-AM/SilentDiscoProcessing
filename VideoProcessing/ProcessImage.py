@@ -1,4 +1,4 @@
-import os, csv, cv2
+import os, csv, cv2, sys
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -127,6 +127,7 @@ def separate_colors(imin, imdir = None):
     imnames = ['b', 'g', 'r']
     images = [b, g, r]
     
+    # TODO: check if this is necessary.
     if imdir:
         save_images(images, imnames, imdir)
     else:
@@ -136,6 +137,11 @@ def separate_colors(imin, imdir = None):
 
 
 def otsu_base(imin, gauss = None):
+    """
+    """
+    
+    #TODO: write docstring
+    
     if gauss:
         blurim = cv2.GaussianBlur(imin, (5, 5), 0)
         _, otsuim = cv2.threshold(blurim, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -169,7 +175,10 @@ def otsu_threshold(imin, gauss = None):
 
 
 def find_contours_base(img, maskin = None):
-    # TODO: fill in base function
+    """
+    """
+    # TODO: write docstring
+    # CHANGED: fill in base function
     
     if maskin:
         mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
@@ -189,9 +198,8 @@ def find_contours_base(img, maskin = None):
 def find_contours_test(imin, maskin = None):
     """
     """
-    
     # TODO: write docstring
-    # TODO: test function
+    # CHANGED: function tested
     img = otsu_threshold(imin, "gauss")
     
     if len(img.shape) is 3:
@@ -375,6 +383,7 @@ def save_contours_multi(imin, imname, maskin = None, savedir = None):
 def find_centres(contours):
     """
     """
+    # TODO: write docstring
     
     centres = []
     
@@ -424,6 +433,7 @@ def save_centres_multi(imin, imname, maskin = None, savedir = None):
     """
     
     # TODO: add "masked" string to image name if mask is applicable.
+    # TODO: fix output (one argument instead of 3)
     if maskin:
         centres_b, centres_g, centres_r = find_centres_multi(imin, mask = maskin)
     else:
@@ -431,6 +441,7 @@ def save_centres_multi(imin, imname, maskin = None, savedir = None):
     
     centre_image = read_image(imin)
     
+    # TODO: simplify
     for i in range(len(centres_b)):
         cv2.circle(centre_image, centres_b[i], 5, (0, 255, 255), -1)
     for i in range(len(centres_g)):
@@ -448,7 +459,8 @@ def save_centres_multi(imin, imname, maskin = None, savedir = None):
 def find_centres_single(imin, maskin = None, imdir = None):
     """
     """
-    
+    # TODO: write docstring
+    # TODO: make simplified version like otsu and contours
     # Assumes single channel image.
     # - Run separate_colors.
     # - Run find_centres for each layer.

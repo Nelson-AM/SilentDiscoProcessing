@@ -64,7 +64,7 @@ def extract_frame_frame(vidin, frame):
     success, image = vidcap.read()
     
     if success:
-        print frame
+        # print frame
         return image
 
 
