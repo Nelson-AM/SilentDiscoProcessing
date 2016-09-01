@@ -12,23 +12,50 @@ from ProcessImage import *
 
 
 def read_video(vidin):
-    """
+    """ Reads a video from filepath.
+    
+    Args:
+        vidin:
+    Returns:
+        Video capture.
     """
     
-    vidin = os.path.expanduser(vidin)
-    return cv2.VideoCapture(vidin)
+    # TODO: write / complete docstring.
+    
+    # If vidin is not a string, assume it's already a videocapture thing.
+    if isinstance(vidin, str):
+        vidin = os.path.expanduser(vidin)
+        return cv2.VideoCapture(vidin)
+    else:
+        return vidin
 
 
 def get_number_frames(vidin):
-    """ 
+    """ Returns the number of frames in a video.
+    
+    Args:
+        vidin
+    Returns:
+    
     """
+    
+    # TODO: write / complete docstring.
     
     vidcap = read_video(vidin)
     return int(vidcap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT))
 
+
 def extract_frame_time(vidin, time):
-    """ Time in miliseconds
+    """ Time in miliseconds.
+    
+    Args:
+        vidin:
+        time:
+    Returns:
+        image
     """
+    
+    # TODO: write / complete docstring.
     
     vidcap = read_video(vidin)
     
@@ -44,6 +71,8 @@ def save_frame_time(vidin, time, outdir = None):
     """
     """
     
+    # TODO: write / complete docstring.
+    
     image = extract_frame_time(vidin, time)
     
     timestr = str(time)
@@ -57,6 +86,8 @@ def save_frame_time(vidin, time, outdir = None):
 def extract_frame_frame(vidin, frame):
     """
     """
+    
+    # TODO: write / complete docstring.
     
     vidcap = read_video(vidin)
     
@@ -72,6 +103,8 @@ def save_frame_frame(vidin, frame, outdir = None):
     """
     """
     
+    # TODO: write / complete docstring.
+    
     image = extract_frame_frame(vidin, frame)
     
     framestr = str(frame)
@@ -85,6 +118,8 @@ def save_frame_frame(vidin, frame, outdir = None):
 def show_video_HSV(vidin):
     """
     """
+    
+    # TODO: write / complete docstring.
     
     vidcap = read_video(vidin)
     

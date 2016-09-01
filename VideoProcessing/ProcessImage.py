@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 
 
 def read_image(imin, colorspace = None):
-    """ Reads an image from a filepath.
+    """ Reads an image from filepath.
     
     Args:
         imin: full path to image (absolute or relative), if it's not a string the function assumes 
