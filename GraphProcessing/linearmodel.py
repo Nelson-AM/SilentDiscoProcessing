@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib.pylab import rcParams
 rcParams['figure.figsize'] = 15, 6
 
+
+
 # TODO: check if scipy, numpy, pandas and matplotlib have the same functionality as these R packages.
 # They probably do.
 # library(car)

@@ -56,13 +56,11 @@ def save_graph_img(g, name, threshold, graphdir = None):
     
     Plots vertices based on x- and y-coordinates, making 
     visualisation correspond to real-life situation.
-    
-    To-do:
-    - Add custom directory support.
-    - Take into account e_weight.
-        - Check if line color can be shaded for this.
-    - Fill in vertices as the color that they are (r/g/b).
     """
+    
+    # TODO: add custom directory support.
+    # TODO: take into account e_weight (check if line color can be shaded)
+    # TODO: fill in vertices as color that they represent.
     
     if isinstance(g, basestring):
         g = load_graph(g, directed = False)
