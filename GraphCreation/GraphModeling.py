@@ -58,7 +58,6 @@ def save_graph_img(g, name, threshold, graphdir = None):
     visualisation correspond to real-life situation.
     """
     
-    # TODO: add custom directory support.
     # TODO: take into account e_weight (check if line color can be shaded)
     # TODO: fill in vertices as color that they represent.
     
@@ -92,19 +91,16 @@ def image_graph(filename, outdir = None):
         if not os.path.isdir(outdir):
             os.mkdir(outdir)
         
-        splitslash = filename.split("/")
-        filenameext = splitslash[-1]
-        splitdot = filenameext.split(".")
-        filenamebare = splitdot[0]
+        fileext = filename.split("/")[-1]
+        filename = fileext.split(".")[0]
         
-        graphnameim = outdir + filenamebare + ".png"
+        graphnameim = outdir + filename + ".png"
         
-        print graphnameim
+        # print graphnameim
         
     else:
-        splitdot = filename.split(".")
-        filenamebare = splitdot[0]
-        graphnameim = filenamebare + ".png"
+        filename = filename.split(".")[0]
+        graphnameim = filename + ".png"
         
         print graphnameim
     
@@ -168,6 +164,7 @@ def create_edges(g, vlist, v_x, v_y, threshold):
     """ Support function, creates edges for graph g from create_graphs.
     """
     
+    # TODO: add weight as edge property (proportional to euclidian distance)
     e_length = g.new_edge_property("double")
     e_weight = g.new_edge_property("double")
     distancelist = []
@@ -234,7 +231,7 @@ def create_graphs(filename, threshold, graphdir = None):
         if graphdir:
             create_base_graph(group, time, threshold, graphdir)
         else:
-            create_base_graph(group, time, threshold, graphdir)
+            create_base_graph(group, time, threshold)
 
 
 def create_graph_color(filename, timestamp, threshold, color, graphdir = None):
@@ -287,107 +284,6 @@ def create_graphs_color(filename, threshold, color = None, graphdir = None):
                     create_base_graph(group, cname, threshold, graphdir)
                 else:
                     create_base_graph(group, cname, threshold)
-
-
-
-
-
-#######################################
-#####     STRUCTURAL ANALYSIS     #####
-#######################################
-
-
-def get_number_vertices(graph):
-    """
-    """
-    
-    v = graph.add_vertex()
-    vindex = graph.vertex_index[v]
-    graph.remove_vertex(v)
-    return vindex
-
-
-def moving_average(dataframe, window):
-    """ Takes a dataframe and adds smoothing. Kernelsize
-    """
-    print "moving average (not weighted)"
-    
-    # take time t (starting at modulo kernelsize, 2)
-    # take times -1, ..., -(1/2) kernelsize
-    # take times +1, ..., +(1/2) kernelsize
-    # sum those and divide by kernelsize
-    # return value for time t.
-    # go to next value
-    
-    pd.rolling_mean(dataframe, window)
             
         
 
-
-
-
-
-########################################
-#####       DRAFT FUNCTIONS        #####
-########################################
-
-
-def global_clustering(graph):
-    print "This function might do something with global clustering"
-
-
-def create_graph_color_test(filename, timestamp, threshold, color = None):
-    """ Creates graph from data in CSV file for each or a specific color at each timepoint.
-    """
-    
-    # Checks if a color is entered as a parameter.
-    if color:
-        print "Yay, color is: " + color + "."
-        # If a color is entered, build graph for only that color.
-    else:
-        # If no color is entered, build graphs separately for each color.
-        print "Boo, you didn't enter a color!"
-
-
-def create_graphs_rg(filename, threshold, pgreen, pred):
-    """ Creates graphs with randomly sampled red and green nodes in the given ratios
-    """
-    
-    if  pgreen + pred == 100:
-        # Awesome, do stuff!
-        print pgreen + pred
-        # Make list of all red nodes.
-        # Make list of all green nodes.
-        
-        # Determine number of vertices that have to be selected for each color.
-        # nred = round(pred / length(redlist))
-        # ngreen = round(pgreen / length(greenlist))
-        
-        # Randomly sample each list until the desired amount of vertices is chosen for each list.
-        
-        # Build graph.
-        
-    else:
-        # Error / warning that red + green has to add up to 100.
-        print "pgreen and pred should add up to 100."
-        sys.exit(-1)
-
-
-def add_weights():
-    print "This should become part of the create_edges function"
-                # e_length[e] = distance
-    
-    # distlist_norm = []
-    # weights = []
-    
-    # Need to loop over edges, and then add the weight based on normalised distance.
-    # for i in range(len(distancelist)):
-    #    
-    #    distlist_norm.append((distancelist[i] - min(distancelist)) / 
-    #                         (max(distancelist) - min(distancelist)))
-    #    
-    #    # Simple linear weight, inverse of normalised distance.
-    #    weights.append(1 - distlist_norm[i])
-    
-    # print "Weights for current graph are: "
-    # print weights
