@@ -38,9 +38,12 @@ def get_n_vertices(graphin):
 def get_n_vertices_color():
     """ Reads _full_ graph and returns number of vertices per color. """
     
-    # TODO: get number of vertices for color in [red, green, blue]
+    colors = [red, green, blue]
+    g = read_graph(graphin)
     
-    pass
+    for color in colors:
+        pass
+        # Return vertices with correct color propertymap.
 
 def get_n_edges(graphin):
     """ Reads graphs and returns number of edges.
