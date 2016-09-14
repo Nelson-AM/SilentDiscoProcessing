@@ -15,36 +15,30 @@ from matplotlib import pyplot as plt
 ################################################
 
 
+# NOTE: Also check design notes in notebook.
 # TODO: Add and complete docstrings for functions.
 # TODO: Add edge weight as graph property.
-
+# TODO: Make every call relative to a project directory (e.g. ESCOM).
 
 
 
 
 ################################################
-#####     AUX CSV AND GRAPH PROCESSING     #####
+#####     FILE INPUT + OUTPUT + SAVING     #####
 ################################################
 
 
 def read_csv(filename):
     """ Read CSV file and return it as a pandas dataframe.
-    
-    Args:
-        filename
-    Returns:
-        dataframe
     """
     
     if isinstance(filename, str):
         filename = os.path.expanduser(filename)
-    
         # TODO: simplify using Pandas built-in from.csv
         with open(filename, "rb") as csvfile:
             spamreader = csv.reader(csvfile, quoting = csv.QUOTE_ALL)
             spamlist = list(spamreader)
             dataframe = pd.DataFrame(spamlist, columns = ["Timestamp", "Color", "X", "Y"])
-        
         return dataframe
     else:
         return filename
@@ -52,11 +46,6 @@ def read_csv(filename):
 
 def read_graph(graphin):
     """ Reads graph from .xml.gz file
-    
-    Args:
-        graphin:
-    Returns:
-        graph
     """
     
     if isinstance(graphin, str):
@@ -74,19 +63,15 @@ def save_graph(g, name, threshold, graphdir = None):
         name
         threshold
         graphdir
-    Returns:
-        saves graph
     """
     
     if graphdir:
         graphdir = os.path.expanduser(graphdir)
         # Build filename based on graphdir, name and threshold.
         graphnamegz = graphdir + "/graph_" + str(name) + "_" + str(threshold) + ".xml.gz"
-        
     else:
         # Build filename based on name and threshold, saves to current working directory.
         graphnamegz = "graph_" + str(name) + "_" + str(threshold) + ".xml.gz"
-    
     print graphnamegz
     # Now we can save it.
     g.save(graphnamegz)
@@ -111,10 +96,8 @@ def save_graph_img(g, name, threshold, graphdir = None):
         graphdir = os.path.expanduser(graphdir)
         print graphdir
         graphnameim = graphdir + "/graph_" + str(name) + "_" + str(threshold) + ".png"
-        
     else:
         graphnameim = "graph_" + str(name) + "_" + str(threshold) + ".png"
-    
     print graphnameim
     pos = g.vertex_properties["pos"]
     color = g.vertex_properties["color"]
@@ -137,22 +120,15 @@ def image_graph(filename, outdir = None):
     if outdir:
         if not os.path.isdir(outdir):
             os.mkdir(outdir)
-        
         fileext = filename.split("/")[-1]
         filename = fileext.split(".")[0]
-        
         graphnameim = outdir + filename + ".png"
-        
         # print graphnameim
-        
     else:
         filename = filename.split(".")[0]
         graphnameim = filename + ".png"
-        
         print graphnameim
-    
     g = load_graph(filename)
-    
     x = g.vertex_properties["x"]
     y = g.vertex_properties["y"]
     color = g.vertex_properties["color"]
@@ -167,6 +143,36 @@ def image_graph(filename, outdir = None):
                output = graphnameim)
 
 
+def create_df(savedir = None, colors = None):
+    """ Creates a pandas data frame for saving graph measures.
+    
+    Args:
+        savedir: directory to save "fulldata.csv" (optional). Defaults to current working directory.
+        colors: the colors for which data exists (optional). Defaults to ["red", "blue", "green", 
+                "full"]
+    Returns:
+        saves dataframe to savedir + "fulldata.csv"
+    """
+    
+    if not savedir:
+        savedir = os.getcwd()
+    if not colors:
+        colors = ["red", "blue", "green", "full"]
+    if savedir.endswith("/"):
+        filename = savedir + "fulldata.csv"
+    else:
+        filename = savedir + "/fulldata.csv"
+    values = ["n_vertices", "n_edges",
+              "local_clustering", "local_sd",
+              "global_clustering", "global_sd",
+              "vertex_average", "vertex_sd"]
+    # TODO: check if indexing and other parameters are necessary to set beforehand.
+    df1 = pd.DataFrame(columns = ["Frameno"])
+    # df1 = df1.set_index("Frameno")
+    for color in colors:
+        for value in values:
+            df1[value + "_" + color] = ""
+    df1.to_csv(filename)
 
 
 
@@ -181,21 +187,17 @@ def create_vertices(g, clist, xlist, ylist):
     
     vlist = []
     dlist = []
-    
     v_color = g.new_vertex_property("string")
     v_x = g.new_vertex_property("int")
     v_y = g.new_vertex_property("int")
     pos = g.new_vertex_property("vector<double>")
     
-    for i in range(len(clist)):
-        
+    for i in range(len(clist)):    
         v = g.add_vertex()
         v_color[v] = clist[i]
         v_x[v] = xlist[i]
         v_y[v] = ylist[i]
-        
         pos[i] = (v_x[i], v_y[i])
-        
         vlist.append(v)
     
     # Make properties internal.
@@ -218,10 +220,8 @@ def create_edges(g, vlist, v_x, v_y, threshold):
     
     for i in range(len(vlist)):
         for j in range(i + 1, len(vlist)):
-            
             distance = np.hypot(v_x[i] - v_x[j], v_y[i] - v_y[j]) 
             distancelist.append(distance)
-            
             if distance < threshold:
                 source = vlist[i]
                 target = vlist[j]
@@ -244,7 +244,6 @@ def create_base_graph(dataframe, name, threshold, graphdir = None):
     if graphdir:
         save_graph_img(g, name, threshold, graphdir)
         save_graph(g, name, threshold, graphdir)
-        
     else:
         # v_color, v_x, v_y, pos, e_weight
         save_graph(g, name, threshold)
@@ -260,7 +259,6 @@ def create_graph(filename, timestamp, threshold, graphdir = None):
     """
     
     centresdf = read_csv(filename)
-    
     timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
     
     if graphdir:
@@ -375,6 +373,8 @@ def get_local_cluster(graphin, savedir = None):
         localsd
     """
     
+    # TODO: write save_local_cluster to save data to file.
+    
     g = read_graph(graphin)
     
     if get_n_vertices(g) > 0:
@@ -397,13 +397,15 @@ def get_global_cluster(graphin):
         globalsd
     """
     
+    # TODO: write save_global_cluster to save data to file.
+    
     g = read_graph(graphin)
     (globalc, globalsd) = global_clustering(g)
     
     return globalc, globalsd
 
 
-def save_vertex_average(graphin):
+def get_vertex_average(graphin):
     """docstring for save_vertex_average
     
     Args:
@@ -413,6 +415,7 @@ def save_vertex_average(graphin):
         vertexsd
     """
     
+    # TODO: write save_vertex_average to save data to file.
     g = read_graph(graphin)
     
     if get_n_vertices(g) > 0:
@@ -427,6 +430,8 @@ def save_vertex_average(graphin):
 def save_graph_measures(graphin, savedir = None):
     """docstring for save_graph_measures
     
+    FULL graphs only.
+    
     Args:
         graphin:
     Returns:
@@ -436,19 +441,29 @@ def save_graph_measures(graphin, savedir = None):
     g = read_graph(graphin)
     
     # TODO: get frameno from graph name
-    
+    frameno = graphin.split("_")[-2]
     
     n_edges = get_n_edges(g)
     n_vertices = get_n_vertices(g)
     localc, localsd = get_local_cluster(g)
     globalc, globalsd = get_global_cluster(g)
     vertexav, vertexsd = get_vertex_average(g)
+    
+    threshold = graphin.split("_")[-1].split(".")[0]
+    
+    if savedir:
+        csvfile = savedir + "graphdata_full_" + threshold + ".csv"
+    else:
+        csvfile = "graphdata_full_" + threshold + ".csv"
+    
     # TODO: save to file (check if savefile exists, append to, etc.)
-    
-    # TODO: get threshold from graph name.
-    
-
-
+    if exists(csvfile):
+        with open_csvfile as bla:
+            append_data_to_file = []
+    else:
+        # create_csvfile (assign columns)
+        with open_csvfile as bla:
+            append_data_to_file = []
 
 
 
