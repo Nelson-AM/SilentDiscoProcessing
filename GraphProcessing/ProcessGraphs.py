@@ -340,6 +340,16 @@ def create_graphs_color(filename, threshold, color = None, graphdir = None):
 #######################################
 
 
+def get_frameno(graphin):
+    """ Extract frameno from filename. """
+    
+    if not isinstance(graphin, str):
+        raise TypeError("Graphin must be a string.")
+    
+    frameno = graphin.split("_")[-2]
+    return frameno
+
+
 def get_n_vertices(graphin):
     """ Reads graphs and returns number of vertices.
     
@@ -362,7 +372,7 @@ def get_n_edges(graphin):
     return g.num_edges()
 
 
-def get_local_cluster(graphin, savedir = None):
+def get_local_cluster(graphin):
     """docstring for save_local_clust
     
     Args:
@@ -471,13 +481,9 @@ def save_graph_measures(graphin, savedir = None):
 
 def save_graphs_list(graphdir, savedir = None):
     """ Save list of all graphs to textfile.
-    
-    Args:
-        graphdir:
-        savedir:
-    Returns:
-        saves textfile in savedir (or current directory if savedir == None)
     """
+    
+    # TODO: add threshold subdirectory support.
     
     graphdir = os.path.expanduser(graphdir)
     if not graphdir.endswith("/"):
