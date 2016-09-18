@@ -1,5 +1,5 @@
 # TODO: create script similar to ProcessVideo.py for graph processing.
-import os, shutil, glob, csv
+import os, shutil, glob, csv, sys
 import numpy as np
 import pandas as pd
 
@@ -500,7 +500,33 @@ def save_graphs_list(graphdir, savedir = None):
         for files in sorted(glob.glob(graphdir + "*.xml.gz")):
             f.write(files.split("/")[-1] + "\n")
 
+########################################
+#####         MISC SUPPORT         #####
+########################################
 
+
+def printProgress(iteration, total, prefix = "", suffix = "", decimals = 1, barLength = 100):
+    """ Call in a loop to create terminal progress bar.
+    
+    Params:
+        iteration
+        total
+        prefix
+        suffix
+        decimals
+        barLength
+    """
+    
+    formatStr = "{0:." + str(decimals) + "f}"
+    percents = formatStr.format(100 * (iteration / float(total)))
+    filledLength = int(round(barLength * iteration / float(total)))
+    bar = "X" * filledLength + "=" * (barLength - filledLength)
+    sys.stdout.write("\r%s |%s| %s%s %s" % (prefix, bar, percents, "%", suffix)),
+    sys.stdout.flush()
+    
+    if iteration == total:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
 
 
 
@@ -523,9 +549,9 @@ def get_n_vertices_color():
         # Return vertices with correct color propertymap.
 
 
-def global_clustering(graph):
-    """This function might do something with global clustering"""
-    pass
+# def global_clustering(graph):
+#    """This function might do something with global clustering"""
+#    pass
 
 
 def create_graph_color_test(filename, timestamp, threshold, color = None):

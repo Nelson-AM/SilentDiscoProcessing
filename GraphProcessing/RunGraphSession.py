@@ -1,12 +1,13 @@
 # TODO: create script similar to RunVideoSession.py for graph processing.
 
 import argparse
+import fnmatch
 from ProcessGraphs import *
 
 ap = argparse.ArgumentParser()
 
 # TODO: toggle when done debugging
-ap.add_argument("-wd", "--workingdir", help="Path to graphs directory.")
+ap.add_argument("-wd", "--workingdir", help="Path to working directory.")
 # parser.add_argument("integers", metavar="N", type=int, nargs="+", help="an integer for the accumulator")
 # ap.add_argument("-cgd", "--colordir", help = "Path to color graphs directory.")
 # ap.add_argument("-fcd", "--fulldir", help = "Path to full graphs directory.")
@@ -67,20 +68,30 @@ for typedir in typedirs:
     thresholddirs = os.listdir(os.getcwd())
     
     for threshold in thresholddirs:
+        
         print("Entering threshold directory: %s" % threshold)
+        os.chdir(threshold)
         
-        framedf = pd.DataFrame(columns = [typedir + "_frameno", 
-                                          typedir + "_vertices", 
-                                          typedir + "_edges"])
-        localdf = pd.DataFrame(columns = [typedir + "_local_cluster", 
-                                          typedir + "_local_sd"])
-        globaldf = pd.DataFrame(columns = [typedir + "_global_cluster",
-                                           typedir + "_global_sd"])
-        vertavdf = pd.DataFrame(columns = [typedir + "_vertex_average",
-                                           typedir + "_vertex_sd"])
+        framefile = csvdir + "framedata_" + typedir + "_" + threshold + ".csv"
+        localfile = csvdir + "localdata_" + typedir + "_" + threshold + ".csv"
+        globalfile = csvdir + "globaldata_" + typedir + "_" + threshold + ".csv"
+        vertexfile = csvdir + "vertexdata_" + typedir + "_" + threshold + ".csv"
         
+        framedf = pd.DataFrame(columns=[typedir + "_frameno", 
+                                        typedir + "_vertices", 
+                                        typedir + "_edges"])
+        localdf = pd.DataFrame(columns=[typedir + "_local_cluster", 
+                                        typedir + "_local_sd"])
+        globaldf = pd.DataFrame(columns=[typedir + "_global_cluster",
+                                         typedir + "_global_sd"])
+        vertavdf = pd.DataFrame(columns=[typedir + "_vertex_average",
+                                         typedir + "_vertex_sd"])
         
-        for filename in sorted(glob.glob(threshold + "/*.xml.gz")):
+        maxlength = len(fnmatch.filter(os.listdir(os.getcwd()), '*.xml.gz'))
+        i = float(0)
+        
+        for filename in sorted(glob.glob("*.xml.gz")):
+            
             g = read_graph(filename)
             frameno = get_frameno(filename)
             n_edge = get_n_vertices(g)
@@ -89,20 +100,30 @@ for typedir in typedirs:
             globalc, globalsd = get_global_cluster(g)
             vertexa, vertexsd = get_vertex_average(g)
             
-            framedf.append({typedir + "_frameno": frameno,
-                            typedir + "_vertices": n_edge,
-                            typedir + "_edges": n_vert})
-            localdf.append({typedir + "_local_cluster": localc,
-                            typedir + "_local_sd": localsd})
-            globaldf.append({typedir + "_global_cluster": globalc,
-                             typedir + "_global_sd": globalsd})
-            vertavdf.append({typedir + "_vertex_average": vertexa,
-                             typedir + "_vertex_sd": vertexsd})
+            framedf = framedf.append({typedir + "_frameno": frameno,
+                                      typedir + "_vertices": n_edge,
+                                      typedir + "_edges": n_vert},
+                                      ignore_index=True)
+            localdf = localdf.append({typedir + "_local_cluster": localc,
+                                      typedir + "_local_sd": localsd},
+                                      ignore_index=True)
+            globaldf = globaldf.append({typedir + "_global_cluster": globalc,
+                                        typedir + "_global_sd": globalsd},
+                                        ignore_index=True)
+            vertavdf = vertavdf.append({typedir + "_vertex_average": vertexa,
+                                        typedir + "_vertex_sd": vertexsd},
+                                        ignore_index=True)
+            
+            # TODO: add progress bar tracking i over number of filenames.
+            printProgress(i, maxlength, prefix="Progress:", suffix="Complete", barLength=50)
+            i += 1
+            
+        framedf.to_csv(framefile, sep=",")
+        localdf.to_csv(localfile, sep=",")
+        globaldf.to_csv(globalfile, sep=",")
+        vertavdf.to_csv(vertexfile, sep=",")
         
-        # TODO: save dataframes.
-        print("Going up one directory, back to type.")
         os.chdir("..")
-    
+        
     print("Going back to: %s" % graphdir)
     os.chdir(graphdir)
-
