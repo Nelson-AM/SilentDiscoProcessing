@@ -35,11 +35,13 @@ def read_csv(filename):
     if isinstance(filename, str):
         filename = os.path.expanduser(filename)
         # dataframe = pd.read_csv(filename)
-        # TODO: simplify using Pandas built-in read_csv
-        with open(filename, "rb") as csvfile:
-            spamreader = csv.reader(csvfile, quoting = csv.QUOTE_ALL)
-            spamlist = list(spamreader)
-            dataframe = pd.DataFrame(spamlist, columns = ["Timestamp", "Color", "X", "Y"])
+        # CHANGED: simplify using Pandas built-in read_csv
+        dataframe = pd.read_csv(filename)
+        
+        # with open(filename, "rb") as csvfile:
+        #    spamreader = csv.reader(csvfile, quoting = csv.QUOTE_ALL)
+        #    spamlist = list(spamreader)
+        #    dataframe = pd.DataFrame(spamlist, columns = ["Timestamp", "Color", "X", "Y"])
         return dataframe
     else:
         return filename
