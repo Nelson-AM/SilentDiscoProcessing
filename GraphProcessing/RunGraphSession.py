@@ -62,12 +62,17 @@ os.chdir(graphdir)
 typedirs = os.listdir(os.getcwd())
 
 for typedir in typedirs:
+    if typedir == ".DS_Store":
+        continue
+    
     print("Entering type directory: %s" % typedir)
     os.chdir(typedir)
     
     thresholddirs = os.listdir(os.getcwd())
     
     for threshold in thresholddirs:
+        if threshold == ".DS_Store":
+            continue
         
         print("Entering threshold directory: %s" % threshold)
         os.chdir(threshold)

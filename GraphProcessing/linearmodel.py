@@ -16,6 +16,12 @@ rcParams['figure.figsize'] = 15, 6
 # library(heplots)
 
 # TODO: read csv 
+data = pd.read_csv("/Volumes/SAMSUNG/ESCOM/localdata_150.csv", index_col="full_frameno")
+# print data.head()
+# print "\n Data types:"
+# print data.dtypes
+
+print data.index
 
 # TODO: transform dataframes to timeseries
 # gts = greendf["localcluster"]

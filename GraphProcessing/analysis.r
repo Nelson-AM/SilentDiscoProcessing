@@ -2,25 +2,46 @@ library(car)
 library(heplots)
 
 # Read data from csv.
-redpath <- "/Volumes/SAMSUNG/csv/reddata_t150.csv"
-greenpath <- "/Volumes/SAMSUNG/csv/greendata_t150.csv"
+localpath <- "localdata_150.csv"
 
-reddata <- read.csv(redpath, header = T, dec = ".", sep = ",")
-greendata <- read.csv(greenpath, header = T, dec = ".", sep = ",")
+localdata <- read.csv(localpath, header = T, dec = ".", sep = ",")
+# loalcadata <- as.matrix(localdata)
 
-print(reddata)
-# Define time_segments
+# Define groups
+n = 2
+k = 36949
+group <- gl(n, k, n * k, labels = c("green_local_cluster", "red_local_cluster"))
 
-# A typical model (first variable of lm) has the following form:
-# 	response ~ terms
-# where response is the (numeric) response vector and terms is a series of terms which specifies a linear predictor for response.  A terms specification of the form first * second
+# Define time segments
+# Replace ranges of frame numbers with numbers 1:n
+# Define cutpoints:
+cut_1 = (1/4)*lengths(localdata["full_frameno"])
+cut_2 = (2/4)*lengths(localdata["full_frameno"])
+cut_3 = (3/4)*lengths(localdata["full_frameno"])
+
+(segments <- rep(NA, lengths(localdata["full_frameno"])))
+segments[1:cut_1] = 1
+segments[cut_1:cut_2] = 2
+segments[cut_2:cut_3] = 3
+segments[cut_3:length(segments)] = 4
+
+# Then convert to a factor
+twosegments = c(segments, segments)
+time_segment <- factor(twosegments)
+
+# Define dependent variable (clustering measures)
+dep_var <- c(as.numeric(unlist(localdata["green_local_cluster"])), 
+             as.numeric(unlist(localdata["red_local_cluster"])))
+
+
 
 # Response is a vector of values for a channel (in a given time segment).
 # Terms is two things: 
 
-myfit <- lm(dependent_variable ~ channel * time_segment, data = mydata)
+# myfit <- lm(dep_var ~ group, data = localdata)
+myfit <- lm(dep_var ~ group * time_segment, data = localdata)
 
 
 # myfit <- lm(dep_var ~ channel * time_segment, data = mydata)
-# Anova(my_fit)
-# etasq(my_fit, type = 2)
+Anova(myfit)
+etasq(myfit, type = 2)

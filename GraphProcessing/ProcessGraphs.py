@@ -18,7 +18,7 @@ from matplotlib import pyplot as plt
 # NOTE: Also check design notes in notebook.
 # TODO: Add and complete docstrings for functions.
 # TODO: Add edge weight as graph property.
-# TODO: Make every call relative to a project directory (e.g. ESCOM).
+# TODO: Make every directory / file path relative to a project directory (e.g. ESCOM).
 
 
 
@@ -34,7 +34,8 @@ def read_csv(filename):
     
     if isinstance(filename, str):
         filename = os.path.expanduser(filename)
-        # TODO: simplify using Pandas built-in from.csv
+        # dataframe = pd.read_csv(filename)
+        # TODO: simplify using Pandas built-in read_csv
         with open(filename, "rb") as csvfile:
             spamreader = csv.reader(csvfile, quoting = csv.QUOTE_ALL)
             spamlist = list(spamreader)
@@ -72,7 +73,7 @@ def save_graph(g, name, threshold, graphdir = None):
     else:
         # Build filename based on name and threshold, saves to current working directory.
         graphnamegz = "graph_" + str(name) + "_" + str(threshold) + ".xml.gz"
-    print graphnamegz
+    # print graphnamegz
     # Now we can save it.
     g.save(graphnamegz)
 
@@ -242,12 +243,12 @@ def create_base_graph(dataframe, name, threshold, graphdir = None):
     create_edges(g, vlist, v_x, v_y, threshold)
     
     if graphdir:
-        save_graph_img(g, name, threshold, graphdir)
         save_graph(g, name, threshold, graphdir)
+        # save_graph_img(g, name, threshold, graphdir)
     else:
         # v_color, v_x, v_y, pos, e_weight
         save_graph(g, name, threshold)
-        save_graph_img(g, name, threshold)
+        # save_graph_img(g, name, threshold)
     
     return g
 
@@ -284,12 +285,21 @@ def create_graph_color(filename, timestamp, threshold, color, graphdir = None):
     """ Creates graph from data in CSV file for specified timepoint and color.
     """
     
-    centresdf = read_csv(filename)
+    if isinstance(filename, str):
+        centresdf = read_csv(filename)
+    else:
+        centresdf = filename
     
     timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
     timecolordf = timedf.loc[timedf["Color"] == color]
     
-    graphname = color + "_" + str(timestamp)
+    # TODO: soft-code value! Based on max number of frames in video / csvfile.
+    if len(str(timestamp)) < 6:
+        timestamp = str(timestamp).rjust(6, "0")
+    else:
+        timestamp = str(timestamp)
+    
+    graphname = color + "_" + timestamp
     if graphdir:
         g = create_base_graph(timecolordf, graphname, threshold, graphdir)
     else:

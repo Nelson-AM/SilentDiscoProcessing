@@ -12,6 +12,8 @@ trt <- c(4.81, 4.17, 4.41, 3.59, 5.87, 3.83, 6.03, 4.89, 4.32, 4.69)
 #	k = 10 replications for each level.
 #	length = n * k
 group <- gl(2, 10, 20, labels = c("Ctl", "Trt"))
+print("groups:")
+print(group)
 
 # weight: 
 weight <- c(ctl, trt)

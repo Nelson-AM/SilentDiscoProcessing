@@ -2,56 +2,22 @@
 
 from ProcessImage import *
 from ProcessVideo import *
-from GraphModeling import *
+from ProcessGraphs import *
 from graph_tool.all import *
 import cv2
 
 from matplotlib import pyplot as plt
 import numpy as np
 
-""" 
-ProcessImage is imported to process individual video frames, to find the image moments and their 
-             centres.  Centres can be saved into a CSV file for further processing by GraphModeling.
-             Shares some functions with ProcessVideo.
+centresfile = "/Volumes/SAMSUNG/MOSI/csv/split_colors_10.csv"
 
-ProcessVideo is imported to process video files, extract frames from them and either save or return
-             them for further processing.  Uses some functions from ProcessImage.
-
-GraphModeling is imported to process CSV files containing information on the centres and build 
-              graphs from this data.  Graphs are currently saved on a per-frame and per-threshold
-              basis.
-"""
-
-
-########################################
-#####        GRAPH MODELING        #####
-########################################
-
-# Specify the file locations. Home directory can be referred to using the tilde (~).
-# videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
-# centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
-
-centresfile = "/Volumes/SAMSUNG/ESCOM/csv/allframes.csv"
-# centresfile = "/Volumes/SAMSUNG/ESCOM/centresperframe_masked.csv"
-
-# Using a single threshold and single timepoint.  These can be looped over if necessary.
-# timestamp = 150354
-
-# thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400] # , 500, 600, 700, 800, 900]
+# thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400, 500, 600, 700, 800, 900]
 thresholdrange = [150]
-# threshold = 50
 
-# create_graphs_color (note: plural) builds one graph for each timepoint in the input file.  The color argument is optional, if no color is given then it will automatically create graphs for red, green and blue.  The graphs are saved as xml.gz files, images of the graphs are saved as well, with the vertices in their approximated real-world location.
-# create_graph_color(centresfile, timestamp, threshold, "red", graphdir = None)
-# create_graph_color(centresfile, timestamp, threshold, "green", graphdir = None)
-
-# In case of the shared CSV file, looping over all timestamps:
-frame_start = 76710
+frame_start = 1 
 frame_step = 10
-frame_stop = 76800
-# frame_stop = 10000
+frame_stop = 139201
 frame_total = frame_stop + 1
-# frame_stop = 369490
 
 def errorfill(x, y, yerr, color = None, alpha_fill = 0.3, ax = None):
     ax = ax if ax is not None else plt.gca()
@@ -65,21 +31,39 @@ def errorfill(x, y, yerr, color = None, alpha_fill = 0.3, ax = None):
     ax.plot(x, y, color = color)
     ax.fill_between(x, ymax, ymin, color = color, alpha = alpha_fill)
 
-savedir = "/Volumes/SAMSUNG/fixedgraphs"
+savedir = "/Volumes/SAMSUNG/MOSI/graphs/"
 
 if not os.path.isdir(savedir):
     os.mkdir(savedir)
 
+centresfile = read_csv(centresfile)
+
 for threshold in thresholdrange:
     
-    fulldf = pd.DataFrame(columns = ['frameno', 'localcluster', 'globalcluster',
-                                      'globalsd', 'vertexaverage', 'vertexsd'])
+    # fulldf = pd.DataFrame(columns = ['frameno', 'localcluster', 'globalcluster', 'globalsd', 'vertexaverage', 'vertexsd'])
+    
+    reddir = savedir + "red_" + str(threshold)
+    greendir = savedir + "green_" + str(threshold)
+    bluedir = savedir + "blue_" + str(threshold)
+    if not os.path.isdir(reddir):
+        os.mkdir(reddir)
+    if not os.path.isdir(greendir):
+        os.mkdir(greendir)
+    if not os.path.isdir(bluedir):
+        os.mkdir(bluedir)
+    
+    print threshold
     
     for i in range(frame_start, frame_total, frame_step):
-        print i
+        # print i
         
         # Get graph for current frame and threshold.
-        g = create_graph(centresfile, i, threshold, savedir)
+        g_red = create_graph_color(centresfile, i, threshold, "red", graphdir=reddir)
+        g_red = create_graph_color(centresfile, i, threshold, "green", graphdir=greendir)
+        g_blue = create_graph_color(centresfile, i, threshold, "blue", graphdir=bluedir)
+        
+        printProgress(i, frame_total, 
+                      prefix="Progress:", suffix="Complete", barLength=50)
     
     """
         

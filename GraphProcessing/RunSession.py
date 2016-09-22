@@ -32,7 +32,7 @@ GraphModeling is imported to process CSV files containing information on the cen
 # videofile = "/Volumes/SAMSUNG/TX-BACK UP_21.mov"
 # centresfile = "/Volumes/SAMSUNG/centres10frames_masked_xy.csv"
 
-centresfile = "/Volumes/SAMSUNG/ESCOM/allframes.csv"
+centresfile = "/Volumes/WDE/ESCOM/csv/centres/allframes.csv"
 # centresfile = "/Volumes/SAMSUNG/ESCOM/centresperframe_masked.csv"
 
 # Using a single threshold and single timepoint.  These can be looped over if necessary.
