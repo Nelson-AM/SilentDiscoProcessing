@@ -2,7 +2,7 @@ library(car)
 library(heplots)
 
 # Read data from csv.
-localpath <- "localdata_150.csv"
+localpath <- "/Volumes/SAMSUNG/ESCOM/localdata_150.csv"
 
 localdata <- read.csv(localpath, header = T, dec = ".", sep = ",")
 # loalcadata <- as.matrix(localdata)
@@ -12,18 +12,32 @@ n = 2
 k = 36949
 group <- gl(n, k, n * k, labels = c("green_local_cluster", "red_local_cluster"))
 
+
+create_segments <- function(n_segments){
+    segments = matrix(data = NaN, ncol = lengths(localdata["full_frameno"]))
+    cuts = matrix(data = NaN, ncol = n_segments - 1)
+    
+    for (i in 1:length(cuts)){
+        cuts[i] = (i / n_segments) * length(segments)
+        cat(cuts[i])
+    }
+    for (i in 1:n_segments){
+        if (i == 1){
+            segments[1:cuts[i]] = i
+        } else if (i == n_segments) {
+            segments[cuts[i - 1]:length(segments)] = i
+        } else {
+            segments[cuts[i - 1]:cuts[i]] = i
+        }
+    }
+    return(segments)
+}
+
+
 # Define time segments
 # Replace ranges of frame numbers with numbers 1:n
-# Define cutpoints:
-cut_1 = (1/4)*lengths(localdata["full_frameno"])
-cut_2 = (2/4)*lengths(localdata["full_frameno"])
-cut_3 = (3/4)*lengths(localdata["full_frameno"])
-
-(segments <- rep(NA, lengths(localdata["full_frameno"])))
-segments[1:cut_1] = 1
-segments[cut_1:cut_2] = 2
-segments[cut_2:cut_3] = 3
-segments[cut_3:length(segments)] = 4
+n_segments = 30
+segments = create_segments(n_segments)
 
 # Then convert to a factor
 twosegments = c(segments, segments)
@@ -41,7 +55,5 @@ dep_var <- c(as.numeric(unlist(localdata["green_local_cluster"])),
 # myfit <- lm(dep_var ~ group, data = localdata)
 myfit <- lm(dep_var ~ group * time_segment, data = localdata)
 
-
-# myfit <- lm(dep_var ~ channel * time_segment, data = mydata)
 Anova(myfit)
 etasq(myfit, type = 2)

@@ -512,6 +512,54 @@ def save_graphs_list(graphdir, savedir = None):
         for files in sorted(glob.glob(graphdir + "*.xml.gz")):
             f.write(files.split("/")[-1] + "\n")
 
+
+
+########################################
+#####        DATA PROCESSING       #####
+########################################
+
+
+def smooth_data(dataframe, span = None):
+    """docstring for smooth_data"""
+    
+    dataframe = read_csv(dataframe)
+    
+    if not span:
+        span = 50
+        print "Using the default kernel size: 50"
+    
+    # TODO: check or make sure that frameno is the index, or is ignored.
+    for column in dataframe:
+        if "frameno" in column:
+            print "I'm skipping the frame data."
+            smoothdf = pd.DataFrame(dataframe[column])
+            print smoothdf.head()
+            continue
+        elif "Unnamed" in column:
+            print "I'm skipping any unnamed columns"
+            continue
+        if "sd" in column:
+            newcol = column.rsplit("_", 1)[0] + "_s" + str(span) + "_" + column.rsplit("_", 1)[-1]
+        else:
+            newcol = column.rsplit("_", 1)[0] + "_s" + str(span)
+        print newcol
+        
+        smoothdf[newcol] = pd.ewma(dataframe[column], span=span)
+    return smoothdf, span
+
+def save_smooth_data(dataframe, span = None):
+    """docstring for save_smooth_data(dataframe)"""
+    
+    smoothdf, span = smooth_data(dataframe, span)
+    # TODO: save smoothed dataframe
+    
+    savepath = dataframe.rsplit("/", 1)[0] + "/"
+    savefile = dataframe.rsplit("/", 1)[-1].split(".", 1)[0] + "_" + str(span) + ".csv"
+    smoothdf.to_csv(savepath + savefile)
+    
+    return smoothdf
+
+
 ########################################
 #####         MISC SUPPORT         #####
 ########################################
