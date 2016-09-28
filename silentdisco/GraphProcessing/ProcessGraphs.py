@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 
 
 ################################################
-#####          GENERAL TO-DO LIST          #####
+#####              TO-DO LIST              #####
 ################################################
 
 
@@ -34,14 +34,7 @@ def read_csv(filename):
     
     if isinstance(filename, str):
         filename = os.path.expanduser(filename)
-        # dataframe = pd.read_csv(filename)
-        # CHANGED: simplify using Pandas built-in read_csv
         dataframe = pd.read_csv(filename)
-        
-        # with open(filename, "rb") as csvfile:
-        #    spamreader = csv.reader(csvfile, quoting = csv.QUOTE_ALL)
-        #    spamlist = list(spamreader)
-        #    dataframe = pd.DataFrame(spamlist, columns = ["Timestamp", "Color", "X", "Y"])
         return dataframe
     else:
         return filename
@@ -70,30 +63,22 @@ def save_graph(g, name, threshold, graphdir = None):
     
     if graphdir:
         graphdir = os.path.expanduser(graphdir)
-        # Build filename based on graphdir, name and threshold.
         graphnamegz = graphdir + "/graph_" + str(name) + "_" + str(threshold) + ".xml.gz"
     else:
-        # Build filename based on name and threshold, saves to current working directory.
         graphnamegz = "graph_" + str(name) + "_" + str(threshold) + ".xml.gz"
-    # print graphnamegz
-    # Now we can save it.
     g.save(graphnamegz)
 
 
 def save_graph_img(g, name, threshold, graphdir = None):
     """ Saves png image of graph g with vertices at "real" locations.
     
-    Plots vertices based on x- and y-coordinates, making visualisation correspond to real-life 
-    situation.
-    
-    Args:
-    Returns:
+    Plots vertices based on x- and y-coordinates, making visualisation correspond more-or-less to 
+    real-life situation.
     """
     
     # TODO: take into account edge weight (line thickness or opacity)
-    # TODO: fill in vertices as color that they represent.
     
-    if isinstance(g, basestring):
+    if isinstance(g, str):
         g = load_graph(g, directed = False)
     if graphdir:
         graphdir = os.path.expanduser(graphdir)
@@ -115,9 +100,6 @@ def save_graph_img(g, name, threshold, graphdir = None):
 
 def image_graph(filename, outdir = None):
     """ Takes a saved graph and saves it as an image.
-    
-    Args:
-    Returns:
     """
     
     if outdir:
@@ -126,11 +108,9 @@ def image_graph(filename, outdir = None):
         fileext = filename.split("/")[-1]
         filename = fileext.split(".")[0]
         graphnameim = outdir + filename + ".png"
-        # print graphnameim
     else:
         filename = filename.split(".")[0]
         graphnameim = filename + ".png"
-        print graphnameim
     g = load_graph(filename)
     x = g.vertex_properties["x"]
     y = g.vertex_properties["y"]
@@ -347,6 +327,89 @@ def create_graphs_color(filename, threshold, color = None, graphdir = None):
 
 
 
+########################################
+#####        VISUALISATION         #####
+########################################
+
+
+def setup_axes():
+    """docstring for setup_axes"""
+    fig, ax = plt.subplots()
+    return fig, ax
+    
+def lineplot(x, ys, colors, ax=None):
+    """docstring for lineplots"""
+    
+    if not ax:
+        testfigure, ax = setup_axes()
+    
+    for y, color in zip(ys, colors):
+        ax.plot(x, y, color)
+    # plt.savefig("/Volumes/SAMSUNG/testplot.png")
+
+def smoothies(ys, span=None):
+    """docstring for smoothies"""
+    
+    if not span:
+        span = 50
+    smoothys = []
+    for y in range(len(ys)):
+        smoothy = pd.ewma(ys[y], span=span)
+        smoothys.append(smoothy)
+    return smoothys
+
+
+def lineplot_smooth(x, ys, colors, ax, span=None):
+    """docstring for lineplot_smooth"""
+    
+    if not ax:
+        smoothfig, ax = setup_axes()
+    smoothys = smoothies(ys, span)
+    lineplot(x, smoothys, colors=colors, ax=ax)
+    
+
+def errorplot(x, ys, yerrors, colors, ax):
+    """docstring for errorplot"""
+    
+    for y, yerror, color in zip(ys, yerrors, colors):
+        ax.fill_between(x, y - yerror, y + yerror, color=color, alpha=0.25)
+    
+
+def errorplot_smooth(x, ys, yerrors, colors, ax, span=None):
+    """docstring for errorplot_smooth"""
+    
+    smoothys = smoothies(ys, span)
+    smoothyerrors = smoothies(yerrors, span)
+    errorplot(x, smoothys, smoothyerrors, colors, ax)
+
+
+def errorfill_smooth(x, ys, yerrors, colors, span=None, ax=None):
+    """docstring for errorfill"""
+    
+    if not span:
+        span = 50
+    if not ax:
+        errorfig, ax = setup_axes()
+    
+    print min(x)
+    print max(x)
+    lineplot_smooth(x, ys, colors, ax, span)
+    errorplot_smooth(x, ys, yerrors, colors, ax, span)
+    axes = plt.gca()
+    axes.set_xlim([min(x), max(x)])
+    plt.savefig("/Volumes/SAMSUNG/testerrorfill.png")
+
+
+def errorfill():
+    """docstring for errorfill"""
+    pass
+
+
+
+
+
+
+
 #######################################
 #####     STRUCTURAL ANALYSIS     #####
 #######################################
@@ -547,8 +610,15 @@ def smooth_data(dataframe, span = None):
         smoothdf[newcol] = pd.ewma(dataframe[column], span=span)
     return smoothdf, span
 
+
 def save_smooth_data(dataframe, span = None):
-    """docstring for save_smooth_data(dataframe)"""
+    """ Smooths data in dataframe and saves it to file.
+    
+    The new filename is based on the original name and location.
+    
+    Args:
+        dataframe: path to csv file.
+    """
     
     smoothdf, span = smooth_data(dataframe, span)
     # TODO: save smoothed dataframe
