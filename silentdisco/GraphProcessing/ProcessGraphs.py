@@ -391,13 +391,10 @@ def errorfill_smooth(x, ys, yerrors, colors, span=None, ax=None):
     if not ax:
         errorfig, ax = setup_axes()
     
-    print min(x)
-    print max(x)
     lineplot_smooth(x, ys, colors, ax, span)
     errorplot_smooth(x, ys, yerrors, colors, ax, span)
     axes = plt.gca()
     axes.set_xlim([min(x), max(x)])
-    plt.savefig("/Volumes/SAMSUNG/testerrorfill.png")
 
 
 def errorfill():

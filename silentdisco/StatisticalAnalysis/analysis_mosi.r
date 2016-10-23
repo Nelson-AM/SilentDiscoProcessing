@@ -1,23 +1,22 @@
 library(car)
 library(heplots)
 
-# TODO: translate analysis to python.
+# TODO: integrate analysis with python code.
 
 # Read data from csv.
-# TODO: update path and labels
-path <- "/Volumes/SAMSUNG/ESCOM/vertexdata_150.csv"
-greenlabel <- "green_vertex_average"
-redlabel <- "red_vertex_average"
+path <- "/Volumes/SAMSUNG/MOSI/csv/globaldata_150.csv"
+
+redlabel <- "red_global_cluster"
+greenlabel <- "green_global_cluster"
+bluelabel <- "blue_global_cluster"
 
 csvdata <- read.csv(path, header = T, dec = ".", sep = ",")
 
-# Define groups
-n = 2
-k = 36949
+# Define groups.
+n = 3
+k = 13921
 
-# TODO: update labels
-group <- gl(n, k, n * k, labels = c(greenlabel, redlabel))
-
+group <- gl(n, k, n * k, labels = c(redlabel, greenlabel, bluelabel))
 
 # TODO: fix function, somehow last value is 
 create_segments <- function(n_segments){
@@ -44,16 +43,17 @@ create_segments <- function(n_segments){
 
 # Define time segments
 # Replace ranges of frame numbers with numbers 1:n
-n_segments = 60
+n_segments = 15
 segments = create_segments(n_segments)
 
 # Then convert to a factor
-twosegments = c(segments, segments)
-time_segment <- factor(twosegments)
+threesegments = c(segments, segments, segments)
+time_segment <- factor(threesegments)
 
 # Define dependent variable (clustering measures)
-dep_var <- c(as.numeric(unlist(csvdata[greenlabel])), 
-             as.numeric(unlist(csvdata[redlabel])))
+dep_var <- c(as.numeric(unlist(csvdata[redlabel])), 
+             as.numeric(unlist(csvdata[greenlabel])),
+             as.numeric(unlist(csvdata[bluelabel])))
 
 # Response is a vector of values for a channel (in a given time segment).
 # Terms is two things: 
