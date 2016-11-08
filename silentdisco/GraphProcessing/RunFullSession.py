@@ -1,5 +1,10 @@
 # RunSession
 
+# TODO: fix imports for relative paths.
+
+import sys
+sys.path.insert(0, "../VideoProcessing")
+
 from ProcessImage import *
 from ProcessVideo import *
 from ProcessGraphs import *
@@ -12,7 +17,7 @@ import numpy as np
 centresfile = "/Volumes/SAMSUNG/MOSI/csv/split_colors_10.csv"
 
 # thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400, 500, 600, 700, 800, 900]
-thresholdrange = [150]
+thresholdrange = [200]
 
 frame_start = 1 
 frame_step = 10

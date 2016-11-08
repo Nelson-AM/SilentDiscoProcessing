@@ -32,7 +32,7 @@ create_segments <- function(n_segments){
     return(segments)
 }
 
-for(i in 1:length(testval)) {
+for(i in 1:length(thresholds)) {
 	inpath <- paste(barepath, filename, toString(thresholds[i]), extension, sep="")
 	sumpath <- paste(barepath, "results/global_", toString(thresholds[i]), "summary.r", sep="")
 	etapath <- paste(barepath, "results/global_", toString(thresholds[i]), "etasq.r", sep="")
