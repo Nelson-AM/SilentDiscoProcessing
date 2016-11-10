@@ -272,7 +272,7 @@ def create_graph_color(filename, timestamp, threshold, color, graphdir = None):
     else:
         centresdf = filename
     
-    timedf = centresdf.loc[centresdf["Timestamp"] == str(timestamp)]
+    timedf = centresdf.loc[centresdf["Timestamp"] == timestamp]
     timecolordf = timedf.loc[timedf["Color"] == color]
     
     # TODO: soft-code value! Based on max number of frames in video / csvfile.
