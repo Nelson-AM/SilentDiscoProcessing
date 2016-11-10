@@ -1,0 +1,11 @@
+opencv (2.4.13.1)
+plus dependencies
+
+graph-tool (2.18)
+plus dependencies
+see: https://graph-tool.skewed.de/download
+
+pip installable:
+bumpy (1.11.2)
+pandas (0.19.1)
+scipy (0.18.1)
