@@ -38,14 +38,13 @@ for(i in 1:length(thresholds)) {
 	etapath <- paste(barepath, "results/global_", toString(thresholds[i]), "etasq.r", sep="")
 	anopath <- paste(barepath, "results/global_", toString(thresholds[i]), "anova.r", sep="")
 	
-	csvdata <- read.csv(inpath, header = T, dec = ".", sep = ",")
+	csvdata <- read.csv(inpath, header=T, dec=".", sep=",")
 
 	# Define groups
 	n = 2
 	k = 36949
 
 	group <- gl(n, k, n * k, labels = c(greenlabel, redlabel))
-
 
 	# Define time segments
 	# Replace ranges of frame numbers with numbers 1:n
@@ -63,12 +62,9 @@ for(i in 1:length(thresholds)) {
 	# Response is a vector of values for a channel (in a given time segment).
 	# Terms is two things: 
 	myfit <- lm(dep_var ~ group * time_segment, data = csvdata)
-
-	Anova(myfit)
-	etasq(myfit, type = 2)
 	
 	sumout <- capture.output(summary(myfit))
-	etaout <- capture.output(etasq(myfit))
+	etaout <- capture.output(etasq(myfit, type=2))
 	anoout <- capture.output(Anova(myfit))
 	
 	cat("Myfit summary", sumout, file=sumpath, sep="\n", append=TRUE)

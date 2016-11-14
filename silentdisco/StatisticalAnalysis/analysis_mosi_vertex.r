@@ -3,14 +3,14 @@ library(heplots)
 
 # TODO: integrate analysis with python code.
 
-barepath <- "/Volumes/SAMSUNG/ESCOM/"
-filename <- "vertexdata_"
+barepath <- "/Volumes/SAMSUNG/MOSI/"
+filename <- "csv/vertexdata_"
 thresholds <- c(150, 200, 250)
 extension <- ".csv"
 
-greenlabel <- "green_vertex_average"
 redlabel <- "red_vertex_average"
-# Read data from csv.
+greenlabel <- "green_vetex_average"
+bluelabel <- "blue_vertex_average"
 
 create_segments <- function(n_segments){
     segments = matrix(data = NaN, ncol = lengths(csvdata["full_frameno"]))
@@ -32,43 +32,44 @@ create_segments <- function(n_segments){
     return(segments)
 }
 
-for(i in 1:length(testval)) {
+for(i in 1:length(thresholds)) {
 	inpath <- paste(barepath, filename, toString(thresholds[i]), extension, sep="")
 	sumpath <- paste(barepath, "results/vertex_", toString(thresholds[i]), "summary.r", sep="")
 	etapath <- paste(barepath, "results/vertex_", toString(thresholds[i]), "etasq.r", sep="")
 	anopath <- paste(barepath, "results/vertex_", toString(thresholds[i]), "anova.r", sep="")
 	
-	csvdata <- read.csv(inpath, header = T, dec = ".", sep = ",")
-
+	csvdata <- read.csv(inpath, header=T, dec=".", sep=",")
+	
 	# Define groups
-	n = 2
-	k = 36949
-
-	group <- gl(n, k, n * k, labels = c(greenlabel, redlabel))
-
-
+	# TODO: check if groups are properly defined.
+	n = 3
+	k = 13921
+	
+	group <- gl(n, k, n * k, labels=c(redlabel, greenlabel, bluelabel))
+	
 	# Define time segments
 	# Replace ranges of frame numbers with numbers 1:n
-	n_segments = 60
+	n_segments = 15
 	segments = create_segments(n_segments)
-
+	
 	# Then convert to a factor
-	twosegments = c(segments, segments)
-	time_segment <- factor(twosegments)
-
+	threesegments = c(segments, segments, segments)
+	time_segment = factor(threesegments)
+	
 	# Define dependent variable (clustering measures)
-	dep_var <- c(as.numeric(unlist(csvdata[greenlabel])), 
-				 as.numeric(unlist(csvdata[redlabel])))
-
+	dep_var <- c(as.numeric(unlist(csvdata[redlabel])),
+				 as.numeric(unlist(csvdata[greenlabel])),
+				 as.numeric(unlist(csvdata[bluelabel])))
+	
 	# Response is a vector of values for a channel (in a given time segment).
-	# Terms is two things: 
-	myfit <- lm(dep_var ~ group * time_segment, data = csvdata)
+	# Terms is two things:
+	myfit <- lm(dep_var ~ group * time_segment, data=csvdata)
 	
 	sumout <- capture.output(summary(myfit))
 	etaout <- capture.output(etasq(myfit, type=2))
 	anoout <- capture.output(Anova(myfit))
 	
 	cat("Myfit summary", sumout, file=sumpath, sep="\n", append=TRUE)
-	cat("Myfit Anova", anoout, file=anopath, sep="\n", append=TRUE)
-	cat("Myfit etasq", etaout, file=etapath, sep="\n", append=TRUE)
+	cat("Myfit Anova", sumout, file=anopath, sep="\n", append=TRUE)
+	cat("Myfit etasq", sumout, file=etapath, sep="\n", append=TRUE)
 }
