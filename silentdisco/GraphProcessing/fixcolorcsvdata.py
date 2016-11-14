@@ -11,54 +11,62 @@ rcParams['figure.figsize'] = 15, 6
 # Construct argument parser and parse arguments.
 ap = argparse.ArgumentParser()
 
-ap.add_argument("-g", "--greencsv", help = "Path to green csv file.")
-ap.add_argument("-r", "--redcsv", help = "Path to red csv file.")
+ap.add_argument("-r", "--redcsv", help="Path to red csv file.")
+ap.add_argument("-g", "--greencsv", help="Path to green csv file.")
+ap.add_argument("-b", "--bluecsv", help="Path to blue csv file.")
 args = vars(ap.parse_args())
 
-greencsv = args["greencsv"]
 redcsv = args["redcsv"]
+greencsv = args["greencsv"]
+bluecsv = args["bluecsv"]
 
-greencsv = os.path.expanduser(greencsv)
 redcsv = os.path.expanduser(redcsv)
+greencsv = os.path.expanduser(greencsv)
+bluecsv = os.path.expanduser(bluecsv)
 
 # Read read and green csv into dataframe.
-greendf = pd.read_csv(greencsv) #, index_col = "frameno")
 reddf = pd.read_csv(redcsv) #, index_col = "frameno")
+greendf = pd.read_csv(greencsv) #, index_col = "frameno")
+bluedf = pd.read_csv(bluecsv)
+
 
 # Create new dataframes.
-"""
-localdf = pd.DataFrame(columns = ["greenframe", "redframe", 
+localdf = pd.DataFrame(columns = ["redframe", "greenframe", "blueframe", 
+                                  "red", "redsd",
                                   "green", "greensd", 
-                                  "red", "redsd", "segment"])
-globaldf = pd.DataFrame(columns = ["greenframe", "redframe",
-                                   "green", "greensd",
-                                   "red", "redsd", "segment"])
-vertavdf = pd.DataFrame(columns = ["greenframe", "redframe", 
-                                   "green", "greensd", 
-                                   "red", "redsd", "segment"])
-"""
+                                  "blue", "bluesd", "segment"])
+globaldf = pd.DataFrame(columns = ["redframe", "greenframe", "blueframe", 
+                                  "red", "redsd",
+                                  "green", "greensd", 
+                                  "blue", "bluesd", "segment"])
+vertavdf = pd.DataFrame(columns = ["redframe", "greenframe", "blueframe", 
+                                  "red", "redsd",
+                                  "green", "greensd", 
+                                  "blue", "bluesd", "segment"])
 
 savedir = str(greencsv.rsplit("/", 1)[0])
 threshold = str(greencsv.rsplit("_", 1)[-1])
 print savedir
 print threshold
 
-# Check if the index columns (frameno) are the same for red and green.
 """
-for gframes, rframes in zip(greendf["frameno"], reddf["frameno"]):
+# Check if the index columns (frameno) are the same for red and green.
+for rframes, gframes, bframes in zip(reddf["frameno"], greendf["frameno"], bluedf["frameno"]):
     if not gframes == rframes:
         print "something went wrong, the frames are unequal \n"
-        print "green: " + str(gframes)
         print "red: " + str(rframes)
+        print "green: " + str(gframes)
+        print "blue: " + str(gframes)
 """
 
-"""
+
 localdf["greenframe"] = greendf["frameno"]
 localdf["green"] = greendf["localcluster"]
 localdf["greensd"] = greendf["localsd"]
 localdf["redframe"] = reddf["frameno"]
 localdf["red"] = reddf["localcluster"]
 localdf["redsd"] = reddf["localsd"]
+localdf[""]
 
 globaldf["greenframe"] = greendf["frameno"]
 globaldf["green"] = greendf["globalcluster"]

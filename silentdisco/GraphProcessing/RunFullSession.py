@@ -13,9 +13,10 @@ import numpy as np
 centresfile = "/Volumes/SAMSUNG/MOSI/csv/centres/split_colors_10.csv"
 
 # thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400, 500, 600, 700, 800, 900]
-thresholdrange = [200]
+thresholdrange = [250]
 
 frame_start = 1 
+# frame_start = 138471
 frame_step = 10
 frame_stop = 139201
 frame_total = frame_stop + 1
