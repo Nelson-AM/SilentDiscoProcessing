@@ -70,6 +70,6 @@ for(i in 1:length(thresholds)) {
 	anoout <- capture.output(Anova(myfit))
 	
 	cat("Myfit summary", sumout, file=sumpath, sep="\n", append=TRUE)
-	cat("Myfit Anova", sumout, file=anopath, sep="\n", append=TRUE)
-	cat("Myfit etasq", sumout, file=etapath, sep="\n", append=TRUE)
+	cat("Myfit Anova", anoout, file=anopath, sep="\n", append=TRUE)
+	cat("Myfit etasq", etaout, file=etapath, sep="\n", append=TRUE)
 }

@@ -12,7 +12,7 @@ import glob
 workingdir = "/Volumes/SAMSUNG/MOSI/"
 csvdir = workingdir + "csv/"
 
-thresholds = ["150"] # , "200", "250"]
+thresholds = ["150", "200", "250"]
 for threshold in thresholds:
     # get frame data
     # ff = pd.read_csv(csvdir + "framedata_full_" + threshold + ".csv")
