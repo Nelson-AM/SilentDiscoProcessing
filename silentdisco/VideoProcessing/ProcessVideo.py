@@ -110,9 +110,11 @@ def save_frame_frame(vidin, frame, outdir = None):
     framestr = str(frame)
     
     if outdir:
-        save_image(vidin, framestr, image, outdir)
+        save_image(image, framestr, outdir)
+        # save_image(vidin, framestr, image, outdir)
     else:
-        save_image(vidin, framestr, image)
+        save_image(image, framestr)
+        # save_image(vidin, framestr, image)
 
 
 def show_video_HSV(vidin):

@@ -48,7 +48,7 @@ for(i in 1:length(thresholds)) {
 
 	# Define time segments
 	# Replace ranges of frame numbers with numbers 1:n
-	n_segments = 60
+	n_segments = 30
 	segments = create_segments(n_segments)
 
 	# Then convert to a factor

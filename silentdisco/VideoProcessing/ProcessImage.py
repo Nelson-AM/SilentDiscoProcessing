@@ -375,9 +375,9 @@ def save_contours_multi(imin, imname, maskin = None, savedir = None):
     cv2.drawContours(contoursim, contours_r, -1, (0, 0, 255), 2)
     
     if savedir:
-        save_image(imin, imname, savedir)
+        save_image(contoursim, imname, savedir)
     else:
-        save_image(imin, imname)
+        save_image(contoursim, imname)
 
 
 def find_centres(contours):
