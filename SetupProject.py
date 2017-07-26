@@ -2,14 +2,7 @@
 """Sets up directory structure. Might do more in the future"""
 
 import os
-import argparse
 
-ap = argparse.ArgumentParser()
-
-ap.add_argument("-wd", "--workingdir", help="Path to working directory.")
-
-args = vars(ap.parse_args())
-workingdir = args["workingdir"]
 
 def setup_directories(maindir):
     """Create directory structure used by rest of the software."""
@@ -27,3 +20,15 @@ def setup_directories(maindir):
 
     for directory in directories:
         os.mkdir(maindir + directory)
+
+if __name__ == "__main__":
+    import argparse
+    
+    ap = argparse.ArgumentParser()
+    
+    ap.add_argument("-wd", "--workingdir", type=str, help="Path to working directory.")
+    
+    args = vars(ap.parse_args())
+    workingdir = args["workingdir"]
+
+    setup_directories(workingdir)
