@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 # To make sure any image-related function calls work.
-from ProcessImage import *
+from .ProcessImage import save_image
 
 ####################################
 #####     VIDEO PROCESSING     #####
@@ -19,8 +19,6 @@ def read_video(vidin):
     Returns:
         Video capture.
     """
-    
-    # TODO: write / complete docstring.
     
     # If vidin is not a string, assume it's already a videocapture thing.
     if isinstance(vidin, str):
@@ -39,8 +37,6 @@ def get_number_frames(vidin):
     
     """
     
-    # TODO: write / complete docstring.
-    
     vidcap = read_video(vidin)
     return int(vidcap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT))
 
@@ -54,8 +50,6 @@ def extract_frame_time(vidin, time):
     Returns:
         image
     """
-    
-    # TODO: write / complete docstring.
     
     vidcap = read_video(vidin)
     
@@ -71,14 +65,12 @@ def save_frame_time(vidin, time, outdir = None):
     """
     """
     
-    # TODO: write / complete docstring.
-    
     image = extract_frame_time(vidin, time)
     
     timestr = str(time)
     
     if outdir:
-        save_image(vidin, timestr, image, outdir)
+        save_image(image, timestr, outdir)
     else:
         save_image(vidin, timestr, image)
 
@@ -86,8 +78,6 @@ def save_frame_time(vidin, time, outdir = None):
 def extract_frame_frame(vidin, frame):
     """
     """
-    
-    # TODO: write / complete docstring.
     
     vidcap = read_video(vidin)
     
@@ -102,8 +92,6 @@ def extract_frame_frame(vidin, frame):
 def save_frame_frame(vidin, frame, outdir = None):
     """
     """
-    
-    # TODO: write / complete docstring.
     
     image = extract_frame_frame(vidin, frame)
     
@@ -121,12 +109,10 @@ def show_video_HSV(vidin):
     """
     """
     
-    # TODO: write / complete docstring.
-    
     vidcap = read_video(vidin)
     
     while(vidcap.isOpened()):
-        ret, frame = vidcap.read()
+        _, frame = vidcap.read()
         
         frame = cv2.resize(frame, 
                            (0, 0), 
@@ -142,5 +128,8 @@ def show_video_HSV(vidin):
         if cv2.waitKey(12) & 0xFF == ord('q'):
             break
     
-    capture.release()
+    vidcap.release()
     cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    print("Do something")

@@ -2,9 +2,6 @@ import os, csv, cv2, sys
 import numpy as np
 from matplotlib import pyplot as plt
 
-# TODO: check for all functions that return values AND save images if this is necessary.
-
-
 
 ########################################
 #####     GEN IMAGE PROCESSING     #####
@@ -22,19 +19,14 @@ def read_image(imin, colorspace = None):
     Returns:
         An image array.
     """
+
+    return cv2.imread(imin)
     
-    if isinstance(imin, str):
-        imin = os.path.expanduser(imin)
-        
-        return cv2.imread(imin)
-        
-        # FIXME: colorspace doesn't get passed through properly.
-        #if colorspace:
-        #    return cv2.imread(imin, colorspace)
-        #else:
-        #    return cv2.imread(imin)
-    else:
-        return imin
+    # FIXME: colorspace doesn't get passed through properly.
+    #if colorspace:
+    #    return cv2.imread(imin, colorspace)
+    #else:
+    #    return cv2.imread(imin)
 
 
 def save_image(image, imname, imdir = None):
@@ -118,7 +110,6 @@ def separate_colors(imin, imdir = None):
     """
     
     img = read_image(imin)
-    
     b, g, r = cv2.split(img)
 
     # Display image for debugging purposes.
@@ -126,8 +117,7 @@ def separate_colors(imin, imdir = None):
 
     imnames = ['b', 'g', 'r']
     images = [b, g, r]
-    
-    # TODO: check if this is necessary.
+
     if imdir:
         save_images(images, imnames, imdir)
     else:
@@ -139,8 +129,6 @@ def separate_colors(imin, imdir = None):
 def otsu_base(imin, gauss = None):
     """
     """
-    
-    #TODO: write docstring
     
     if gauss:
         blurim = cv2.GaussianBlur(imin, (5, 5), 0)
@@ -177,8 +165,6 @@ def otsu_threshold(imin, gauss = None):
 def find_contours_base(img, maskin = None):
     """
     """
-    # TODO: write docstring
-    # CHANGED: fill in base function
     
     if maskin:
         mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
@@ -192,58 +178,7 @@ def find_contours_base(img, maskin = None):
                                        cv2.RETR_TREE,
                                        cv2.CHAIN_APPROX_SIMPLE)
     
-    return contoursim
-
-
-def find_contours_test(imin, maskin = None):
-    """
-    """
-    # TODO: write docstring
-    # CHANGED: function tested
-    img = otsu_threshold(imin, "gauss")
-    
-    if len(img.shape) is 3:
-        for i in range(img.shape[-1]):
-            contoursim[:, :, i] = find_contours_base(img[:, :, i], maskin)
-    else:
-        contoursim = find_contours_base(img, maskin)
-    
-    return contoursim
-
-
-def otsu_threshold(imin, gauss = None, imdir = None):
-    """ Perform otsu thresholding
-    
-    Args:
-        imin: path to image (absolute or relative) or array of values to threshold.
-        gauss: optional
-        imdir: optional path to save directory.
-    
-    Returns:
-        otsuim: thresholded
-        saves thresholded file
-    """
-    
-    # TODO: assumes greyscale image (i.e. one color layer or a greyscaled image)
-    # TODO: option for filename as argument?
-    
-    img = read_image(imin)
-    
-    if gauss:
-        blurim = cv2.GaussianBlur(img, (5, 5), 0)
-        _, otsuim = cv2.threshold(blurim, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        imname = 'otsu_gauss'
-        
-    else:
-        _, otsuim = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        imname = 'otsu'
-    
-    if imdir:
-        save_image(otsuim, imname, imdir)
-    else:
-        save_image(otsuim, imname)
-    
-    return otsuim
+    return contours
 
 
 def otsu_threshold_multi(imin, gauss = None, imdir = None):
@@ -277,10 +212,10 @@ def otsu_threshold_multi(imin, gauss = None, imdir = None):
     
     images = [otsu_b, otsu_g, otsu_r]
     
-    # if imdir:
-    #    save_images(images, imnames, imdir)
-    # else:
-    #    save_images(images, imnames)
+    if imdir:
+       save_images(images, imnames, imdir)
+    else:
+       save_images(images, imnames)
     
     return otsu_b, otsu_g, otsu_r
 
@@ -318,32 +253,25 @@ def find_contours_multi(imin, maskin = None):
     2. Find contours for each layer.
     """
     
-    # TODO: allow function call with input image, not text string.
-    #       save_image assumes imin is a string.
-    
     b, g, r = otsu_threshold_multi(imin, "gauss")
     
     if maskin:
         # Read mask and apply to all three layers.
-        # TODO: make sure read_image handles the colorspace argument properly.
         mask = read_image(maskin)
         mask = cv2.cvtColor(mask, cv2.cv.CV_BGR2GRAY)
         
-        # TODO: see if this can be simplified (i.e. reduce number of near-duplicate lines).
-        # IDEA: Instead of splitting the image into different variables, iterate over the image layers.
         b = cv2.bitwise_and(b, b, mask = mask)
         g = cv2.bitwise_and(g, g, mask = mask)
         r = cv2.bitwise_and(r, r, mask = mask)
-    
-    # TODO: see if this can be simplified (i.e. reduce number of near-duplicate lines).
-    contours_b, _ = cv2.findContours(b, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours_g, _ = cv2.findContours(g, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours_r, _ = cv2.findContours(r, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    _, contours_b, _ = cv2.findContours(b, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    _, contours_g, _ = cv2.findContours(g, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    _, contours_r, _ = cv2.findContours(r, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     
     return contours_b, contours_g, contours_r
 
 
-def save_contours_multi(imin, imname, maskin = None, savedir = None):
+def save_contours_multi(imin, outname, maskin = None, savedir = None):
     """ Finds contours for each colour layer, then draws them onto the original color image.
     
     Args:
@@ -369,21 +297,19 @@ def save_contours_multi(imin, imname, maskin = None, savedir = None):
     else:
         contours_b, contours_g, contours_r = find_contours_multi(imin)
     
-    # TODO: see if this can be simplified (i.e. reduce number of near-duplicate lines).
     cv2.drawContours(contoursim, contours_b, -1, (255, 0, 0), 2)
     cv2.drawContours(contoursim, contours_g, -1, (0, 255, 0), 2)
     cv2.drawContours(contoursim, contours_r, -1, (0, 0, 255), 2)
-    
+
     if savedir:
-        save_image(contoursim, imname, savedir)
+        save_image(contoursim, outname, savedir)
     else:
-        save_image(contoursim, imname)
+        save_image(contoursim, outname)
 
 
 def find_centres(contours):
     """
     """
-    # TODO: write docstring
     
     centres = []
     
@@ -412,14 +338,12 @@ def find_centres_multi(imin, maskin = None):
     Returns:
         centres_b, centres_g, centres_r:
     """
-    
-    # FIXME: multiple values of maskin, need to use a different keyword.
-    # TODO: change output to one argument.
+
     if maskin:
         contours_b, contours_g, contours_r = find_contours_multi(imin, maskin = maskin)
     else:
         contours_b, contours_g, contours_r = find_contours_multi(imin)
-    
+
     # Preallocate for each color layer.
     centres_b = find_centres(contours_b)
     centres_g = find_centres(contours_g)
@@ -431,17 +355,14 @@ def find_centres_multi(imin, maskin = None):
 def save_centres_multi(imin, imname, maskin = None, savedir = None):
     """
     """
-    
-    # TODO: add "masked" string to image name if mask is applicable.
-    # TODO: fix output (one argument instead of 3)
+
     if maskin:
-        centres_b, centres_g, centres_r = find_centres_multi(imin, mask = maskin)
+        centres_b, centres_g, centres_r = find_centres_multi(imin, maskin = maskin)
     else:
         centres_b, centres_g, centres_r = find_centres_multi(imin)
-    
+
     centre_image = read_image(imin)
-    
-    # TODO: simplify
+
     for i in range(len(centres_b)):
         cv2.circle(centre_image, centres_b[i], 5, (0, 255, 255), -1)
     for i in range(len(centres_g)):
@@ -459,30 +380,28 @@ def save_centres_multi(imin, imname, maskin = None, savedir = None):
 def find_centres_single(imin, maskin = None, imdir = None):
     """
     """
-    # TODO: write docstring
-    # TODO: make simplified version like otsu and contours
     # Assumes single channel image.
     # - Run separate_colors.
     # - Run find_centres for each layer.
-    contours, contoursim = find_contours_single(imin)
+    contours, _ = find_contours_single(imin)
     
     im = read_image(imin, cv2.IMREAD_COLOR)
     
     if maskin:
         mask = read_image(maskin, cv2.IMREAD_GRAYSCALE)
-        im = cv2.bitwise_and(imgray, imgray, mask = mask)
+        im = cv2.bitwise_and(im, im, mask = mask)
         imname = 'centroids_masked'
     else:
         imname = 'centroids_unmasked'
     
     centres = find_centres(contours)
     
-    return centres
-    
     if imdir:
         save_image(im, imname, imdir)
     else:
         save_image(im, imname)
+
+    return centres
 
 
 def save_centres(filename, timepoint, color, centres):
@@ -555,20 +474,5 @@ def printProgress(iteration, total, prefix = "", suffix = "", decimals = 1, barL
         sys.stdout.flush()
 
 
-########################################
-#####       DRAFT FUNCTIONS        #####
-########################################
-
-def show_centres(image, centres):
-    
-    for i in range(len(centres)):
-        cv2.circle(image, centres[i], 5, (0, 255, 255), -1)
-    
-    show_image(image)
-
-
-# testimage = "~/Documents/PYTHON/SilentDiscoData/Frames/TX-BACK UP_21_0.png"
-# im = read_image(testimage)
-# print len(im.shape)
-# save_image(testimage, 'test', im, 'Processed2')
-# save_image(testimage, 'test', im)
+if __name__ == "__main__":
+    print("Do something.")
