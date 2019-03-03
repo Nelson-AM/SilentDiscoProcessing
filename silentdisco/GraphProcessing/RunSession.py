@@ -42,7 +42,10 @@ thresholdrange = [50, 100, 150, 200, 250, 300, 350, 400] # , 500, 600, 700, 800,
 # thresholdrange = [400]
 # threshold = 50
 
-# create_graphs_color (note: plural) builds one graph for each timepoint in the input file.  The color argument is optional, if no color is given then it will automatically create graphs for red, green and blue.  The graphs are saved as xml.gz files, images of the graphs are saved as well, with the vertices in their approximated real-world location.
+# create_graphs_color (note: plural) builds one graph for each timepoint in the input file.  The color argument is
+# optional, if no color is given then it will automatically create graphs for red, green and blue.  The graphs are
+# saved as xml.gz files, images of the graphs are saved as well, with the vertices in their approximated real-world
+# location.
 # create_graph_color(centresfile, timestamp, threshold, "red", graphdir = None)
 # create_graph_color(centresfile, timestamp, threshold, "green", graphdir = None)
 
@@ -85,15 +88,16 @@ for threshold in thresholdrange:
                                     'globalsd', 'vertexaverage', 'vertexsd'])
     
     for i in range(frame_start, frame_total, frame_step):
-        print i
+        print(i)
         
         # Get graph for current frame and threshold.
         # greeng = create_graph_color(centresfile, i, threshold, 
         #                            "green", "/Volumes/SAMSUNG/ESCOM/Graphs")
         # redg = create_graph_color(centresfile, i, threshold, 
         #                          "red", "/Volumes/SAMSUNG/ESCOM/Graphs")
-        
-        # Test if number of vertices is greater than zero.  If n_vertices is greater than zero, do the following, if not, make the entry a NaN?  Check how matplotlib deals with NaNs.
+
+        # Test if number of vertices is greater than zero.  If n_vertices is greater than zero, do the following, if
+        # not, make the entry a NaN?  Check how matplotlib deals with NaNs.
         if get_number_vertices(greeng) is not 0:
             
             # Get local clustering values.
@@ -104,7 +108,7 @@ for threshold in thresholdrange:
             (greenvertav, greenvertsd) = vertex_average(greeng, 'total')
             
         else:
-            print "Green graph number bla has 0 vertices."
+            print("Green graph number bla has 0 vertices.")
             
             greenlocalc = float('NaN')
             greenlocalsd = float('NaN')
@@ -121,7 +125,7 @@ for threshold in thresholdrange:
             (redvertav, redvertsd) = vertex_average(redg, 'total')
             
         else:
-            print "Red graph number bla has 0 vertices."
+            print("Red graph number bla has 0 vertices.")
             
             redlocalc = float('NaN')
             redlocalsd = float('NaN')
@@ -140,7 +144,7 @@ for threshold in thresholdrange:
                                   'globalsd': greenglobalsd,
                                   'vertexaverage': greenvertav,
                                   'vertexsd': greenvertsd},
-                                  ignore_index = True)
+                                 ignore_index=True)
         reddf = reddf.append({'frameno': i,
                               'localcluster': redlocalc,
                               'localsd': redlocalsd,

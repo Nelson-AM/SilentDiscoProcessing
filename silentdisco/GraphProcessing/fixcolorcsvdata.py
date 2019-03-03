@@ -1,11 +1,9 @@
-import scipy as sp
 import pandas as pd
-import numpy as np
-import os, csv
+import os
 import argparse
-import matplotlib.pyplot as plt
 
 from matplotlib.pylab import rcParams
+
 rcParams['figure.figsize'] = 15, 6
 
 # Construct argument parser and parse arguments.
@@ -25,29 +23,28 @@ greencsv = os.path.expanduser(greencsv)
 bluecsv = os.path.expanduser(bluecsv)
 
 # Read read and green csv into dataframe.
-reddf = pd.read_csv(redcsv) #, index_col = "frameno")
-greendf = pd.read_csv(greencsv) #, index_col = "frameno")
+reddf = pd.read_csv(redcsv)  # , index_col = "frameno")
+greendf = pd.read_csv(greencsv)  # , index_col = "frameno")
 bluedf = pd.read_csv(bluecsv)
 
-
 # Create new dataframes.
-localdf = pd.DataFrame(columns = ["redframe", "greenframe", "blueframe", 
-                                  "red", "redsd",
-                                  "green", "greensd", 
-                                  "blue", "bluesd", "segment"])
-globaldf = pd.DataFrame(columns = ["redframe", "greenframe", "blueframe", 
-                                  "red", "redsd",
-                                  "green", "greensd", 
-                                  "blue", "bluesd", "segment"])
-vertavdf = pd.DataFrame(columns = ["redframe", "greenframe", "blueframe", 
-                                  "red", "redsd",
-                                  "green", "greensd", 
-                                  "blue", "bluesd", "segment"])
+localdf = pd.DataFrame(columns=["redframe", "greenframe", "blueframe",
+                                "red", "redsd",
+                                "green", "greensd",
+                                "blue", "bluesd", "segment"])
+globaldf = pd.DataFrame(columns=["redframe", "greenframe", "blueframe",
+                                 "red", "redsd",
+                                 "green", "greensd",
+                                 "blue", "bluesd", "segment"])
+vertavdf = pd.DataFrame(columns=["redframe", "greenframe", "blueframe",
+                                 "red", "redsd",
+                                 "green", "greensd",
+                                 "blue", "bluesd", "segment"])
 
 savedir = str(greencsv.rsplit("/", 1)[0])
 threshold = str(greencsv.rsplit("_", 1)[-1])
-print savedir
-print threshold
+print(savedir)
+print(threshold)
 
 """
 # Check if the index columns (frameno) are the same for red and green.
@@ -59,14 +56,13 @@ for rframes, gframes, bframes in zip(reddf["frameno"], greendf["frameno"], blued
         print "blue: " + str(gframes)
 """
 
-
 localdf["greenframe"] = greendf["frameno"]
 localdf["green"] = greendf["localcluster"]
 localdf["greensd"] = greendf["localsd"]
 localdf["redframe"] = reddf["frameno"]
 localdf["red"] = reddf["localcluster"]
 localdf["redsd"] = reddf["localsd"]
-localdf[""]
+# localdf[""]
 
 globaldf["greenframe"] = greendf["frameno"]
 globaldf["green"] = greendf["globalcluster"]
@@ -90,3 +86,4 @@ vertavpath = savedir + "vertex_average_" + threshold
 localdf.to_csv(localpath)
 globaldf.to_csv(globalpath)
 vertavdf.to_csv(vertavpath)
+"""

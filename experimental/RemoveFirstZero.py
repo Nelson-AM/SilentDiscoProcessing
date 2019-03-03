@@ -15,6 +15,6 @@ for files in glob.glob(filepath + "*.xml.gz"):
     if splitfiles[1].startswith("0"):
         splitfiles[1] = splitfiles[1][1:]
         newfiles = "_".join(splitfiles)
-        print files
-        print newfiles
+        print(files)
+        print(newfiles)
         os.rename(files, newfiles)

@@ -7,6 +7,7 @@ import argparse
 # Define and add subdirectories
 directories = ["csv", "frames", "graphs", "masks", "music", "plots", "video"]
 
+
 def setup_directories(maindir):
     """Create directory structure used by rest of the software."""
 

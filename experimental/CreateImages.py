@@ -1,14 +1,11 @@
 # RunSession
-
-from ProcessImage import *
-from ProcessVideo import *
-from GraphModeling import *
-from graph_tool.all import *
-import cv2
+import os
+import pandas as pd
 import glob
 
-from matplotlib import pyplot as plt
-import numpy as np
+from graph_tool.all import *
+
+from silentdisco.GraphProcessing.ProcessGraphs import image_graph
 
 """ 
 ProcessImage is imported to process individual video frames, to find the image moments and their 
@@ -56,7 +53,7 @@ for threshold in thresholds:
         # print i
         
         if float(i[1]) in range(frame_start, frame_total, frame_step):
-            print file
+            print(file)
             
             image_graph(file, "/Volumes/SAMSUNG/PNG/")
 

@@ -28,15 +28,13 @@ for threshold in thresholds:
                 shutil.move(sourcepath + str(threshold) + "/" + filename,
                             redpath + "/" + str(threshold) + "/" + filename)
             else:
-                print "File already exists: "
-                print redpath + "/" + str(threshold) + "/" + filename
+                print("File already exists: " + redpath + "/" + str(threshold) + "/" + filename)
         elif "green" in filename:
             if not os.path.isfile(greenpath + "/" + str(threshold) + "/" + filename):
                 shutil.move(sourcepath + str(threshold) + "/" + filename,
                             greenpath + "/" + str(threshold) + "/" + filename)
             else:
-                print "File already exists:"
-                print greenpath + "/" + str(threshold) + "/" + filename
+                print("File already exists:" + greenpath + "/" + str(threshold) + "/" + filename)
                 
 """
 if not os.path.isfile(filepath + filename):

@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 from matplotlib import pyplot as plt
 
 img = cv2.imread('OriginalG.png', 0)
@@ -15,7 +14,7 @@ titles = ['Original Image', 'Global Thresholding (v = 127)',
           'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding']
 images = [img, th1, th2, th3]
 
-for i in xrange(4):
+for i in range(4):
     plt.subplot(2, 2, i + 1), plt.imshow(images[i], 'gray')
     plt.title(titles[i])
     plt.xticks([]), plt.yticks([])

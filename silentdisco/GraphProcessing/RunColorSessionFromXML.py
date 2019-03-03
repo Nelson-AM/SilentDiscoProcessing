@@ -71,8 +71,8 @@ for threshold in thresholds:
         
         if float(i[2]) in range(frame_start, frame_total, frame_step):
             # print "Succes!"
-            
-            print file
+
+            print(file)
             g = load_graph(file)
         
             if 'red' in file:
@@ -142,7 +142,7 @@ for threshold in thresholds:
                                           ignore_index = True)
             
             else:
-                print 'Oops, this is not a red or a green graph.'
+                print('Oops, this is not a red or a green graph.')
         
     redcsvname = savedir + "reddata_t" + str(threshold) + ".csv"
     greencsvname = savedir + "greendata_t" + str(threshold) + ".csv"

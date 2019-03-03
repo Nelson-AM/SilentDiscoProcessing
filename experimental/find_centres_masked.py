@@ -1,3 +1,5 @@
+import cv2
+
 def find_centres_masked(imin, maskin):
     """
     """
@@ -14,8 +16,7 @@ def find_centres_masked(imin, maskin):
     im = read_image(imin, cv2.IMREAD_COLOR)
     mask = read_image(maskin, cv2.IMREAD_GRAYSCALE)
 
-    print 'contours has length: '
-    print len(contours)
+    print('contours has length: ' + len(contours))
 
     centres = []
     
@@ -27,14 +28,12 @@ def find_centres_masked(imin, maskin):
             continue
 
         moments = cv2.moments(contours[i])
-        print "i is:"
-        print i
-        print "moments:"
-        print moments
+        print("i is:" + i)
+        print("moments: " + moments)
         centres.append(
             (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
         cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
 
-    print centres
+    print(centres)
 
     save_image(imin, ['centroids_masked'], [im])

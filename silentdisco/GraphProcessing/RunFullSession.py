@@ -53,8 +53,8 @@ for threshold in thresholdrange:
         os.mkdir(greendir)
     if not os.path.isdir(bluedir):
         os.mkdir(bluedir)
-    
-    print threshold
+
+    print(threshold)
     
     for i in range(frame_start, frame_total, frame_step):
         # print i

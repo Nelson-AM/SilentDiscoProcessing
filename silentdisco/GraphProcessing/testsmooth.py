@@ -9,7 +9,7 @@ csvext = ".csv"
 dataframe = read_csv(csvbase + csvext)
 x = dataframe["full_frameno"]
 x = x / 25 / 60
-print dataframe.head()
+print(dataframe.head())
 ys = [dataframe["green_vertices"], 
       dataframe["red_vertices"]]
 #       dataframe["blue_vertices"]]

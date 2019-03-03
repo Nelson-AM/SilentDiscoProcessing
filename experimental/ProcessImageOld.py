@@ -105,7 +105,7 @@ def adaptive_threshold(imin):
     """ Takes an image and creates three binarized versions of it using adaptive thresholding.
     """
 
-    img = cv2.imread(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    img = cv2.imread(imin, cv2.IMREAD_GRAYSCALE)
     img = cv2.medianBlur(img, 5)
 
     ret, th1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
@@ -123,7 +123,7 @@ def otsu_threshold(imin):
     """ Takes an image and creates binarised versions using Otsu thresholding.
     """
 
-    img = read_image(imin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    img = read_image(imin, cv2.IMREAD_GRAYSCALE)
 
     # Global thresholding
     ret1, th1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
@@ -150,8 +150,8 @@ def find_contours(imin):
         
     contours, _ = cv2.findContours(imgray, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contoursim = cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
-        
-    return (contours, contoursim)
+
+    return contours, contoursim
 
 def find_contours_masked(imin, maskin):
     """
@@ -159,15 +159,13 @@ def find_contours_masked(imin, maskin):
         
     im = read_image(imin, cv2.IMREAD_COLOR)
     imgray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
-    mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+    mask = read_image(maskin, cv2.IMREAD_GRAYSCALE)
         
     # apply mask
-    maksedim = cv2.bitwise_and(imgray, imgray, mask = mask)
-        
-    contours, _ = cv2.findContours(maskedim, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(cv2.bitwise_and(imgray, imgray, mask=mask), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     contoursim = cv2.drawContours(im, contours, -1, (0, 0, 255), 2)
-        
-    return (contours, contoursim)
+
+    return contours, contoursim
     
 def find_centres(imin):
     """
@@ -179,9 +177,8 @@ def find_centres(imin):
         
     contours, contoursim = find_contours(imin)
     im = read_image(imin, cv2.IMREAD_COLOR)
-        
-    print 'contours has length: '
-    print len(contours)
+
+    print('contours has length: ' + len(contours))
         
     centres = []
         
@@ -193,16 +190,14 @@ def find_centres(imin):
             continue
             
         moments = cv2.moments(contours[i])
-        print "i is:"
-        print i
-        print "moments:"
-        print moments
+        print("i is:" + i)
+        print("moments: " + moments)
             
         centres.append(
             (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
         cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
-    
-    print centres
+
+    print(centres)
         
     save_image(imin, ['centroids'], [im])
     
@@ -219,11 +214,10 @@ def find_centres_masked(imin, maskin):
     # maskedim = cv2.bitwise_and(imgray, imgray, mask = mask)
         
     contours, contoursim = find_contours_masked(imin, maskin)
-    im = imread(imin, cv2.IMREAD_COLOR)
-    mask = imread(maskin, cv2.IMREAD_GRAYSCALE)
-        
-    print 'contours has length: '
-    print len(contours)
+    im = cv2.imread(imin, cv2.IMREAD_COLOR)
+    mask = cv2.imread(maskin, cv2.IMREAD_GRAYSCALE)
+
+    print('contours has length: ' + len(contours))
 
     centres = []
 
@@ -235,14 +229,12 @@ def find_centres_masked(imin, maskin):
             continue
             
         moments = cv2.moments(contours[i])
-        print "i is:"
-        print i
-        print "moments:"
-        print moments
+        print("i is:" + i)
+        print("moments:" + moments)
         centres.append(
             (int(moments['m10'] / moments['m00']), int(moments['m01'] / moments['m00'])))
         cv2.circle(im, centres[-1], 5, (0, 255, 0), -1)
-        
-    print centres
+
+    print("centres: " + centres)
         
     save_image(imin, ['centroids_masked'], [im])

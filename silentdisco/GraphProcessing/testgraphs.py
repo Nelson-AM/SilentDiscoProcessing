@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 import argparse
 import fnmatch
-from ProcessGraphs import *
+import glob
+import os
+
+from silentdisco.GraphProcessing.ProcessGraphs import read_graph
+from silentdisco.Utilities import printProgress
 
 ap = argparse.ArgumentParser()
 
@@ -37,7 +41,7 @@ for typedir in typedirs:
                     # TODO: add progress bar tracking i over number of filenames.
                     printProgress(i, maxlength, prefix="Progress:", suffix="Complete", barLength=50)
                     i += 1
-                except IOError, e:
+                except IOError as e:
                     print("\nError:", e)
                     continue
             os.chdir("..")

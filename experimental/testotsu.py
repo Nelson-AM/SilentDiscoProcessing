@@ -4,7 +4,7 @@ from ProcessImage import *
 imname = "/Users/Nelson/Desktop/Bromo.jpg"
 
 image = read_image(imname)
-print image.shape
+print(image.shape)
 
 # print image.shape
 # print len(image.shape)

@@ -67,7 +67,7 @@ for threshold in thresholds:
         idot = i[1].split(".")
         
         if float(i[1]) in range(frame_start, frame_total, frame_step):
-            print file
+            print(file)
             g = load_graph(file)
             
             if get_number_vertices(g) is not 0:

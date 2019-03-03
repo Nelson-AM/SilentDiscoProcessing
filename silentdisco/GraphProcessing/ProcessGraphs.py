@@ -1,13 +1,10 @@
 # TODO: create script similar to ProcessVideo.py for graph processing.
-import os, shutil, glob, csv, sys
+import os, glob, sys
 import numpy as np
 import pandas as pd
 
 from graph_tool.all import *
 from matplotlib import pyplot as plt
-
-
-
 
 
 ################################################
@@ -19,8 +16,6 @@ from matplotlib import pyplot as plt
 # TODO: Add and complete docstrings for functions.
 # TODO: Add edge weight as graph property.
 # TODO: Make every directory / file path relative to a project directory (e.g. ESCOM).
-
-
 
 
 ################################################
@@ -82,11 +77,11 @@ def save_graph_img(g, name, threshold, graphdir = None):
         g = load_graph(g, directed = False)
     if graphdir:
         graphdir = os.path.expanduser(graphdir)
-        print graphdir
+        print(graphdir)
         graphnameim = graphdir + "/graph_" + str(name) + "_" + str(threshold) + ".png"
     else:
         graphnameim = "graph_" + str(name) + "_" + str(threshold) + ".png"
-    print graphnameim
+    print(graphnameim)
     pos = g.vertex_properties["pos"]
     color = g.vertex_properties["color"]
     
@@ -567,7 +562,7 @@ def save_graphs_list(graphdir, savedir = None):
     typegraph = graphdir.split("/")[-3]
     threshold = graphdir.split("/")[-2]
     savefile = savedir + "/" +  typegraph + "_" + threshold + ".txt"
-    print savefile
+    print(savefile)
     with open(savefile, "w") as f:
         for files in sorted(glob.glob(graphdir + "*.xml.gz")):
             f.write(files.split("/")[-1] + "\n")
@@ -586,23 +581,23 @@ def smooth_data(dataframe, span = None):
     
     if not span:
         span = 50
-        print "Using the default kernel size: 50"
+        print("Using the default kernel size: 50")
     
     # TODO: check or make sure that frameno is the index, or is ignored.
     for column in dataframe:
         if "frameno" in column:
-            print "I'm skipping the frame data."
+            print("I'm skipping the frame data.")
             smoothdf = pd.DataFrame(dataframe[column])
-            print smoothdf.head()
+            print(smoothdf.head())
             continue
         elif "Unnamed" in column:
-            print "I'm skipping any unnamed columns"
+            print("I'm skipping any unnamed columns")
             continue
         if "sd" in column:
             newcol = column.rsplit("_", 1)[0] + "_s" + str(span) + "_" + column.rsplit("_", 1)[-1]
         else:
             newcol = column.rsplit("_", 1)[0] + "_s" + str(span)
-        print newcol
+        print(newcol)
         
         smoothdf[newcol] = pd.ewma(dataframe[column], span=span)
     return smoothdf, span
@@ -662,9 +657,6 @@ def printProgress(iteration, total, prefix = "", suffix = "", decimals = 1, barL
 ########################################
 
 
-
-
-
 def get_n_vertices_color():
     """ Reads _full_ graph and returns number of vertices per color. """
     
@@ -687,11 +679,11 @@ def create_graph_color_test(filename, timestamp, threshold, color = None):
     
     # Checks if a color is entered as a parameter.
     if color:
-        print "Yay, color is: " + color + "."
+        print("Yay, color is: " + color + ".")
         # If a color is entered, build graph for only that color.
     else:
         # If no color is entered, build graphs separately for each color.
-        print "Boo, you didn't enter a color!"
+        print("Boo, you didn't enter a color!")
 
 
 def create_graphs_rg(filename, threshold, pgreen, pred):
@@ -700,7 +692,7 @@ def create_graphs_rg(filename, threshold, pgreen, pred):
     
     if  pgreen + pred == 100:
         # Awesome, do stuff!
-        print pgreen + pred
+        print(pgreen + pred)
         # Make list of all red nodes.
         # Make list of all green nodes.
         
@@ -714,7 +706,7 @@ def create_graphs_rg(filename, threshold, pgreen, pred):
         
     else:
         # Error / warning that red + green has to add up to 100.
-        print "pgreen and pred should add up to 100."
+        print("pgreen and pred should add up to 100.")
         sys.exit(-1)
 
 

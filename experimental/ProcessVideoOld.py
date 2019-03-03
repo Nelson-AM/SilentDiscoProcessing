@@ -1,6 +1,5 @@
 import os
 import cv2
-import numpy as np
 from matplotlib import pyplot as plt
 
 
@@ -9,6 +8,7 @@ def read_video(vidin):
     """
     vidin = os.path.expanduser(vidin)
     return cv2.VideoCapture(vidin)
+
 
 def save_image(imin, imnames, images, outdir):
     """ DUPLICATE FROM ProcessImage.py
@@ -19,12 +19,13 @@ def save_image(imin, imnames, images, outdir):
     To-do:
     - Generalize so images are saved with the same extension as original.
     """
-        
+
     imin = os.path.expanduser(imin)
     outdir = os.path.expanduser(outdir)
-        
+
     for imname, image in zip(imnames, images):
         cv2.imwrite(outdir + imin[17:-4] + '_' + str(imname / 1000) + '.png', image)
+
 
 def show_image(imin):
     """ DUPLICATE FROM ProcessImage.py
@@ -44,6 +45,7 @@ def show_image(imin):
     plt.xticks([]), plt.yticks([])
     plt.show()
 
+
 def process_video(vidin):
 
     cap = read_video(vidin)
@@ -54,9 +56,9 @@ def process_video(vidin):
         # cap = cv2.VideoCapture("./out.mp4")
 
         cv2.waitKey(1000)
-        print "Wait for the header"
+        print("Wait for the header")
 
-        pos_frame = cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES)
+        pos_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
 
         while True:
             flag, frame = cap.read()
@@ -66,14 +68,14 @@ def process_video(vidin):
                 # The frame is ready and already captured
                 show_image(frame)
                 # cv2.imshow('video', frame)
-                pos_frame = cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES)
-                print str(pos_frame) + " frames"
+                pos_frame = cap.get(cv2.CAP_PROP_POS_FRAMES)
+                print(str(pos_frame) + " frames")
 
             else:
 
                 # The next frame is not ready, so we try to read it again.
-                cap.set(cv2.cv.CV_CAP_PROP_POS_FRAMES, pos_frame - 1)
-                print "Frame is not ready"
+                cap.set(cv2.CAP_PROP_POS_FRAMES, pos_frame - 1)
+                print("Frame is not ready")
 
                 # It is better to wait a while for the next frame to be
                 # ready.
@@ -81,12 +83,12 @@ def process_video(vidin):
 
                 if cv2.waitKey(10) == 27:
                     break
-                    
-                if cap.get(cv2.cv.CV_CAP_PROP_POS_FRAMES) == 
-                   cap.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT):
+
+                if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
                     # If the number of captured frames is equal to the
                     # total number of frames, we stop.
                     break
+
 
 def process_video_time(vidin, time, outdir):
 
@@ -95,19 +97,17 @@ def process_video_time(vidin, time, outdir):
     # Cue to 20 sec. position, not sure what 0 does here.
     # Something related to CV_CAP_PROP_POS_MSEC probably?
     # vidcap.set(0, time)
-    vidcap.set(cv2.cv.CV_CAP_PROP_POS_MSEC, time)
+    vidcap.set(cv2.CAP_PROP_POS_MSEC, time)
     success, image = vidcap.read()
 
     if success:
-
-        print time
+        print(time)
 
         # save frame as PNG
         imnames = [time]
         images = [image]
 
         save_image(vidin, imnames, images, outdir)
-    
+
     # cv2.imwrite("frame20sec.jpg", image)
     # self.show_image(image)
-    

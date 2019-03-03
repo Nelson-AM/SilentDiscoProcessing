@@ -166,11 +166,7 @@ def save_contours_multi(imin, imname, maskin = None, savedir = None):
     else:
         save_image(imin, imname)
 
-
-
-
-
-    # TODO: test function
+    # TODO: experimental function
     if maskin:
         mask = read_image(maskin, cv2.CV_LOAD_IMAGE_GRAYSCALE)
         

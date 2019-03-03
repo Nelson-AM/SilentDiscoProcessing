@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import os, shutil, glob
+import os
 from graph_tool.all import *
+
 
 def read_graph(graphin):
     """ Reads graph from .xml.gz file
@@ -16,6 +17,7 @@ def read_graph(graphin):
         return load_graph(graphin)
     else:
         return graphin
+
 
 def set_n_vertices_color(graphin, colors = None):
     """ Read _full_ graph and save number of vertices per color as propertymap.
@@ -56,9 +58,9 @@ def get_n_vertices_color(graphin):
                 
                 # TODO: separate function for adding and extracting the values?
                 # TODO: requires saving the graph again. Not as useful for extracting the data.
-                
-    
+
     # TODO: return counts per color
+
 
 filename = "~/Documents/PYTHON/SilentDiscoProcessing/graph_000150_150.xml.gz"
 get_n_vertices_color(filename)

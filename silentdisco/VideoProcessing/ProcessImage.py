@@ -1,4 +1,5 @@
-import os, csv, cv2, sys
+import csv
+import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -152,7 +153,7 @@ def otsu_threshold(imin, gauss = None):
     img = read_image(imin)
     
     if len(img.shape) is 3:
-        # CHANGED: tuple call and then test function!
+        # CHANGED: tuple call and then experimental function!
         otsuim = np.empty(img.shape)
         for i in range(img.shape[-1]):
             otsuim[:, :, i] = otsu_base(img[:, :, i], gauss)

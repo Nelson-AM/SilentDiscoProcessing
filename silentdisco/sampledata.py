@@ -11,4 +11,4 @@ sampledata = pd.DataFrame({"frameno": series,
 # print sampledata
 
 for col in sampledata:
-    print col
+    print(col)
